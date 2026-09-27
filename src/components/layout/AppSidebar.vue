@@ -148,6 +148,7 @@ import { useAuthStore } from "@/stores/auth"
 import { useLearningStore } from "@/stores/learning"
 import { useTheme } from "@/composables/useTheme"
 import { useI18n } from "@/lang"
+import navigationData from "@/data/navigation.json"
 
 const emit = defineEmits(["close-mobile"])
 const authStore = useAuthStore()
@@ -164,7 +165,8 @@ const toggleLanguage = () => {
     setLocale(nextLocaleCode)
 }
 
-const isEnglishRoute = (path) => ["/english", "/vocab", "/quiz", "/reading", "/writing", "/speaking", "/ielts", "/exam"].some((p) => path.startsWith(p))
+const isEnglishRoute = (currentRoutePath) =>
+    navigationData.englishRoutePrefixes.some((routePrefix) => currentRoutePath.startsWith(routePrefix))
 
 const techOpen = ref(route.path.startsWith("/tech"))
 const englishOpen = ref(isEnglishRoute(route.path))
@@ -173,60 +175,37 @@ const isTechActive = computed(() => route.path.startsWith("/tech"))
 const isEnglishActive = computed(() => isEnglishRoute(route.path))
 const isActive = (path) => route.path === path
 
-const englishSubItems = computed(() => [
-    { to: "/vocab", icon: "fa-solid fa-book-open", label: translate("learning.nav.vocab") },
-    { to: "/quiz", icon: "fa-solid fa-puzzle-piece", label: translate("learning.nav.quiz") },
-    { to: "/reading", icon: "fa-solid fa-book-open-reader", label: translate("learning.nav.reading") },
-    { to: "/writing", icon: "fa-solid fa-pen-fancy", label: translate("learning.nav.writing") },
-    { to: "/speaking", icon: "fa-solid fa-microphone-lines", label: translate("learning.nav.speaking") },
-    { to: "/ielts", icon: "fa-solid fa-graduation-cap", label: translate("learning.nav.ielts") },
-    { to: "/exam", icon: "fa-solid fa-file-signature", label: translate("learning.nav.exam") },
-])
+const englishSubItems = computed(() =>
+    navigationData.englishNavigationItems.map((item) => ({
+        to: item.to,
+        icon: item.icon,
+        label: translate(item.labelKey),
+    }))
+)
 
 const isEnglishSubActive = (path) => {
     if (path === "/quiz") return route.path.startsWith("/quiz")
     return route.path === path
 }
 
-const fallbackTechStacks = [
-    { slug: "php", name: "PHP", active_item_count: 200 },
-    { slug: "nextjs", name: "Next.js", active_item_count: 200 },
-    { slug: "python", name: "Python", active_item_count: 200 },
-    { slug: "reactjs", name: "React.js", active_item_count: 200 },
-    { slug: "javascript", name: "JavaScript", active_item_count: 200 },
-    { slug: "nodejs", name: "Node.js", active_item_count: 200 },
-]
-
-const techStacks = computed(() => (learningStore.techStacks.length ? learningStore.techStacks : fallbackTechStacks))
+const techStacks = computed(() =>
+    learningStore.techStacks.length ? learningStore.techStacks : navigationData.fallbackTechStacks
+)
 
 const normalizeTechSlug = (slug) =>
     String(slug || "")
         .toLowerCase()
         .replace(/[^a-z]/g, "")
 
-const techIconClass = (slug) =>
-    ({
-        php: "fa-brands fa-php",
-        python: "fa-brands fa-python",
-        react: "fa-brands fa-react",
-        reactjs: "fa-brands fa-react",
-        javascript: "fa-brands fa-js",
-        js: "fa-brands fa-js",
-        node: "fa-brands fa-node-js",
-        nodejs: "fa-brands fa-node-js",
-    })[normalizeTechSlug(slug)] || "fa-solid fa-code"
+const techIconClass = (slug) => {
+    const normalizedKey = normalizeTechSlug(slug)
+    return navigationData.techStackStyles[normalizedKey]?.icon || navigationData.techStackStyles.default.icon
+}
 
-const techIconColor = (slug) =>
-    ({
-        php: "text-indigo-600 dark:text-indigo-300",
-        python: "text-sky-600 dark:text-sky-400",
-        react: "text-cyan-600 dark:text-cyan-400",
-        reactjs: "text-cyan-600 dark:text-cyan-400",
-        javascript: "text-amber-600 dark:text-yellow-400",
-        js: "text-amber-600 dark:text-yellow-400",
-        node: "text-emerald-600 dark:text-green-400",
-        nodejs: "text-emerald-600 dark:text-green-400",
-    })[normalizeTechSlug(slug)] || "text-gray-600 dark:text-gray-300"
+const techIconColor = (slug) => {
+    const normalizedKey = normalizeTechSlug(slug)
+    return navigationData.techStackStyles[normalizedKey]?.color || navigationData.techStackStyles.default.color
+}
 
 const isTechStackActive = (slug) => route.path.startsWith("/tech") && String(route.params.stack || learningStore.activeTechSlug || "php") === slug
 

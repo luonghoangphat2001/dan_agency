@@ -1,0 +1,67 @@
+{
+  "englishRoutePrefixes": [
+    "/english",
+    "/vocab",
+    "/quiz",
+    "/reading",
+    "/writing",
+    "/speaking",
+    "/ielts",
+    "/exam"
+  ],
+  "englishNavigationItems": [
+    { "to": "/vocab", "icon": "fa-solid fa-book-open", "labelKey": "learning.nav.vocab" },
+    { "to": "/quiz", "icon": "fa-solid fa-puzzle-piece", "labelKey": "learning.nav.quiz" },
+    { "to": "/reading", "icon": "fa-solid fa-book-open-reader", "labelKey": "learning.nav.reading" },
+    { "to": "/writing", "icon": "fa-solid fa-pen-fancy", "labelKey": "learning.nav.writing" },
+    { "to": "/speaking", "icon": "fa-solid fa-microphone-lines", "labelKey": "learning.nav.speaking" },
+    { "to": "/ielts", "icon": "fa-solid fa-graduation-cap", "labelKey": "learning.nav.ielts" },
+    { "to": "/exam", "icon": "fa-solid fa-file-signature", "labelKey": "learning.nav.exam" }
+  ],
+  "fallbackTechStacks": [
+    { "slug": "php", "name": "PHP", "active_item_count": 200 },
+    { "slug": "nextjs", "name": "Next.js", "active_item_count": 200 },
+    { "slug": "python", "name": "Python", "active_item_count": 200 },
+    { "slug": "reactjs", "name": "React.js", "active_item_count": 200 },
+    { "slug": "javascript", "name": "JavaScript", "active_item_count": 200 },
+    { "slug": "nodejs", "name": "Node.js", "active_item_count": 200 }
+  ],
+  "techStackStyles": {
+    "php": {
+      "icon": "fa-brands fa-php",
+      "color": "text-indigo-600 dark:text-indigo-300"
+    },
+    "python": {
+      "icon": "fa-brands fa-python",
+      "color": "text-sky-600 dark:text-sky-400"
+    },
+    "react": {
+      "icon": "fa-brands fa-react",
+      "color": "text-cyan-600 dark:text-cyan-400"
+    },
+    "reactjs": {
+      "icon": "fa-brands fa-react",
+      "color": "text-cyan-600 dark:text-cyan-400"
+    },
+    "javascript": {
+      "icon": "fa-brands fa-js",
+      "color": "text-amber-600 dark:text-yellow-400"
+    },
+    "js": {
+      "icon": "fa-brands fa-js",
+      "color": "text-amber-600 dark:text-yellow-400"
+    },
+    "node": {
+      "icon": "fa-brands fa-node-js",
+      "color": "text-emerald-600 dark:text-green-400"
+    },
+    "nodejs": {
+      "icon": "fa-brands fa-node-js",
+      "color": "text-emerald-600 dark:text-green-400"
+    },
+    "default": {
+      "icon": "fa-solid fa-code",
+      "color": "text-gray-600 dark:text-gray-300"
+    }
+  }
+}
