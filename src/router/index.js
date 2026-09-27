@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { routes } from './routes';
-import { setupGuards } from './guards';
+import { routes } from '@router/routes';
+import { setupGuards } from '@router/guards';
 
-export * from './constants';
-export * from './routes';
-export * from './guards';
+export * from '@router/constants';
+export * from '@router/routes';
+export * from '@router/guards';
 
 export const router = createRouter({
   history: createWebHistory(),

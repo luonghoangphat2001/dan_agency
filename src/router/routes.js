@@ -4,7 +4,7 @@ import {
   TECH_STACKS,
   DEFAULT_QUIZ_MODE,
   QUIZ_MODES,
-} from './constants';
+} from '@router/constants';
 
 export const resolveTechRedirect = (to) => {
   const requested = String(to.query.stack || '').toLowerCase();
@@ -41,7 +41,7 @@ export const routes = [
     path: '/login',
     name: ROUTE_NAMES.LOGIN,
     component: () => import('@/views/LoginView.vue'),
-    meta: { guestOnly: true, title: 'Đăng nhập' },
+    meta: { guestOnly: true, titleKey: 'auth.title' },
   },
 
   // Tech Stacks
@@ -54,7 +54,7 @@ export const routes = [
     name: ROUTE_NAMES.TECH,
     component: () => import('@/views/learning/TechView.vue'),
     beforeEnter: validateTechStackGuard,
-    meta: { requiresAuth: true, title: 'Kỹ thuật Lập trình' },
+    meta: { requiresAuth: true, titleKey: 'learning.nav.tech' },
   },
 
   // English & Vocabulary Modules
@@ -66,13 +66,13 @@ export const routes = [
     path: '/vocab',
     name: ROUTE_NAMES.VOCAB,
     component: () => import('@/views/learning/VocabView.vue'),
-    meta: { requiresAuth: true, title: 'Từ vựng & Flashcard' },
+    meta: { requiresAuth: true, titleKey: 'learning.nav.vocab' },
   },
   {
     path: '/discord',
     name: ROUTE_NAMES.DISCORD,
     component: () => import('@/views/learning/DiscordView.vue'),
-    meta: { requiresAuth: true, title: 'Cấu hình Discord Bot' },
+    meta: { requiresAuth: true, titleKey: 'learning.nav.discord' },
   },
 
   // Quizzes & Practice Exams
@@ -85,13 +85,13 @@ export const routes = [
     name: ROUTE_NAMES.QUIZ,
     component: () => import('@/views/learning/QuizView.vue'),
     beforeEnter: validateQuizModeGuard,
-    meta: { requiresAuth: true, title: 'Trắc nghiệm & Luyện tập' },
+    meta: { requiresAuth: true, titleKey: 'learning.nav.quiz' },
   },
   {
     path: '/exam',
     name: ROUTE_NAMES.EXAM,
     component: () => import('@/views/learning/ExamView.vue'),
-    meta: { requiresAuth: true, title: 'Thi thử Tiếng Anh' },
+    meta: { requiresAuth: true, titleKey: 'learning.nav.exam' },
   },
 
   // English Skills
@@ -99,25 +99,25 @@ export const routes = [
     path: '/reading',
     name: ROUTE_NAMES.READING,
     component: () => import('@/views/learning/ReadingView.vue'),
-    meta: { requiresAuth: true, title: 'Luyện Đọc hiểu' },
+    meta: { requiresAuth: true, titleKey: 'learning.nav.reading' },
   },
   {
     path: '/writing',
     name: ROUTE_NAMES.WRITING,
     component: () => import('@/views/learning/WritingView.vue'),
-    meta: { requiresAuth: true, title: 'Writing Studio' },
+    meta: { requiresAuth: true, titleKey: 'learning.nav.writing' },
   },
   {
     path: '/speaking',
     name: ROUTE_NAMES.SPEAKING,
     component: () => import('@/views/learning/SpeakingView.vue'),
-    meta: { requiresAuth: true, title: 'Luyện Nói Phản Xạ' },
+    meta: { requiresAuth: true, titleKey: 'learning.nav.speaking' },
   },
   {
     path: '/ielts',
     name: ROUTE_NAMES.IELTS,
     component: () => import('@/views/learning/IeltsView.vue'),
-    meta: { requiresAuth: true, title: 'IELTS Preparation' },
+    meta: { requiresAuth: true, titleKey: 'learning.nav.ielts' },
   },
 
   // Catch-all Fallback
