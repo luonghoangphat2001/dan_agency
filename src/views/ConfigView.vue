@@ -230,7 +230,7 @@
 import { computed, onMounted, reactive, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { translate } from "@/lang"
-import { getConfig, getModelsByProvider, updateConfig } from "@/api/config"
+import { getConfig, getConfigMeta, getModelsByProvider, updateConfig } from "@/api/config"
 import { cleanLogs } from "@/api/stats"
 
 const route = useRoute()
@@ -254,85 +254,23 @@ const fallbackProviders = [
 const providers = ref(fallbackProviders)
 
 const getProviderIcon = (key) => {
-    const s = String(key || "").toLowerCase()
-    if (s.includes("gemini")) return "fa-solid fa-wand-magic-sparkles"
-    if (s.includes("claude")) return "fa-solid fa-brain"
-    if (s.includes("chatgpt") || s.includes("gpt")) return "fa-solid fa-robot"
-    if (s.includes("deepseek")) return "fa-solid fa-compass"
+    const providerKeyString = String(key || "").toLowerCase()
+    if (providerKeyString.includes("gemini")) return "fa-solid fa-wand-magic-sparkles"
+    if (providerKeyString.includes("claude")) return "fa-solid fa-brain"
+    if (providerKeyString.includes("chatgpt") || providerKeyString.includes("gpt")) return "fa-solid fa-robot"
+    if (providerKeyString.includes("deepseek")) return "fa-solid fa-compass"
     return "fa-solid fa-microchip"
 }
 
-const allProviders = ["gemini", "claude", "chatgpt", "deepseek", "kimi", "vllm", "ollama", "nvidia", "cloudflare"]
+const allProviders = ref(["gemini", "claude", "chatgpt", "deepseek", "kimi", "vllm", "ollama", "nvidia", "cloudflare"])
 const modelOptions = reactive(
-    Object.fromEntries(allProviders.map((provider) => [provider, []]))
+    Object.fromEntries(allProviders.value.map((providerName) => [providerName, []]))
 )
 
-const platforms = [
-    {
-        key: "discord",
-        field: "discord_active_model",
-        iconClass: "fa-brands fa-discord",
-        titleKey: "manager.config.platforms.discord.title",
-        descriptionKey: "manager.config.platforms.discord.description",
-        color: "text-indigo-400"
-    },
-    {
-        key: "telegram",
-        field: "telegram_active_model",
-        iconClass: "fa-brands fa-telegram",
-        titleKey: "manager.config.platforms.telegram.title",
-        descriptionKey: "manager.config.platforms.telegram.description",
-        color: "text-blue-400"
-    },
-    {
-        key: "learning",
-        field: "learning_active_model",
-        iconClass: "fa-solid fa-graduation-cap",
-        titleKey: "manager.config.platforms.learning.title",
-        descriptionKey: "manager.config.platforms.learning.description",
-        color: "text-emerald-400"
-    },
-    {
-        key: "web",
-        field: "active_model",
-        iconClass: "fa-solid fa-desktop",
-        titleKey: "manager.config.platforms.web.title",
-        descriptionKey: "manager.config.platforms.web.description",
-        color: "text-purple-400"
-    },
-]
-
-const additionalProviders = [
-    { key: "deepseek", field: "deepseek_model", label: "DeepSeek", iconClass: "fa-solid fa-compass text-sky-400", placeholder: "deepseek-chat" },
-    { key: "kimi", field: "kimi_model", label: "Kimi", iconClass: "fa-solid fa-brain text-purple-400", placeholder: "kimi-k2.6" },
-    { key: "vllm", field: "vllm_model", label: "vLLM", iconClass: "fa-solid fa-bolt text-amber-400", placeholder: "llama3.1" },
-    { key: "ollama", field: "ollama_model", label: "Ollama", iconClass: "fa-solid fa-server text-emerald-400", placeholder: "llama3.1" },
-    { key: "nvidia", field: "nvidia_model", label: "NVIDIA NIM", iconClass: "fa-solid fa-microchip text-green-400", placeholder: "meta/llama-3.2-11b-vision-instruct" },
-    { key: "cloudflare", field: "cloudflare_model", label: "Cloudflare AI", iconClass: "fa-solid fa-cloud text-amber-400", placeholder: "@cf/meta/llama-3.1-8b-instruct" },
-]
-
-const agents = [
-    { key: "dan_rnd", label: "R&D" },
-    { key: "dan_logistics", label: "Logistics" },
-    { key: "dan_cfo", label: "CFO" },
-    { key: "dan_ops", label: "Operations" },
-    { key: "dan_cskh", label: "CSKH" },
-]
-
-const promptFields = [
-    { key: "learning_prompt_tech", iconClass: "fa-solid fa-laptop-code", labelKey: "manager.config.prompts.learning_prompt_tech.label", placeholderKey: "manager.config.prompts.learning_prompt_tech.placeholder" },
-    { key: "learning_prompt_vocab", iconClass: "fa-solid fa-book-open", labelKey: "manager.config.prompts.learning_prompt_vocab.label", placeholderKey: "manager.config.prompts.learning_prompt_vocab.placeholder" },
-    { key: "learning_prompt_quiz", iconClass: "fa-solid fa-puzzle-piece", labelKey: "manager.config.prompts.learning_prompt_quiz.label", placeholderKey: "manager.config.prompts.learning_prompt_quiz.placeholder" },
-    { key: "learning_prompt_reading", iconClass: "fa-solid fa-book-open-reader", labelKey: "manager.config.prompts.learning_prompt_reading.label", placeholderKey: "manager.config.prompts.learning_prompt_reading.placeholder" },
-    { key: "learning_prompt_writing", iconClass: "fa-solid fa-pen-fancy", labelKey: "manager.config.prompts.learning_prompt_writing.label", placeholderKey: "manager.config.prompts.learning_prompt_writing.placeholder" },
-    { key: "learning_prompt_speaking", iconClass: "fa-solid fa-microphone-lines", labelKey: "manager.config.prompts.learning_prompt_speaking.label", placeholderKey: "manager.config.prompts.learning_prompt_speaking.placeholder" },
-    { key: "learning_prompt_ielts", iconClass: "fa-solid fa-graduation-cap", labelKey: "manager.config.prompts.learning_prompt_ielts.label", placeholderKey: "manager.config.prompts.learning_prompt_ielts.placeholder" },
-    { key: "learning_prompt_eval_tech", iconClass: "fa-solid fa-robot", labelKey: "manager.config.prompts.learning_prompt_eval_tech.label", placeholderKey: "manager.config.prompts.learning_prompt_eval_tech.placeholder" },
-    { key: "learning_prompt_eval_reading", iconClass: "fa-solid fa-robot", labelKey: "manager.config.prompts.learning_prompt_eval_reading.label", placeholderKey: "manager.config.prompts.learning_prompt_eval_reading.placeholder" },
-    { key: "learning_prompt_eval_writing", iconClass: "fa-solid fa-robot", labelKey: "manager.config.prompts.learning_prompt_eval_writing.label", placeholderKey: "manager.config.prompts.learning_prompt_eval_writing.placeholder" },
-    { key: "learning_prompt_eval_speaking", iconClass: "fa-solid fa-robot", labelKey: "manager.config.prompts.learning_prompt_eval_speaking.label", placeholderKey: "manager.config.prompts.learning_prompt_eval_speaking.placeholder" },
-    { key: "learning_prompt_eval_ielts", iconClass: "fa-solid fa-robot", labelKey: "manager.config.prompts.learning_prompt_eval_ielts.label", placeholderKey: "manager.config.prompts.learning_prompt_eval_ielts.placeholder" },
-]
+const platforms = ref([])
+const additionalProviders = ref([])
+const agents = ref([])
+const promptFields = ref([])
 
 const resolvePromptTemplate = (promptConfig) => {
     const label = translate(promptConfig.labelKey)
@@ -355,49 +293,117 @@ const form = reactive({
     log_retention_days: 14,
 })
 
-for (const item of additionalProviders) form[item.field] = ""
-for (const agent of agents) {
-    form[`agent_${agent.key}_primary`] = ""
-    form[`agent_${agent.key}_fallback`] = ""
-}
-for (const prompt of promptFields) form[prompt.key] = ""
-
 const saving = ref(false)
 const saveMessage = ref("")
 const saveOk = ref(false)
 const cleanMessage = ref("")
 
-const providerName = (key) => providers.value.find((p) => (p.key || p.id) === key)?.display || providers.value.find((p) => (p.key || p.id) === key)?.label || key
+const providerName = (key) =>
+    providers.value.find((providerItem) => (providerItem.key || providerItem.id) === key)?.display ||
+    providers.value.find((providerItem) => (providerItem.key || providerItem.id) === key)?.label ||
+    key
 
-const normalizeModels = (rows) => (rows || []).map((model) => (typeof model === "string" ? { id: model, label: model } : { id: model.id || model.value, label: model.label || model.name || model.id || model.value }))
+const normalizeModels = (modelRows) =>
+    (modelRows || []).map((modelItem) =>
+        typeof modelItem === "string"
+            ? { id: modelItem, label: modelItem }
+            : {
+                  id: modelItem.id || modelItem.value,
+                  label: modelItem.label || modelItem.name || modelItem.id || modelItem.value,
+              }
+    )
 
-const ensureModel = (provider, value) => {
-    if (value && modelOptions[provider] && !modelOptions[provider].some((model) => model.id === value)) {
-        modelOptions[provider].unshift({ id: value, label: value })
+const ensureModel = (providerName, modelValue) => {
+    if (modelValue && modelOptions[providerName] && !modelOptions[providerName].some((modelItem) => modelItem.id === modelValue)) {
+        modelOptions[providerName].unshift({ id: modelValue, label: modelValue })
     }
 }
 
 const load = async () => {
-    const [config, ...models] = await Promise.all([
-        getConfig(),
-        ...allProviders.map((p) => getModelsByProvider(p).catch(() => ({ models: [] }))),
-    ])
+    let config = {}
+    try {
+        config = await getConfig()
+    } catch {
+        config = {}
+    }
+
+    if (config.platforms?.length) {
+        platforms.value = config.platforms
+    }
+    if (config.additionalProviders?.length || config.additional_providers?.length) {
+        additionalProviders.value = config.additionalProviders || config.additional_providers
+    }
+    if (config.agents?.length) {
+        agents.value = config.agents
+    }
+    if (config.promptFields?.length || config.prompt_fields?.length) {
+        promptFields.value = config.promptFields || config.prompt_fields
+    }
+
+    // Dynamic metadata fallback in case schema attributes were omitted in legacy cached payload
+    if (!platforms.value.length || !additionalProviders.value.length || !promptFields.value.length || !agents.value.length) {
+        try {
+            const meta = await getConfigMeta()
+            if (meta) {
+                if (!platforms.value.length && meta.platforms?.length) platforms.value = meta.platforms
+                if (!additionalProviders.value.length && (meta.additionalProviders?.length || meta.additional_providers?.length)) {
+                    additionalProviders.value = meta.additionalProviders || meta.additional_providers
+                }
+                if (!promptFields.value.length && (meta.promptFields?.length || meta.prompt_fields?.length)) {
+                    promptFields.value = meta.promptFields || meta.prompt_fields
+                }
+                if (!agents.value.length && meta.agents?.length) agents.value = meta.agents
+            }
+        } catch {
+            // graceful fallback
+        }
+    }
 
     providers.value = config.ai_providers?.length
-        ? config.ai_providers.map((p) => ({ ...p, key: p.key || p.id }))
+        ? config.ai_providers.map((providerItem) => ({ ...providerItem, key: providerItem.key || providerItem.id }))
         : fallbackProviders
 
-    Object.keys(form).forEach((key) => {
-        if (config[key] !== undefined) {
-            form[key] = key === "openclaw_enabled" ? String(config[key]) === "true" : config[key]
+    additionalProviders.value.forEach((providerItem) => {
+        if (form[providerItem.field] === undefined) {
+            form[providerItem.field] = config[providerItem.field] || ""
         }
     })
 
-    allProviders.forEach((provider, index) => {
-        const remote = normalizeModels(models[index]?.models)
-        modelOptions[provider] = remote
-        const val = form[`${provider}_model`]
-        if (val) ensureModel(provider, val)
+    agents.value.forEach((agentItem) => {
+        const primaryFieldKey = `agent_${agentItem.key}_primary`
+        const fallbackFieldKey = `agent_${agentItem.key}_fallback`
+        if (form[primaryFieldKey] === undefined) {
+            form[primaryFieldKey] = config[primaryFieldKey] || ""
+        }
+        if (form[fallbackFieldKey] === undefined) {
+            form[fallbackFieldKey] = config[fallbackFieldKey] || ""
+        }
+    })
+
+    promptFields.value.forEach((promptItem) => {
+        if (form[promptItem.key] === undefined) {
+            form[promptItem.key] = config[promptItem.key] || ""
+        }
+    })
+
+    Object.keys(form).forEach((formKey) => {
+        if (config[formKey] !== undefined) {
+            form[formKey] = formKey === "openclaw_enabled" ? String(config[formKey]) === "true" : config[formKey]
+        }
+    })
+
+    const providerKeyList = allProviders.value
+    const modelFetchResults = await Promise.all(
+        providerKeyList.map((providerName) => getModelsByProvider(providerName).catch(() => ({ models: [] })))
+    )
+
+    providerKeyList.forEach((providerName, providerIndex) => {
+        const remoteModelList = normalizeModels(modelFetchResults[providerIndex]?.models)
+        modelOptions[providerName] = remoteModelList
+        const activeModelName = form[`${providerName}_model`]
+        if (activeModelName) {
+            ensureModel(providerName, activeModelName)
+        }
     })
 }
 
@@ -422,15 +428,15 @@ const applyPromptTemplate = (promptConfig) => {
 }
 
 const fillAllPrompts = () => {
-    promptFields.forEach((promptConfig) => {
+    promptFields.value.forEach((promptConfig) => {
         form[promptConfig.key] = resolvePromptTemplate(promptConfig)
     })
 }
 
 const cleanLogsNow = async () => {
     try {
-        const res = await cleanLogs(form.log_retention_days)
-        cleanMessage.value = `Đã dọn ${res.deletedCount || 0} file log cũ (> ${res.retentionDays || form.log_retention_days} ngày)`
+        const cleanupResult = await cleanLogs(form.log_retention_days)
+        cleanMessage.value = `Đã dọn ${cleanupResult.deletedCount || 0} file log cũ (> ${cleanupResult.retentionDays || form.log_retention_days} ngày)`
     } catch (error) {
         cleanMessage.value = error.message
     }
