@@ -61,6 +61,24 @@ jobs:
           mv ../api.tar.gz ./api.tar.gz
 
       - name: Upload api.tar.gz to Server
+        id: scp_upload
+        uses: appleboy/scp-action@v0.1.7
+        continue-on-error: true
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source: "api.tar.gz"
+          target: "/home/hpdev/api.hpdev.name.vn"
+
+      - name: "Wait before SCP retry if handshake failed"
+        if: steps.scp_upload.outcome == 'failure'
+        run: sleep 20
+
+      - name: "Upload api.tar.gz to Server (Retry)"
+        if: steps.scp_upload.outcome == 'failure'
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
