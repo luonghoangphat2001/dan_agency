@@ -67,7 +67,9 @@ jobs:
           target: "/home/hpdev/ai.hpdev.name.vn"
 
       - name: Extract & Clean on Server
+        id: ssh_deploy
         uses: appleboy/ssh-action@v1.0.3
+        continue-on-error: true
         with:
           host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT }}
@@ -88,6 +90,33 @@ jobs:
             fi
             grep -q "${{ github.sha }}" "$TARGET_DIR/version.json"
             # Dọn sạch các file rác nếu có
+            find "$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
+            echo "==> [AI] Deploy hoàn tất siêu tốc lúc $(date)!"
+
+      - name: "Wait before retry if SSH handshake failed"
+        if: steps.ssh_deploy.outcome == 'failure'
+        run: sleep 15
+
+      - name: "Extract & Clean on Server (Retry)"
+        if: steps.ssh_deploy.outcome == 'failure'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          timeout: 60s
+          command_timeout: 2m
+          script: |
+            TARGET_DIR="/home/hpdev/ai.hpdev.name.vn"
+            cd "$TARGET_DIR"
+            if [ -f "dist.tar.gz" ]; then
+              rm -rf "$TARGET_DIR/assets" "$TARGET_DIR/images"
+              tar -xzf dist.tar.gz -C "$TARGET_DIR"
+              rm -f dist.tar.gz
+            fi
+            grep -q "${{ github.sha }}" "$TARGET_DIR/version.json"
             find "$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
             echo "==> [AI] Deploy hoàn tất siêu tốc lúc $(date)!"
 
