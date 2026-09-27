@@ -6,9 +6,6 @@
   "scripts": {
     "start": "node app.js",
     "register": "node scripts/register.js",
-    "seed:tech": "node scripts/seed-tech-learning.js",
-    "seed:tech:fundamentals": "node scripts/seed-tech-fundamentals.js",
-    "seed:english:rw": "node scripts/seed-english-reading-writing.js",
     "test": "jest --testPathPatterns=test/"
   },
   "keywords": [],
@@ -33,7 +30,9 @@
     "mysql2": "^3.9.0",
     "openai": "^4.67.0",
     "telegraf": "^4.16.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "^3.25.76",
+    "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
     "jest": "^29.7.0"
@@ -52,10 +51,13 @@
     "@database": "src/database",
     "@bots": "src/bots",
     "@docs": "src/docs",
-    "@server": "src/server.js"
+    "@server": "src/server.js",
+    "@lang": "src/lang"
   },
   "jest": {
     "moduleNameMapper": {
+      "^@lang$": "<rootDir>/src/lang/index.js",
+      "^@lang/(.*)$": "<rootDir>/src/lang/$1",
       "^@config$": "<rootDir>/src/config/index.js",
       "^@config/(.*)$": "<rootDir>/src/config/$1",
       "^@bootstrap$": "<rootDir>/src/bootstrap",

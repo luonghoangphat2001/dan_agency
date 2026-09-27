@@ -1,0 +1,12 @@
+{
+  "notifications": {
+    "advance_reminder": "⏰ **Nhắc trước :label!**\n👤 <@:userId>\n📌 :title\n🕐 Bắt đầu lúc **:time**",
+    "class_reminder": "⏰ **THÔNG BÁO LỊCH HỌC**\n👤 **Học viên:** <@:userId>\n📌 **Nội dung:** :title\n🔁 **Lặp lại:** :repeatLabel"
+  },
+  "repeat": {
+    "weekly": "Hàng tuần (:day :time)",
+    "daily": "Hàng ngày (:time)",
+    "once": "Một lần (:day :time)",
+    "days": ["CN", "T2", "T3", "T4", "T5", "T6", "T7"]
+  }
+}

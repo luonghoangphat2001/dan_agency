@@ -1,0 +1,100 @@
+{
+  "system": {
+    "default_prompt": "You are Dan AI Agent - an advanced autonomous AI assistant in the Dan AI ecosystem.",
+    "tools_preamble": "You have access to tools to query databases, crawl web pages, parse spreadsheets, and send notifications.",
+    "react_instructions": "REASONING GUIDELINES (ReAct Pattern):\n- When solving tasks requiring live data, invoke available tools.\n- If a tool returns an error, analyze the cause and retry with adjusted parameters.\n- When sufficient information is gathered, synthesize a comprehensive and concise response.",
+    "max_steps_fallback": "Maximum reasoning steps reached. Synthesize the best possible response from collected observations.",
+    "memory_section_header": "[REMEMBERED USER INFORMATION]:",
+    "user_memory_header": "[User Memory]",
+    "augmented_prompt": "{{context}}\n\nUser question: {{prompt}}",
+    "final_thought": "Analysis completed. Synthesizing final response.",
+    "tool_thought": "Calling tool :toolName to resolve user request."
+  },
+  "tools": {
+    "mysql_query": {
+      "description": "Execute read-only SQL queries on the internal MySQL database. SELECT statements only.",
+      "schema_sql": "SQL SELECT query to fetch data from database.",
+      "schema_reason": "Justification for executing this query.",
+      "error_read_only_only": "Only read operations (SELECT, SHOW, DESCRIBE, EXPLAIN) are permitted.",
+      "error_dangerous_keywords": "Dangerous keywords detected. Query rejected.",
+      "error_multiple_statements": "Multiple SQL statements are not permitted."
+    },
+    "excel_reader": {
+      "description": "Read and analyze Excel and CSV spreadsheets on the system.",
+      "schema_file_path": "File path of the spreadsheet (.xlsx, .xls, .csv).",
+      "schema_sheet_name": "Target sheet name (optional, defaults to first sheet).",
+      "schema_limit_rows": "Maximum number of rows to sample (default 20, max 100).",
+      "error_file_not_found": "File not found at path: :filePath",
+      "error_empty_workbook": "Spreadsheet contains no sheets.",
+      "error_read_failed": "Failed to read spreadsheet: :errorMessage"
+    },
+    "discord_notify": {
+      "description": "Send proactive alerts or task status messages to Discord channels.",
+      "schema_title": "Notification title.",
+      "schema_message": "Notification message body.",
+      "schema_severity": "Severity level (info, success, warning, critical).",
+      "schema_channel_id": "Target Discord channel ID (optional).",
+      "success_message": "Notification delivered to Discord successfully."
+    },
+    "telegram_notify": {
+      "description": "Send notifications or reports to Telegram users or chats.",
+      "schema_chat_id": "Recipient Telegram chat ID or channel ID.",
+      "schema_message": "Message text to deliver.",
+      "schema_parse_mode": "Text format mode (Markdown or HTML).",
+      "error_token_missing": "TELEGRAM_TOKEN is not configured.",
+      "error_chat_id_missing": "Target chatId is missing.",
+      "error_send_failed": "Failed to send Telegram message: :errorMessage"
+    },
+    "web_search": {
+      "description": "Search the internet via Google Custom Search via OpenClaw.",
+      "schema_query": "Search query keywords.",
+      "schema_num": "Number of results to retrieve (default 5, max 20).",
+      "error_search_failed": "Web search error: :errorMessage"
+    },
+    "web_crawl": {
+      "description": "Crawl and extract full page text using headless Playwright browser.",
+      "schema_url": "Full webpage URL (https://...).",
+      "schema_selector": "CSS selector to filter main content (optional).",
+      "truncated_suffix": "\n...[Remaining content truncated to preserve context]",
+      "error_crawl_failed": "Web crawl error: :errorMessage"
+    },
+    "workspace_file": {
+      "description": "Perform file operations inside the safe Workspace Sandbox (read, write, list, delete). Use when creating report files, writing code, saving data, or inspecting files.",
+      "schema_action": "Action to perform (read, write, list, delete).",
+      "schema_path": "Relative path to file or directory in workspace.",
+      "schema_content": "Content to write into file (required for write action).",
+      "error_unknown_action": "Invalid action \":action\". Allowed actions: read, write, list, delete.",
+      "error_path_required": "Path is required.",
+      "error_content_required": "Content is required for write action.",
+      "error_file_not_found": "File or directory not found at: :filePath",
+      "error_traversal_blocked": "Directory traversal outside Workspace Sandbox is blocked: :targetPath"
+    },
+    "workspace_command": {
+      "description": "Execute safe shell / bash commands inside the isolated Workspace Sandbox. Use for running scripts or CLI tools.",
+      "schema_command": "Shell command to execute in workspace root.",
+      "schema_timeout_ms": "Maximum execution timeout in milliseconds (default 15000ms, max 60000ms).",
+      "error_dangerous_command": "Command contains prohibited dangerous patterns: :command",
+      "error_timeout": "Command exceeded maximum execution timeout (:timeoutMs ms)."
+    },
+    "skill_loader": {
+      "description": "Dynamically load specialized domain instructions from SKILL.md packages. Use when facing complex or standard operating procedures.",
+      "schema_skill_name": "Identifier name of the skill to load (e.g., code-review, market-analysis).",
+      "error_skill_not_found": "Skill \":skillName\" was not found.",
+      "error_skill_empty": "SKILL.md file for skill \":skillName\" has no content."
+    }
+  },
+  "errors": {
+    "tool_not_found": "Tool \":toolName\" is not registered in the system.",
+    "tool_execution_failed": "Observation (Error): Tool \":toolName\" failed with error: :errorMessage. Please analyze and try a different approach.",
+    "service_unavailable": "The :serviceName service is not initialized or configured on the system.",
+    "prompt_required": "prompt is required and must not be empty",
+    "run_id_required": "Run ID is required",
+    "run_not_found": "Agent run not found",
+    "internal_agent_error": "Internal server error during agent execution",
+    "company_dashboard_status_missing": "OpenClaw has not received company Dashboard status"
+  },
+  "skills": {
+    "prompt_header": "[AVAILABLE DOMAIN SKILLS (SKILL.md)]:",
+    "prompt_footer": "When facing specialized business requirements, invoke tool \"skill_loader\" with the skill name to retrieve detailed SOP instructions."
+  }
+}

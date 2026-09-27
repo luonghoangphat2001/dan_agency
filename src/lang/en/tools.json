@@ -1,0 +1,62 @@
+{
+  "web_search": {
+    "description": "Search the internet via Google. Used when live information, real-time facts, news, prices, or external web data is needed.",
+    "query": "Search query in English or Vietnamese",
+    "num": "Number of results to retrieve (1-50, default 5)",
+    "no_results": "No online results found for \":query\""
+  },
+  "web_crawl": {
+    "description": "Extract full content of a web page using headless browser. Used when a specific URL needs to be read.",
+    "url": "Full webpage URL (https://...)",
+    "selector": "CSS selector to filter specific content (optional)"
+  },
+  "http_fetch": {
+    "description": "Send an HTTP request to a URL (proxy). Used for REST APIs, JSON downloads, or simple webpages without JavaScript.",
+    "url": "Target URL (https://...)",
+    "method": "HTTP method: GET, POST, PUT, DELETE (default GET)",
+    "headers": "HTTP headers as key-value object (optional)",
+    "body": "Request body for POST/PUT as JSON string (optional)"
+  },
+  "browser_automate": {
+    "description": "Automate browser actions: click, fill form, take screenshot. Used for interactive pages requiring login or form filling.",
+    "url": "Target URL to automate (https://...)",
+    "steps": "Ordered list of steps to execute. Each step is an object: { action, selector, value }",
+    "action": "Action: click, fill, screenshot, or wait",
+    "selector": "CSS selector of element",
+    "value": "Value used for fill action"
+  },
+  "save_memory": {
+    "description": "Save critical user information to long-term memory for future conversations.",
+    "key": "Short label key (e.g., \"interest\", \"studying\", \"preferred_language\")",
+    "value": "Content to store",
+    "source": "Information source — URL or description (optional)",
+    "saved": "Saved: :key"
+  },
+  "recall_memory": {
+    "description": "Recall all stored user memories to personalize responses."
+  },
+  "company_dashboard_metrics": {
+    "description": "Read company internal business metrics through OpenClaw SSOT.",
+    "period": "Reporting period: today, month, quarter, or year. Default today.",
+    "summary": "📊 Company Dashboard — :period\n\nOrders: :orderCount\nRevenue: :revenue :currency\nProducts: :products"
+  },
+  "schedule_manage": {
+    "description": "Manage user schedule via the scheduler service.",
+    "operation": "Operation: create, list, update, or delete.",
+    "scheduleId": "Existing schedule ID for update/delete.",
+    "title": "Reminder title or event name.",
+    "remindAt": "Local datetime YYYY-MM-DD HH:MM:SS.",
+    "repeatType": "Repeat rule: none, daily, or weekly.",
+    "date": "Filter date YYYY-MM-DD for list.",
+    "created": "✅ Added schedule #:id: :title\n📅 :remindAt",
+    "not_found": "❌ Schedule to update was not found.",
+    "updated": "✅ Updated schedule #:id.",
+    "deleted": "✅ Deleted schedule #:id.",
+    "not_found_with_id": "❌ Schedule #:id not found.",
+    "empty": "📅 No matching schedule found.",
+    "list_header": "📅 There are :count schedules:"
+  },
+  "agent_loop": {
+    "final_synthesis_instruction": "Synthesize what you have discovered and provide the final answer."
+  }
+}

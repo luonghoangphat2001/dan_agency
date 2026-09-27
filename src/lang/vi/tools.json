@@ -1,0 +1,62 @@
+{
+  "web_search": {
+    "description": "Tìm kiếm thông tin trên Google. Dùng khi cần thông tin mới nhất, sự kiện thực tế, tin tức, giá cả, hoặc bất kỳ câu hỏi nào cần dữ liệu web hiện tại.",
+    "query": "Từ khóa tìm kiếm bằng tiếng Việt hoặc tiếng Anh",
+    "num": "Số kết quả cần lấy (1-50, mặc định 5)",
+    "no_results": "Không tìm thấy kết quả trực tuyến cho \":query\""
+  },
+  "web_crawl": {
+    "description": "Đọc toàn bộ nội dung một trang web bằng trình duyệt headless. Dùng khi có URL cụ thể cần đọc nội dung chi tiết.",
+    "url": "URL đầy đủ của trang web cần đọc (https://...)",
+    "selector": "CSS selector để lấy phần nội dung cụ thể (tuỳ chọn, để trống để lấy toàn trang)"
+  },
+  "http_fetch": {
+    "description": "Gửi HTTP request đến một URL (proxy). Dùng cho REST API endpoints, download JSON, hoặc trang web đơn giản không cần JavaScript.",
+    "url": "URL cần gửi request (https://...)",
+    "method": "HTTP method: GET, POST, PUT, DELETE (mặc định GET)",
+    "headers": "HTTP headers dạng object key-value (tuỳ chọn)",
+    "body": "Request body cho POST/PUT dạng JSON string (tuỳ chọn)"
+  },
+  "browser_automate": {
+    "description": "Tự động hoá trình duyệt: click, điền form, chụp màn hình. Dùng cho trang web tương tác cần thao tác như đăng nhập, điền form.",
+    "url": "URL trang web cần tự động hoá (https://...)",
+    "steps": "Danh sách bước thực hiện theo thứ tự. Mỗi bước là object: { action: \"click\"|\"fill\"|\"screenshot\"|\"wait\", selector: \"CSS selector\", value: \"giá trị điền (nếu fill)\" }",
+    "action": "Hành động: click, fill, screenshot hoặc wait",
+    "selector": "CSS selector của phần tử",
+    "value": "Giá trị dùng cho hành động fill"
+  },
+  "save_memory": {
+    "description": "Lưu thông tin quan trọng về user vào bộ nhớ dài hạn để dùng ở các cuộc trò chuyện sau. Gọi khi user chia sẻ sở thích, lĩnh vực nghiên cứu, hoặc thông tin cá nhân hữu ích.",
+    "key": "Tên nhãn ngắn gọn (vd: \"interest\", \"studying\", \"preferred_language\")",
+    "value": "Nội dung cần lưu",
+    "source": "Nguồn thông tin — URL hoặc mô tả (tuỳ chọn)",
+    "saved": "Đã lưu: :key"
+  },
+  "recall_memory": {
+    "description": "Xem lại tất cả thông tin đã lưu về user. Gọi khi cần biết sở thích hoặc lĩnh vực nghiên cứu của user để cá nhân hóa câu trả lời."
+  },
+  "company_dashboard_metrics": {
+    "description": "Đọc các chỉ số kinh doanh nội bộ của công ty qua OpenClaw SSOT. Dùng cho các câu hỏi về Dashboard, sản phẩm, đơn hàng, doanh thu, bán hàng, tồn kho, agents hoặc thống kê vận hành.",
+    "period": "Kỳ báo cáo: today, month, quarter, hoặc year. Mặc định today.",
+    "summary": "📊 Dashboard công ty — :period\n\nĐơn hàng: :orderCount\nDoanh thu: :revenue :currency\nSản phẩm: :products"
+  },
+  "schedule_manage": {
+    "description": "Quản lý lịch trình của người dùng qua dịch vụ scheduler. Dùng cho các yêu cầu tạo, liệt kê, kiểm tra, cập nhật, đổi lịch hoặc xóa nhắc nhở, cuộc họp, lớp học, công việc hoặc sự kiện.",
+    "operation": "Thao tác: create, list, update, hoặc delete.",
+    "scheduleId": "ID lịch trình hiện có để cập nhật/xóa.",
+    "title": "Tiêu đề nhắc nhở hoặc tên sự kiện.",
+    "remindAt": "Thời gian cục bộ YYYY-MM-DD HH:MM:SS.",
+    "repeatType": "Quy tắc lặp lại: none, daily, hoặc weekly.",
+    "date": "Ngày lọc YYYY-MM-DD cho danh sách.",
+    "created": "✅ Đã thêm lịch #:id: :title\n📅 :remindAt",
+    "not_found": "❌ Không tìm thấy lịch cần cập nhật.",
+    "updated": "✅ Đã cập nhật lịch #:id.",
+    "deleted": "✅ Đã xóa lịch #:id.",
+    "not_found_with_id": "❌ Không tìm thấy lịch #:id.",
+    "empty": "📅 Hiện không có lịch phù hợp.",
+    "list_header": "📅 Có :count lịch:"
+  },
+  "agent_loop": {
+    "final_synthesis_instruction": "Hãy tổng hợp lại những gì bạn đã tìm được và đưa ra câu trả lời cuối cùng."
+  }
+}

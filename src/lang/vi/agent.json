@@ -1,0 +1,100 @@
+{
+  "system": {
+    "default_prompt": "Bạn là Dan AI Agent - Trợ lý trí tuệ nhân tạo cấp tiến của hệ sinh thái Đần AI.",
+    "tools_preamble": "Bạn có quyền truy cập vào các công cụ (Tools) để tra cứu cơ sở dữ liệu, cào web, đọc file bảng tính, gửi thông báo.",
+    "react_instructions": "HƯỚNG DẪN QUY TRÌNH SUY LUẬN (ReAct Pattern):\n- Khi đối mặt với yêu cầu cần dữ liệu thực tế, hãy sử dụng các công cụ (Tools) được cung cấp.\n- Nếu một công cụ trả về lỗi hoặc thiếu thông tin, hãy phân tích lý do và thử cách tiếp cận khác hoặc điều chỉnh tham số.\n- Khi đã có đủ dữ liệu cần thiết, hãy tổng hợp câu trả lời hoàn chỉnh, súc tích và giải quyết trọn vẹn yêu cầu của người dùng.",
+    "max_steps_fallback": "Đã đạt giới hạn số bước suy luận. Dựa trên các thông tin đã thu thập ở trên, hãy tổng hợp câu trả lời tốt nhất có thể cho người dùng.",
+    "memory_section_header": "[THÔNG TIN NGƯỜI DÙNG ĐÃ GHI NHỚ]:",
+    "user_memory_header": "[Bộ nhớ về user này]",
+    "augmented_prompt": "{{context}}\n\nCâu hỏi của user: {{prompt}}",
+    "final_thought": "Đã hoàn thành phân tích và tổng hợp câu trả lời cuối cùng.",
+    "tool_thought": "Gọi tool :toolName để giải quyết yêu cầu."
+  },
+  "tools": {
+    "mysql_query": {
+      "description": "Truy vấn cơ sở dữ liệu MySQL nội bộ. CHỈ được dùng cho câu lệnh SELECT để tra cứu bài học, câu hỏi trắc nghiệm, tiến độ học tập, lịch hẹn, thông tin hệ thống. TUYỆT ĐỐI không dùng cho thao tác thay đổi dữ liệu.",
+      "schema_sql": "Câu lệnh SQL SELECT để tra cứu dữ liệu trong CSDL.",
+      "schema_reason": "Lý do truy vấn câu lệnh này.",
+      "error_read_only_only": "Chỉ được phép thực hiện câu lệnh đọc (SELECT, SHOW, DESCRIBE, EXPLAIN).",
+      "error_dangerous_keywords": "Phát hiện từ khóa nguy hiểm! Câu lệnh bị từ chối.",
+      "error_multiple_statements": "Không được phép thực thi nhiều câu lệnh SQL cùng lúc."
+    },
+    "excel_reader": {
+      "description": "Đọc, phân tích và trích xuất dữ liệu từ file Excel hoặc CSV trên hệ thống. Dùng khi user yêu cầu phân tích dữ liệu bảng tính, báo cáo kinh doanh hoặc danh sách dữ liệu.",
+      "schema_file_path": "Đường dẫn file Excel (.xlsx, .xls, .csv) cần đọc.",
+      "schema_sheet_name": "Tên sheet cần đọc (bỏ trống nếu muốn đọc sheet đầu tiên).",
+      "schema_limit_rows": "Số dòng tối đa cần đọc để phân tích (mặc định 20, tối đa 100).",
+      "error_file_not_found": "File không tồn tại tại đường dẫn: :filePath",
+      "error_empty_workbook": "File Excel không có bất kỳ sheet nào.",
+      "error_read_failed": "Không thể đọc file Excel: :errorMessage"
+    },
+    "discord_notify": {
+      "description": "Gửi thông báo, cảnh báo hoặc báo cáo công việc chủ động tới kênh Discord của quản trị viên hoặc kênh nội bộ.",
+      "schema_title": "Tiêu đề thông báo ngắn gọn.",
+      "schema_message": "Nội dung chi tiết của thông báo.",
+      "schema_severity": "Mức độ quan trọng của thông báo.",
+      "schema_channel_id": "ID kênh Discord cụ thể (tuỳ chọn, nếu bỏ trống sẽ gửi vào kênh mặc định).",
+      "success_message": "Đã gửi thông báo đến Discord thành công."
+    },
+    "telegram_notify": {
+      "description": "Gửi tin nhắn hoặc báo cáo chủ động tới người dùng hoặc nhóm chat trên Telegram.",
+      "schema_chat_id": "Chat ID hoặc Channel ID nhận tin nhắn Telegram.",
+      "schema_message": "Nội dung tin nhắn cần gửi.",
+      "schema_parse_mode": "Định dạng văn bản (Markdown hoặc HTML).",
+      "error_token_missing": "TELEGRAM_TOKEN chưa được cấu hình trong hệ thống.",
+      "error_chat_id_missing": "Không tìm thấy chatId để gửi tin nhắn Telegram.",
+      "error_send_failed": "Lỗi gửi tin nhắn Telegram: :errorMessage"
+    },
+    "web_search": {
+      "description": "Tìm kiếm thông tin trên Internet qua Google Search. Dùng khi cần tra cứu tin tức mới nhất, sự kiện thực tế, giá cả sản phẩm, tài liệu kỹ thuật hoặc thông tin bên ngoài hệ thống.",
+      "schema_query": "Từ khóa hoặc câu hỏi cần tìm kiếm trên Google (tiếng Việt hoặc tiếng Anh).",
+      "schema_num": "Số lượng kết quả cần lấy (mặc định 5, tối đa 20).",
+      "error_search_failed": "Lỗi khi tìm kiếm trên web: :errorMessage"
+    },
+    "web_crawl": {
+      "description": "Đọc toàn bộ nội dung văn bản của một trang web cụ thể bằng trình duyệt headless. Dùng khi đã có URL và cần đọc chi tiết bài viết, tài liệu hoặc báo cáo trên trang đó.",
+      "schema_url": "Đường dẫn URL đầy đủ (https://...) của trang web cần đọc nội dung.",
+      "schema_selector": "CSS selector để lọc phần nội dung chính (tuỳ chọn).",
+      "truncated_suffix": "\n...[Nội dung còn lại đã được cắt bớt để bảo toàn ngữ cảnh]",
+      "error_crawl_failed": "Lỗi khi cào dữ liệu trang web: :errorMessage"
+    },
+    "workspace_file": {
+      "description": "Thao tác với tập tin trong Workspace Sandbox an toàn (đọc, ghi, liệt kê, xóa file/thư mục). Dùng khi cần tạo file báo cáo, ghi chép mã nguồn, lưu trữ dữ liệu hoặc kiểm tra thư mục làm việc.",
+      "schema_action": "Hành động thực hiện (read, write, list, delete).",
+      "schema_path": "Đường dẫn tương đối của file hoặc thư mục trong workspace.",
+      "schema_content": "Nội dung cần ghi vào file (áp dụng khi action = write).",
+      "error_unknown_action": "Hành động :action không hợp lệ. Chỉ chấp nhận: read, write, list, delete.",
+      "error_path_required": "Đường dẫn path là bắt buộc.",
+      "error_content_required": "Nội dung content là bắt buộc đối với hành động ghi file.",
+      "error_file_not_found": "Không tìm thấy file hoặc thư mục tại: :filePath",
+      "error_traversal_blocked": "Phát hiện hành vi truy cập ngoài phạm vi Workspace Sandbox (:targetPath). Thao tác bị chặn!"
+    },
+    "workspace_command": {
+      "description": "Thực thi lệnh shell / bash an toàn bên trong Workspace Sandbox cô lập. Dùng khi cần chạy script, kiểm tra môi trường, xử lý dữ liệu dòng lệnh.",
+      "schema_command": "Câu lệnh shell cần thực thi trong thư mục workspace.",
+      "schema_timeout_ms": "Thời gian chờ tối đa tính bằng mili-giây (mặc định 15000ms, tối đa 60000ms).",
+      "error_dangerous_command": "Lệnh chứa từ khóa hoặc mẫu nguy hiểm bị cấm thực thi: :command",
+      "error_timeout": "Lệnh đã vượt quá thời gian chờ cho phép (:timeoutMs ms)."
+    },
+    "skill_loader": {
+      "description": "Nạp chỉ dẫn nghiệp vụ chuyên sâu động từ các gói SKILL.md. Dùng khi gặp các bài toán hoặc quy trình phức tạp (kiểm toán SEO, review code, tạo báo cáo, SOP nghiệp vụ...).",
+      "schema_skill_name": "Tên định danh của Skill cần nạp (ví dụ: code-review, market-analysis).",
+      "error_skill_not_found": "Không tìm thấy skill có tên \":skillName\".",
+      "error_skill_empty": "Tài liệu SKILL.md của skill \":skillName\" không có nội dung."
+    }
+  },
+  "errors": {
+    "tool_not_found": "Tool \":toolName\" không tồn tại trong hệ thống.",
+    "tool_execution_failed": "Observation (Lỗi): Tool \":toolName\" thất bại với lỗi: :errorMessage. Hãy phân tích lỗi và điều chỉnh tham số hoặc sử dụng công cụ khác.",
+    "service_unavailable": "Dịch vụ :serviceName chưa được khởi tạo hoặc cấu hình trên hệ thống.",
+    "prompt_required": "prompt là bắt buộc và không được để trống",
+    "run_id_required": "Run ID là bắt buộc",
+    "run_not_found": "Không tìm thấy phiên chạy Agent tương ứng",
+    "internal_agent_error": "Lỗi máy chủ nội bộ trong quá trình thực thi Agent",
+    "company_dashboard_status_missing": "OpenClaw chưa nhận được trạng thái Dashboard công ty"
+  },
+  "skills": {
+    "prompt_header": "[CÁC KỸ NĂNG NGHIỆP VỤ (SKILLS) KHẢ DỤNG]:",
+    "prompt_footer": "Khi gặp bài toán cần thực hiện nghiệp vụ chuyên sâu, hãy gọi tool \"skill_loader\" với tên skill để lấy tài liệu SOP hướng dẫn chi tiết."
+  }
+}

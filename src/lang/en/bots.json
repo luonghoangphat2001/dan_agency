@@ -1,0 +1,34 @@
+{
+  "base": {
+    "empty_mention_reply": "Did you call me? Ask away! 😤"
+  },
+  "telegram": {
+    "start_greeting": "Hey, Dan AI here! Call me with /ai <question> or mention 'đần' and I will respond! 😤",
+    "empty_prompt": "Ask something, don't just stay silent! 😑",
+    "current_model": "🤖 I am currently running on **:label**!",
+    "setmodel_usage": "❓ Usage: /setmodel :models",
+    "setmodel_success": "✅ Switched to **:label**!",
+    "thinking": "🤖 Analyzing and searching...",
+    "processing": "⏳ Processing...",
+    "search_error": "❌ Encountered an error while searching, please try again later 😅",
+    "generic_error": "❌ Error: :errorMessage",
+    "task_failed": "❌ Task #:taskId failed: :errorMessage",
+    "task_scheduled": "🔍 Processing... Task #:taskId — you will be notified upon completion!",
+    "read_more": "...(read more)"
+  },
+  "discord": {
+    "quiz_uninitialized": "❌ Quiz Engine is not initialized.",
+    "quiz_insufficient_vocab": "Not enough vocabulary words to generate a Quiz.",
+    "quiz_title": "🎮 **INTERACTIVE VOCABULARY QUIZ**\n\n:prompt\n\n*Click a button below to choose your answer:*",
+    "quiz_create_error": "❌ Quiz creation error: :errorMessage",
+    "quiz_correct": "**CORRECT!** (+10 points)",
+    "quiz_incorrect": "**INCORRECT!** (Correct answer: :expected)",
+    "leaderboard_empty": "🏆 No learners on the leaderboard yet.",
+    "leaderboard_title": "🏆 **VOCABULARY LEADERBOARD**\n──────────────\n:lines",
+    "openclaw_unconfigured": "❌ OpenClaw is not configured.",
+    "scheduler_unconfigured": "❌ Scheduler is not enabled.",
+    "schedule_empty": "📅 You have no upcoming schedules.",
+    "schedule_list_header": "📅 **Upcoming Schedules** (:count):\n:lines",
+    "generic_error": "❌ Error: :errorMessage"
+  }
+}

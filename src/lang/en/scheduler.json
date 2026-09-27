@@ -1,0 +1,12 @@
+{
+  "notifications": {
+    "advance_reminder": "⏰ **Reminder :label ahead!**\n👤 <@:userId>\n📌 :title\n🕐 Starts at **:time**",
+    "class_reminder": "⏰ **STUDY SCHEDULE NOTIFICATION**\n👤 **Student:** <@:userId>\n📌 **Topic:** :title\n🔁 **Repeat:** :repeatLabel"
+  },
+  "repeat": {
+    "weekly": "Weekly (:day :time)",
+    "daily": "Daily (:time)",
+    "once": "Once (:day :time)",
+    "days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  }
+}

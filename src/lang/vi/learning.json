@@ -1,0 +1,41 @@
+{
+  "validation": {
+    "excel_attachment_required": "Chưa đính kèm file Excel",
+    "insufficient_vocab": "Chưa có đủ từ vựng trong CSDL để tạo bài kiểm tra (cần tối thiểu 3 từ)",
+    "discord_channel_not_configured": "Chưa cấu hình Discord Channel ID trong phần Cấu hình!",
+    "discord_bot_not_ready": "Discord bot client chưa sẵn sàng hoặc channel ID không hợp lệ",
+    "excel_empty": "File Excel rỗng!",
+    "excel_no_data": "File Excel không có dữ liệu!",
+    "excel_invalid": "File Excel rỗng hoặc không đúng định dạng",
+    "item_not_found": "Item #{itemId} không tồn tại",
+    "learning_not_found": "Chuyên đề #{learningId} không tồn tại",
+    "tech_stack_not_found": "Tech stack \"{stackSlug}\" không tồn tại",
+    "question_not_found": "Câu hỏi #{questionId} không tồn tại",
+    "ai_parse_failed": "Phân tích phản hồi AI thất bại: {message}",
+    "ai_not_array": "Phản hồi AI không phải dạng mảng (Array)"
+  },
+  "default_student_name": "Học viên",
+  "excel_export": {
+    "index": "STT",
+    "stack": "Công nghệ (Stack)",
+    "topic": "Chuyên đề (Topic)",
+    "level": "Cấp độ (Level)",
+    "title": "Tiêu đề",
+    "question": "Câu hỏi chi tiết",
+    "quick_answer": "Trả lời nhanh phỏng vấn",
+    "detailed_answer": "Phân tích chuyên sâu",
+    "code_example": "Code minh họa",
+    "interview_tips": "Bẫy phỏng vấn",
+    "practical_tips": "Lưu ý thực chiến",
+    "tags": "Tags"
+  },
+  "quiz": {
+    "insufficient_words_in_topic": "Chưa có từ vựng trong chủ đề này để tạo Quiz.",
+    "prompt_multiple_choice": "📖 Nghĩa tiếng Việt của từ này là gì?",
+    "prompt_ipa_matching": "🎧 Phiên âm chuẩn Mỹ **{pron}** tương ứng với từ tiếng Anh nào?",
+    "prompt_fill_blank": "📝 Chọn từ đúng điền vào chỗ trống:",
+    "prompt_spelling": "🔤 Ghép chữ cái thành từ có nghĩa: **\"{meaning}\"**{pronStr}",
+    "default_topic_name": "Chủ đề {topicNo}",
+    "fallback_option": "Đáp án lựa chọn {index}"
+  }
+}

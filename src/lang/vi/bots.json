@@ -1,0 +1,34 @@
+{
+  "base": {
+    "empty_mention_reply": "Gọi tao hả? Hỏi gì đi 😤"
+  },
+  "telegram": {
+    "start_greeting": "Ê đần đây! Gọi tao bằng /ai <câu hỏi> hoặc cứ nhắc tới 'đần' là tao trả lời 😤",
+    "empty_prompt": "Hỏi gì đi đần ơi 😑",
+    "current_model": "🤖 Tao đang dùng **:label** nè!",
+    "setmodel_usage": "❓ Dùng: /setmodel :models",
+    "setmodel_success": "✅ Đã chuyển sang **:label**!",
+    "thinking": "🤖 Đần đang phân tích và tìm kiếm...",
+    "processing": "⏳ Đang xử lý...",
+    "search_error": "❌ Tao gặp lỗi khi tìm kiếm, thử lại sau nha 😅",
+    "generic_error": "❌ Lỗi: :errorMessage",
+    "task_failed": "❌ Tác vụ #:taskId thất bại: :errorMessage",
+    "task_scheduled": "🔍 Đang xử lý... Task #:taskId — mày sẽ được thông báo khi xong!",
+    "read_more": "...(xem thêm)"
+  },
+  "discord": {
+    "quiz_uninitialized": "❌ Quiz Engine chưa được khởi tạo.",
+    "quiz_insufficient_vocab": "Chưa có đủ từ vựng để tạo bài Quiz.",
+    "quiz_title": "🎮 **QUIZ TỪ VỰNG TƯƠNG TÁC**\n\n:prompt\n\n*Bấm nút bên dưới để chọn đáp án:*",
+    "quiz_create_error": "❌ Lỗi tạo Quiz: :errorMessage",
+    "quiz_correct": "**CHÍNH XÁC!** (+10 điểm)",
+    "quiz_incorrect": "**CHƯA ĐÚNG!** (Đáp án đúng: :expected)",
+    "leaderboard_empty": "🏆 Chưa có học viên trong bảng xếp hạng.",
+    "leaderboard_title": "🏆 **BẢNG XẾP HẠNG HỌC VIÊN VOCABULARY**\n──────────────\n:lines",
+    "openclaw_unconfigured": "❌ OpenClaw chưa được cấu hình.",
+    "scheduler_unconfigured": "❌ Scheduler chưa được bật.",
+    "schedule_empty": "📅 Bạn chưa có lịch nào.",
+    "schedule_list_header": "📅 **Lịch sắp tới** (:count):\n:lines",
+    "generic_error": "❌ Lỗi: :errorMessage"
+  }
+}

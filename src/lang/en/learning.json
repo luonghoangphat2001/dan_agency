@@ -1,0 +1,41 @@
+{
+  "validation": {
+    "excel_attachment_required": "Excel file attachment is required",
+    "insufficient_vocab": "Not enough vocabulary items in database to generate a quiz (minimum 3 required)",
+    "discord_channel_not_configured": "Discord Channel ID is not configured in settings!",
+    "discord_bot_not_ready": "Discord bot client is not ready or channel ID is invalid",
+    "excel_empty": "Excel file is empty!",
+    "excel_no_data": "Excel file contains no data!",
+    "excel_invalid": "Excel file is empty or invalid format",
+    "item_not_found": "Item #{itemId} not found",
+    "learning_not_found": "Learning topic #{learningId} not found",
+    "tech_stack_not_found": "Tech stack \"{stackSlug}\" not found",
+    "question_not_found": "Question #{questionId} not found",
+    "ai_parse_failed": "Failed to parse AI response: {message}",
+    "ai_not_array": "AI response is not an array"
+  },
+  "default_student_name": "Student",
+  "excel_export": {
+    "index": "No.",
+    "stack": "Tech Stack",
+    "topic": "Topic",
+    "level": "Level",
+    "title": "Title",
+    "question": "Question Details",
+    "quick_answer": "Quick Answer (30s)",
+    "detailed_answer": "Detailed Analysis",
+    "code_example": "Code Example",
+    "interview_tips": "Interview Tips",
+    "practical_tips": "Practical Tips",
+    "tags": "Tags"
+  },
+  "quiz": {
+    "insufficient_words_in_topic": "No vocabulary in this topic to generate quiz.",
+    "prompt_multiple_choice": "📖 What is the meaning of this word?",
+    "prompt_ipa_matching": "🎧 Which English word matches the US IPA transcription **{pron}**?",
+    "prompt_fill_blank": "📝 Choose the correct word to fill in the blank:",
+    "prompt_spelling": "🔤 Arrange the letters to form the word meaning: **\"{meaning}\"**{pronStr}",
+    "default_topic_name": "Topic {topicNo}",
+    "fallback_option": "Option {index}"
+  }
+}
