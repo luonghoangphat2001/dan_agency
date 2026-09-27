@@ -1,0 +1,52 @@
+{
+  "actions": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "search": "Tìm kiếm",
+    "filter": "Bộ lọc",
+    "close": "Đóng",
+    "retry": "Thử lại",
+    "refresh": "Làm mới",
+    "logout": "Đăng xuất",
+    "login": "Đăng nhập",
+    "submit": "Gửi",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép",
+    "confirm": "Xác nhận",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước đó",
+    "loading": "Đang tải...",
+    "saving": "Đang lưu...",
+    "all": "Tất cả",
+    "create": "Tạo mới",
+    "update": "Cập nhật",
+    "view": "Xem"
+  },
+  "theme": {
+    "light": "Sáng",
+    "dark": "Tối",
+    "theme_light": "Giao diện Sáng",
+    "theme_dark": "Giao diện Tối"
+  },
+  "status": {
+    "success": "Thành công",
+    "error": "Lỗi",
+    "warning": "Cảnh báo",
+    "info": "Thông tin",
+    "network_error": "Lỗi kết nối máy chủ",
+    "no_data": "Không có dữ liệu",
+    "running": "Đang chạy",
+    "stopped": "Đã dừng",
+    "active": "Hoạt động",
+    "inactive": "Ngừng hoạt động",
+    "processing": "Đang xử lý..."
+  },
+  "language": {
+    "select": "Chọn ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  }
+}

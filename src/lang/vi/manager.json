@@ -1,0 +1,193 @@
+{
+  "nav": {
+    "chat": "Trò chuyện AI",
+    "openclaw": "Điều phối OpenClaw",
+    "schedule": "Lập lịch Tác vụ",
+    "users": "Quản lý Người dùng",
+    "stats": "Thống kê Hệ thống",
+    "history": "Lịch sử Hoạt động",
+    "logs": "Nhật ký Hệ thống",
+    "config": "Cấu hình Hệ thống"
+  },
+  "sidebar": {
+    "title": "Dan Manager",
+    "subtitle": "Admin Control Center",
+    "section_assistant": "Trợ lý & Điều phối",
+    "section_management": "Quản trị & Lập lịch",
+    "section_system": "Hệ thống & Cấu hình"
+  },
+  "chat": {
+    "welcome_title": "Xin chào! Tôi có thể giúp gì cho bạn hôm nay?",
+    "welcome_subtitle": "Trợ lý trí tuệ nhân tạo Dan AI sẵn sàng hỗ trợ bạn quản lý dữ liệu, phân tích và thực thi tác vụ.",
+    "input_placeholder": "Nhập tin nhắn hoặc câu hỏi... (Nhấn Enter để gửi, Shift+Enter để xuống dòng)",
+    "send": "Gửi",
+    "stop": "Dừng sinh phản hồi",
+    "thinking": "Dan AI đang suy nghĩ...",
+    "model_label": "Mô hình:",
+    "clear_chat": "Xóa hội thoại",
+    "new_chat": "Cuộc hội thoại mới",
+    "copy_success": "Đã sao chép câu trả lời vào clipboard",
+    "stream_error": "Mất kết nối dòng dữ liệu với máy chủ AI."
+  },
+  "openclaw": {
+    "title": "Trung tâm Điều phối OpenClaw",
+    "subtitle": "Giám sát vòng đời tác nhân, quy trình tự động và trạng thái thực thi",
+    "status_banner": "Hệ thống OpenClaw đang vận hành bình thường",
+    "active_agents": "Tác nhân đang chạy",
+    "total_tasks": "Tổng tác vụ đã xử lý",
+    "kill_switch": "Dừng khẩn cấp toàn bộ",
+    "restart_service": "Khởi động lại OpenClaw",
+    "health_check": "Kiểm tra sức khỏe dịch vụ",
+    "workflow_title": "Chi tiết quy trình làm việc",
+    "kill_confirm": "CẢNH BÁO: Bạn có chắc chắn muốn kích hoạt dừng khẩn cấp toàn bộ các tác nhân đang thực thi?",
+    "actions": {
+      "activate": "Kích hoạt",
+      "pause": "Tạm dừng",
+      "suspend": "Đình chỉ",
+      "quarantine": "Cách ly",
+      "fix": "Sửa chữa",
+      "test": "Kiểm thử",
+      "canary": "Chạy thử (Canary)",
+      "retire": "Thu hồi"
+    },
+    "reason_prompt": "Nhập lý do chuyển trạng thái {agentId} sang {targetState}:",
+    "confirm_transition": "Xác nhận chuyển trạng thái tác nhân {agentId} sang {targetState}?"
+  },
+  "schedule": {
+    "title": "Quản lý Lập lịch Tác vụ",
+    "subtitle": "Thiết lập và giám sát các cronjob và tác vụ định kỳ tự động",
+    "add_job": "Thêm tác vụ mới",
+    "job_name": "Tên tác vụ",
+    "cron_expression": "Biểu thức Cron",
+    "target_action": "Hành động thực thi",
+    "status": "Trạng thái",
+    "next_run": "Lần chạy kế tiếp",
+    "last_run": "Lần chạy gần nhất",
+    "delete_confirm": "Bạn có chắc chắn muốn xóa tác vụ lập lịch này?",
+    "execute_now": "Chạy ngay"
+  },
+  "users": {
+    "title": "Quản lý Người dùng",
+    "subtitle": "Quản lý tài khoản, phân quyền và mật khẩu người dùng trong hệ thống",
+    "add_user": "Thêm người dùng mới",
+    "username": "Tên tài khoản",
+    "role": "Vai trò",
+    "role_admin": "Quản trị viên (Admin)",
+    "role_user": "Người dùng (User)",
+    "status": "Trạng thái",
+    "created_at": "Ngày tạo",
+    "change_password": "Đổi mật khẩu",
+    "new_password": "Mật khẩu mới",
+    "confirm_delete": "Bạn có chắc chắn muốn xóa người dùng {username}?"
+  },
+  "config": {
+    "title": "Cấu hình Hệ thống",
+    "subtitle": "Quản lý tham số kết nối, mô hình ngôn ngữ và biến môi trường",
+    "tab_general": "Cấu hình Chung",
+    "tab_ai": "Mô hình AI & LLM",
+    "tab_database": "Cơ sở dữ liệu",
+    "tab_security": "Bảo mật & Token",
+    "tab_storage": "Lưu trữ & Tệp",
+    "save_config": "Lưu tất cả thay đổi",
+    "save_success": "Đã cập nhật cấu hình hệ thống thành công!",
+    "save_error": "Lưu cấu hình thất bại. Vui lòng kiểm tra lại thông số.",
+    "prompt_template_placeholder": "Bạn là chuyên gia {label}. Hãy xử lý {{count}} nội dung cho {{topicName}} ở cấp độ {{level}} và chỉ trả về JSON đúng schema Learning.",
+    "in_use": "Đang dùng",
+    "platforms": {
+      "discord": {
+        "title": "Discord Bot - Model Mặc Định",
+        "description": "Mô hình AI xử lý tin nhắn trực tiếp và lệnh trong server Discord"
+      },
+      "telegram": {
+        "title": "Telegram Bot - Model Mặc Định",
+        "description": "Mô hình AI xử lý tin nhắn chat và lệnh trong bot Telegram"
+      },
+      "learning": {
+        "title": "Learning Hub - Model Mặc Định",
+        "description": "Dùng để sinh bài tập Tech, Vocab, Quiz và chấm điểm AI"
+      },
+      "web": {
+        "title": "Web Chat - Model Mặc Định",
+        "description": "Mô hình AI mặc định cho giao diện Web Dashboard Chat"
+      }
+    },
+    "prompts": {
+      "apply_all_templates": "Nhập tất cả mẫu",
+      "apply_template": "Nhập mẫu",
+      "clear": "Xóa",
+      "learning_prompt_tech": {
+        "label": "Tech Questions Prompt",
+        "placeholder": "Sinh câu hỏi cho 6 Tech Stacks"
+      },
+      "learning_prompt_vocab": {
+        "label": "Vocabulary Prompt",
+        "placeholder": "Sinh từ vựng 50 Topics"
+      },
+      "learning_prompt_quiz": {
+        "label": "Quiz Prompt",
+        "placeholder": "Soạn đề trắc nghiệm"
+      },
+      "learning_prompt_reading": {
+        "label": "Reading Comprehension Prompt",
+        "placeholder": "Soạn bài đọc hiểu"
+      },
+      "learning_prompt_writing": {
+        "label": "Writing Studio Prompt",
+        "placeholder": "Soạn đề luyện viết"
+      },
+      "learning_prompt_speaking": {
+        "label": "Speaking Prompt",
+        "placeholder": "Kịch bản luyện nói"
+      },
+      "learning_prompt_ielts": {
+        "label": "IELTS Prep Prompt",
+        "placeholder": "Đề thi IELTS"
+      },
+      "learning_prompt_eval_tech": {
+        "label": "Tech Mock Interview Evaluator",
+        "placeholder": "AI chấm điểm Tech"
+      },
+      "learning_prompt_eval_reading": {
+        "label": "Reading Evaluator",
+        "placeholder": "AI chấm đọc hiểu"
+      },
+      "learning_prompt_eval_writing": {
+        "label": "Writing Evaluator",
+        "placeholder": "AI chấm và sửa bài viết"
+      },
+      "learning_prompt_eval_speaking": {
+        "label": "Speaking Evaluator",
+        "placeholder": "AI chấm bài nói"
+      },
+      "learning_prompt_eval_ielts": {
+        "label": "IELTS Evaluator",
+        "placeholder": "AI chấm IELTS"
+      }
+    }
+  },
+  "stats": {
+    "title": "Thống kê & Giám sát",
+    "subtitle": "Theo dõi hiệu năng hệ thống, tài nguyên và lưu lượng truy cập",
+    "metrics_overview": "Tổng quan chỉ số",
+    "total_requests": "Tổng số yêu cầu",
+    "success_rate": "Tỷ lệ thành công",
+    "avg_latency": "Độ trễ trung bình",
+    "memory_usage": "Bộ nhớ sử dụng"
+  },
+  "logs": {
+    "title": "Nhật ký Hệ thống",
+    "subtitle": "Xem trực tiếp nhật ký sự kiện, cảnh báo và lỗi hệ thống",
+    "filter_level": "Mức độ nhật ký",
+    "auto_refresh": "Tự động làm mới",
+    "clear_display": "Xóa màn hình log",
+    "download": "Tải xuống log file"
+  },
+  "history": {
+    "title": "Lịch sử Hoạt động",
+    "subtitle": "Truy vết các phiên làm việc và tác vụ của người dùng",
+    "session_id": "Mã phiên",
+    "initiated_by": "Khởi tạo bởi",
+    "timestamp": "Thời gian",
+    "action_type": "Loại thao tác"
+  }
+}

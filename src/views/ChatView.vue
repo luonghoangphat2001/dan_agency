@@ -10,10 +10,10 @@
             <!-- Empty Welcome State -->
             <div v-if="chatStore.messages.length === 0" id="chat-empty" class="flex flex-col items-center justify-center h-full text-center px-4">
                 <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden mb-3.5 sm:mb-4 shadow-md ring-4 ring-indigo-500/10 shrink-0" style="width: 64px; height: 64px; min-width: 64px; min-height: 64px">
-                    <img src="/images/dan.png" alt="Đần" width="64" height="64" class="w-full h-full object-cover rounded-2xl" style="width: 64px; height: 64px; aspect-ratio: 1/1" loading="eager" decoding="sync" />
+                    <img src="/images/dan.png" alt="Dan" width="64" height="64" class="w-full h-full object-cover rounded-2xl" style="width: 64px; height: 64px; aspect-ratio: 1/1" loading="eager" decoding="sync" />
                 </div>
-                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Xin chào! Tôi là Đần</h2>
-                <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm max-w-sm leading-relaxed">AI được tạo bởi Hoàng Phát, kết hợp nhiều model AI. Hỏi tôi bất cứ điều gì!</p>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">{{ $translate('manager.chat.welcome_title') }}</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm max-w-sm leading-relaxed">{{ $translate('manager.chat.welcome_subtitle') }}</p>
             </div>
 
             <!-- Message Bubbles -->
@@ -38,7 +38,7 @@
                     <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce"></span>
                     <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:0.2s]"></span>
                     <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:0.4s]"></span>
-                    <span class="ml-1 font-mono font-semibold">Đần đang suy nghĩ và trả lời...</span>
+                    <span class="ml-1 font-mono font-semibold">{{ $translate('manager.chat.thinking') }}</span>
                 </div>
             </div>
         </div>
@@ -47,8 +47,8 @@
         <div class="shrink-0 border-t border-slate-200/90 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md px-3 sm:px-4 py-3 sm:py-4">
             <div class="max-w-3xl mx-auto">
                 <form @submit.prevent="handleSend" class="flex items-end gap-2.5 sm:gap-3 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700/80 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/10 px-3.5 sm:px-4 py-2.5 sm:py-3 transition shadow-sm">
-                    <textarea v-model="inputText" @keydown.enter.exact.prevent="handleSend" rows="1" placeholder="Hỏi Đần điều gì đó… (Shift+Enter để xuống dòng)" class="flex-1 bg-transparent resize-none text-base sm:text-sm focus:outline-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 max-h-36 sm:max-h-40 leading-relaxed"></textarea>
-                    <button type="submit" :disabled="!inputText.trim() || chatStore.loading" class="shrink-0 w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl sm:rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 shadow-sm shadow-indigo-600/30" aria-label="Gửi tin nhắn">
+                    <textarea v-model="inputText" @keydown.enter.exact.prevent="handleSend" rows="1" :placeholder="$translate('manager.chat.input_placeholder')" class="flex-1 bg-transparent resize-none text-base sm:text-sm focus:outline-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 max-h-36 sm:max-h-40 leading-relaxed"></textarea>
+                    <button type="submit" :disabled="!inputText.trim() || chatStore.loading" class="shrink-0 w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl sm:rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 shadow-sm shadow-indigo-600/30" :aria-label="$translate('manager.chat.send')">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <line x1="22" y1="2" x2="11" y2="13" />
                             <polygon points="22 2 15 22 11 13 2 9 22 2" />

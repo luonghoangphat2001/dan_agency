@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { sendChatMessage } from '@/api/chat';
+import { translate } from '@/lang';
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
@@ -8,34 +9,34 @@ export const useChatStore = defineStore('chat', {
     loading: false,
   }),
   actions: {
-    setModel(model) {
-      this.activeModel = model;
-      localStorage.setItem('dan_active_model', model);
+    setModel(selectedModel) {
+      this.activeModel = selectedModel;
+      localStorage.setItem('dan_active_model', selectedModel);
     },
-    async sendMessage(text) {
-      if (!text.trim() || this.loading) return;
+    async sendMessage(messageText) {
+      if (!messageText.trim() || this.loading) return;
 
       this.messages.push({
         id: Date.now(),
         role: 'user',
-        content: text,
+        content: messageText,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       });
 
       this.loading = true;
       try {
-        const res = await sendChatMessage(text, this.activeModel);
+        const chatResponse = await sendChatMessage(messageText, this.activeModel);
         this.messages.push({
           id: Date.now() + 1,
           role: 'assistant',
-          content: res.response || res.message || 'Không có phản hồi từ máy chủ.',
+          content: chatResponse.response || chatResponse.message || translate('common.status.no_data'),
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         });
-      } catch (err) {
+      } catch (chatError) {
         this.messages.push({
           id: Date.now() + 1,
           role: 'assistant',
-          content: `❌ Lỗi: ${err.message}`,
+          content: `❌ ${translate('common.status.error')}: ${chatError.message}`,
           isError: true,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         });

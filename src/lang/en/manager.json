@@ -1,0 +1,193 @@
+{
+  "nav": {
+    "chat": "AI Chat",
+    "openclaw": "OpenClaw Orchestration",
+    "schedule": "Task Scheduler",
+    "users": "User Management",
+    "stats": "System Stats",
+    "history": "Activity History",
+    "logs": "System Logs",
+    "config": "System Config"
+  },
+  "sidebar": {
+    "title": "Dan Manager",
+    "subtitle": "Admin Control Center",
+    "section_assistant": "Assistant & Orchestration",
+    "section_management": "Administration & Scheduling",
+    "section_system": "System & Settings"
+  },
+  "chat": {
+    "welcome_title": "Hello! How can I help you today?",
+    "welcome_subtitle": "Dan AI Assistant is ready to assist you with data management, analytics, and task execution.",
+    "input_placeholder": "Type a message or question... (Press Enter to send, Shift+Enter for new line)",
+    "send": "Send",
+    "stop": "Stop generation",
+    "thinking": "Dan AI is thinking...",
+    "model_label": "Model:",
+    "clear_chat": "Clear Chat",
+    "new_chat": "New Conversation",
+    "copy_success": "Response copied to clipboard",
+    "stream_error": "Lost data stream connection with AI server."
+  },
+  "openclaw": {
+    "title": "OpenClaw Orchestration Center",
+    "subtitle": "Monitor agent lifecycles, automated workflows, and execution states",
+    "status_banner": "OpenClaw system is running normally",
+    "active_agents": "Active Agents",
+    "total_tasks": "Total Processed Tasks",
+    "kill_switch": "Emergency Stop All",
+    "restart_service": "Restart OpenClaw",
+    "health_check": "Service Health Check",
+    "workflow_title": "Workflow Details",
+    "kill_confirm": "WARNING: Are you sure you want to trigger emergency stop for all running agents?",
+    "actions": {
+      "activate": "Activate",
+      "pause": "Pause",
+      "suspend": "Suspend",
+      "quarantine": "Quarantine",
+      "fix": "Fix",
+      "test": "Test",
+      "canary": "Canary",
+      "retire": "Retire"
+    },
+    "reason_prompt": "Enter reason for moving {agentId} to {targetState}:",
+    "confirm_transition": "Confirm moving agent {agentId} to {targetState}?"
+  },
+  "schedule": {
+    "title": "Task Scheduler Management",
+    "subtitle": "Configure and monitor recurring automated cron jobs and background tasks",
+    "add_job": "Add New Task",
+    "job_name": "Task Name",
+    "cron_expression": "Cron Expression",
+    "target_action": "Action Target",
+    "status": "Status",
+    "next_run": "Next Run",
+    "last_run": "Last Run",
+    "delete_confirm": "Are you sure you want to delete this scheduled task?",
+    "execute_now": "Run Now"
+  },
+  "users": {
+    "title": "User Management",
+    "subtitle": "Manage accounts, permissions, and passwords across the system",
+    "add_user": "Add New User",
+    "username": "Username",
+    "role": "Role",
+    "role_admin": "Administrator (Admin)",
+    "role_user": "Standard User (User)",
+    "status": "Status",
+    "created_at": "Created At",
+    "change_password": "Change Password",
+    "new_password": "New Password",
+    "confirm_delete": "Are you sure you want to delete user {username}?"
+  },
+  "config": {
+    "title": "System Configuration",
+    "subtitle": "Manage connection parameters, language models, and environment variables",
+    "tab_general": "General Settings",
+    "tab_ai": "AI & LLM Models",
+    "tab_database": "Database Settings",
+    "tab_security": "Security & Tokens",
+    "tab_storage": "Storage & Files",
+    "save_config": "Save All Changes",
+    "save_success": "System configuration updated successfully!",
+    "save_error": "Failed to save configuration. Please check parameters.",
+    "prompt_template_placeholder": "You are an expert in {label}. Process {{count}} items for {{topicName}} at level {{level}} and return JSON adhering to the Learning schema.",
+    "in_use": "In use",
+    "platforms": {
+      "discord": {
+        "title": "Discord Bot - Default Model",
+        "description": "AI model processing direct messages and commands in Discord server"
+      },
+      "telegram": {
+        "title": "Telegram Bot - Default Model",
+        "description": "AI model processing chat messages and commands in Telegram bot"
+      },
+      "learning": {
+        "title": "Learning Hub - Default Model",
+        "description": "Used to generate Tech, Vocab, Quiz exercises and AI evaluation"
+      },
+      "web": {
+        "title": "Web Chat - Default Model",
+        "description": "Default AI model for Web Dashboard Chat interface"
+      }
+    },
+    "prompts": {
+      "apply_all_templates": "Apply all templates",
+      "apply_template": "Apply template",
+      "clear": "Clear",
+      "learning_prompt_tech": {
+        "label": "Tech Questions Prompt",
+        "placeholder": "Generate questions for 6 Tech Stacks"
+      },
+      "learning_prompt_vocab": {
+        "label": "Vocabulary Prompt",
+        "placeholder": "Generate vocabulary for 50 Topics"
+      },
+      "learning_prompt_quiz": {
+        "label": "Quiz Prompt",
+        "placeholder": "Compose quiz questions"
+      },
+      "learning_prompt_reading": {
+        "label": "Reading Comprehension Prompt",
+        "placeholder": "Compose reading comprehension exercises"
+      },
+      "learning_prompt_writing": {
+        "label": "Writing Studio Prompt",
+        "placeholder": "Compose writing studio prompts"
+      },
+      "learning_prompt_speaking": {
+        "label": "Speaking Prompt",
+        "placeholder": "Speaking practice scenarios"
+      },
+      "learning_prompt_ielts": {
+        "label": "IELTS Prep Prompt",
+        "placeholder": "IELTS practice tests"
+      },
+      "learning_prompt_eval_tech": {
+        "label": "Tech Mock Interview Evaluator",
+        "placeholder": "AI tech scoring evaluator"
+      },
+      "learning_prompt_eval_reading": {
+        "label": "Reading Evaluator",
+        "placeholder": "AI reading comprehension evaluator"
+      },
+      "learning_prompt_eval_writing": {
+        "label": "Writing Evaluator",
+        "placeholder": "AI writing scoring and correction"
+      },
+      "learning_prompt_eval_speaking": {
+        "label": "Speaking Evaluator",
+        "placeholder": "AI speech evaluator"
+      },
+      "learning_prompt_eval_ielts": {
+        "label": "IELTS Evaluator",
+        "placeholder": "AI IELTS evaluator"
+      }
+    }
+  },
+  "stats": {
+    "title": "Statistics & Monitoring",
+    "subtitle": "Track system performance, resource usage, and network traffic",
+    "metrics_overview": "Metrics Overview",
+    "total_requests": "Total Requests",
+    "success_rate": "Success Rate",
+    "avg_latency": "Average Latency",
+    "memory_usage": "Memory Usage"
+  },
+  "logs": {
+    "title": "System Logs",
+    "subtitle": "Live stream of event logs, system warnings, and error messages",
+    "filter_level": "Log Level",
+    "auto_refresh": "Auto Refresh",
+    "clear_display": "Clear Display",
+    "download": "Download Log File"
+  },
+  "history": {
+    "title": "Activity History",
+    "subtitle": "Audit trail of user sessions and background operations",
+    "session_id": "Session ID",
+    "initiated_by": "Initiated By",
+    "timestamp": "Timestamp",
+    "action_type": "Action Type"
+  }
+}

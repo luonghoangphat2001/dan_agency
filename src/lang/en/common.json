@@ -1,0 +1,52 @@
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "filter": "Filter",
+    "close": "Close",
+    "retry": "Retry",
+    "refresh": "Refresh",
+    "logout": "Logout",
+    "login": "Login",
+    "submit": "Submit",
+    "copy": "Copy",
+    "copied": "Copied",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "all": "All",
+    "create": "Create",
+    "update": "Update",
+    "view": "View"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "theme_light": "Light Mode",
+    "theme_dark": "Dark Mode"
+  },
+  "status": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "network_error": "Server connection error",
+    "no_data": "No data available",
+    "running": "Running",
+    "stopped": "Stopped",
+    "active": "Active",
+    "inactive": "Inactive",
+    "processing": "Processing..."
+  },
+  "language": {
+    "select": "Select language",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  }
+}
