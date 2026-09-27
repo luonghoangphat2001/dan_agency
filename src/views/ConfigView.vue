@@ -233,6 +233,8 @@ import { translate } from "@/lang"
 import { getConfig, getConfigMeta, getModelsByProvider, updateConfig } from "@/api/config"
 import { cleanLogs } from "@/api/stats"
 
+import providerConfig from "@/data/providers.json"
+
 const route = useRoute()
 const router = useRouter()
 const validTabs = ["models", "providers", "openclaw", "prompts", "logs"]
@@ -246,23 +248,17 @@ watch(
     { immediate: true },
 )
 
-const fallbackProviders = [
-    { key: "claude", shortLabel: "Claude", iconClass: "fa-solid fa-brain" },
-    { key: "chatgpt", shortLabel: "ChatGPT", iconClass: "fa-solid fa-robot" },
-    { key: "gemini", shortLabel: "Gemini", iconClass: "fa-solid fa-wand-magic-sparkles" },
-]
-const providers = ref(fallbackProviders)
+const providers = ref(providerConfig.fallbackProviders)
 
 const getProviderIcon = (key) => {
     const providerKeyString = String(key || "").toLowerCase()
-    if (providerKeyString.includes("gemini")) return "fa-solid fa-wand-magic-sparkles"
-    if (providerKeyString.includes("claude")) return "fa-solid fa-brain"
-    if (providerKeyString.includes("chatgpt") || providerKeyString.includes("gpt")) return "fa-solid fa-robot"
-    if (providerKeyString.includes("deepseek")) return "fa-solid fa-compass"
-    return "fa-solid fa-microchip"
+    const matchedKey = Object.keys(providerConfig.providerIcons).find((iconKey) =>
+        iconKey !== "default" && providerKeyString.includes(iconKey)
+    )
+    return matchedKey ? providerConfig.providerIcons[matchedKey] : providerConfig.providerIcons.default
 }
 
-const allProviders = ref(["gemini", "claude", "chatgpt", "deepseek", "kimi", "vllm", "ollama", "nvidia", "cloudflare"])
+const allProviders = ref([...providerConfig.defaultProviderList])
 const modelOptions = reactive(
     Object.fromEntries(allProviders.value.map((providerName) => [providerName, []]))
 )

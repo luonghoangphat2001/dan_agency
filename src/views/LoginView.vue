@@ -60,13 +60,7 @@ const handleLogin = async () => {
             router.push("/chat")
         }
     } catch (loginError) {
-        if (loginError.response?.data?.error) {
-            error.value = loginError.response.data.error;
-        } else if (loginError.message) {
-            error.value = loginError.message;
-        } else {
-            error.value = translate('auth.error_failed');
-        }
+        error.value = loginError.response?.data?.error || loginError.message || translate("auth.error_failed")
     } finally {
         loading.value = false;
     }

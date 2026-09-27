@@ -1,0 +1,26 @@
+{
+  "fallbackProviders": [
+    { "key": "claude", "shortLabel": "Claude", "iconClass": "fa-solid fa-brain" },
+    { "key": "chatgpt", "shortLabel": "ChatGPT", "iconClass": "fa-solid fa-robot" },
+    { "key": "gemini", "shortLabel": "Gemini", "iconClass": "fa-solid fa-wand-magic-sparkles" }
+  ],
+  "defaultProviderList": [
+    "gemini",
+    "claude",
+    "chatgpt",
+    "deepseek",
+    "kimi",
+    "vllm",
+    "ollama",
+    "nvidia",
+    "cloudflare"
+  ],
+  "providerIcons": {
+    "gemini": "fa-solid fa-wand-magic-sparkles",
+    "claude": "fa-solid fa-brain",
+    "chatgpt": "fa-solid fa-robot",
+    "gpt": "fa-solid fa-robot",
+    "deepseek": "fa-solid fa-compass",
+    "default": "fa-solid fa-microchip"
+  }
+}
