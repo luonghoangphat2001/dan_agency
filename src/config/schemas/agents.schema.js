@@ -36,7 +36,19 @@ const AGENT_CONFIG_SCHEMA = [
   },
 ];
 
+/**
+ * UI schema and metadata for monitored OpenClaw agents.
+ */
+const AGENTS_METADATA = [
+  { key: 'dan_rnd', label: 'R&D' },
+  { key: 'dan_logistics', label: 'Logistics' },
+  { key: 'dan_cfo', label: 'CFO' },
+  { key: 'dan_ops', label: 'Operations' },
+  { key: 'dan_cskh', label: 'CSKH' },
+];
+
 module.exports = {
   MONITORED_AGENTS,
   AGENT_CONFIG_SCHEMA,
+  AGENTS_METADATA,
 };

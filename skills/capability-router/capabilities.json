@@ -1,0 +1,22 @@
+{
+  "schedule_manage": {
+    "tools": ["schedule_manage"],
+    "mutating": true
+  },
+  "company_dashboard_metrics": {
+    "tools": ["company_dashboard_metrics"],
+    "mutating": true
+  },
+  "web_search": {
+    "tools": ["web_search", "web_crawl", "http_fetch", "browser_automate"],
+    "mutating": false
+  },
+  "memory": {
+    "tools": ["save_memory", "recall_memory"],
+    "mutating": false
+  },
+  "none": {
+    "tools": null,
+    "mutating": false
+  }
+}
