@@ -15,10 +15,14 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import '@/assets/main.css';
 
+import i18n from '@/lang';
+
 const app = createApp(App);
 const pinia = createPinia();
 
 app.use(pinia);
 app.use(router);
+app.use(i18n);
 
 app.mount('#app');
+

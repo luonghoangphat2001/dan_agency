@@ -174,9 +174,9 @@
                             <span class="text-[10px] text-gray-400">Tất cả</span>
                             <b class="truncate">Toàn bộ ngân hàng</b>
                         </button>
-                        <button v-for="t in vocabTopics" :key="t.id" type="button" @click="quizTopicNo = Number(t.topic_no)" class="p-2.5 rounded-xl border text-left transition flex flex-col gap-0.5 text-xs" :class="quizTopicNo === Number(t.topic_no) ? 'bg-indigo-50 dark:bg-indigo-950/70 border-indigo-500 text-indigo-900 dark:text-white font-semibold' : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'">
-                            <span class="text-[10px] text-gray-400">Topic {{ t.topic_no }}</span>
-                            <b class="truncate">{{ t.name }}</b>
+                        <button v-for="topic in vocabTopics" :key="topic.id" type="button" @click="quizTopicNo = Number(topic.topic_no)" class="p-2.5 rounded-xl border text-left transition flex flex-col gap-0.5 text-xs" :class="quizTopicNo === Number(topic.topic_no) ? 'bg-indigo-50 dark:bg-indigo-950/70 border-indigo-500 text-indigo-900 dark:text-white font-semibold' : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'">
+                            <span class="text-[10px] text-gray-400">Topic {{ topic.topic_no }}</span>
+                            <b class="truncate">{{ topic.name }}</b>
                         </button>
                     </div>
                 </div>

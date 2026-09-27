@@ -1,0 +1,122 @@
+{
+  "nav": {
+    "tech": "Kiến thức Kỹ thuật",
+    "vocab": "Từ vựng & Flashcard",
+    "quiz": "Luyện tập Trắc nghiệm",
+    "exam": "Đề thi & Kiểm tra",
+    "reading": "Kỹ năng Đọc",
+    "writing": "Kỹ năng Viết",
+    "speaking": "Kỹ năng Nói",
+    "ielts": "Luyện thi IELTS",
+    "discord": "Cộng đồng Discord"
+  },
+  "sidebar": {
+    "title": "Dan Studio",
+    "subtitle": "Learning Center",
+    "section_core": "Lộ trình cốt lõi",
+    "section_practice": "Luyện tập & Kỹ năng",
+    "section_community": "Cộng đồng & Mở rộng"
+  },
+  "controls": {
+    "generate_ai": "Tạo bằng AI",
+    "filter_level": "Mức độ",
+    "filter_category": "Danh mục",
+    "filter_type": "Loại",
+    "search_placeholder": "Tìm kiếm kiến thức, từ vựng...",
+    "show_explanation": "Xem giải thích",
+    "hide_explanation": "Ẩn giải thích",
+    "flip_card": "Lật thẻ",
+    "listen_pronunciation": "Nghe phát âm",
+    "play_audio": "Phát âm thanh",
+    "stop_audio": "Dừng",
+    "record_speech": "Ghi âm",
+    "evaluating_speech": "Đang chấm điểm...",
+    "add_item": "Thêm mục mới",
+    "edit_item": "Sửa mục",
+    "delete_item": "Xóa mục",
+    "select_all": "Chọn tất cả"
+  },
+  "tech": {
+    "title": "Kho Tri thức Kỹ thuật",
+    "subtitle": "Tổng hợp kiến thức kiến trúc, framework và công nghệ hiện đại",
+    "empty_state": "Không tìm thấy nội dung kỹ thuật phù hợp",
+    "card_view": "Dạng thẻ",
+    "mindmap_view": "Sơ đồ tư duy",
+    "code_example": "Ví dụ mã nguồn",
+    "key_takeaways": "Điểm mấu chốt",
+    "practice_quiz": "Làm bài kiểm tra chủ đề này"
+  },
+  "vocab": {
+    "title": "Kho Từ vựng & Thuật ngữ",
+    "subtitle": "Ghi nhớ thông minh qua thẻ ghi nhớ 3D và phương pháp lặp lại ngắt quãng",
+    "empty_state": "Chưa có từ vựng nào trong danh mục này",
+    "mastered_count": "Đã thuộc: {count}",
+    "learning_count": "Đang học: {count}",
+    "definition": "Định nghĩa",
+    "examples": "Ví dụ áp dụng",
+    "synonyms": "Từ đồng nghĩa",
+    "antonyms": "Từ trái nghĩa",
+    "collocations": "Cụm từ liên quan",
+    "tap_to_flip": "Nhấn để lật thẻ"
+  },
+  "quiz": {
+    "title": "Luyện tập Trắc nghiệm",
+    "subtitle": "Củng cố kiến thức với các bài kiểm tra thích ứng",
+    "question": "Câu hỏi {current}/{total}",
+    "time_remaining": "Thời gian còn lại: {time}",
+    "submit_answer": "Xác nhận câu trả lời",
+    "next_question": "Câu hỏi kế tiếp",
+    "finish_quiz": "Nộp bài thi",
+    "result_title": "Kết quả bài kiểm tra",
+    "score": "Điểm số: {score}/{total} ({percent}%)",
+    "correct_answers": "Số câu đúng: {count}",
+    "incorrect_answers": "Số câu sai: {count}",
+    "time_spent": "Thời gian làm bài: {time}",
+    "review_answers": "Xem lại câu trả lời",
+    "retake": "Làm lại bài này"
+  },
+  "exam": {
+    "title": "Kỳ thi & Đánh giá năng lực",
+    "subtitle": "Mô phỏng kỳ thi thực tế với đồng hồ bấm giờ và phân tích chi tiết",
+    "start_exam": "Bắt đầu kỳ thi",
+    "exam_rules": "Quy chế phòng thi",
+    "duration": "Thời lượng: {minutes} phút",
+    "total_questions": "Tổng số câu hỏi: {count}",
+    "exam_in_progress": "Đang diễn ra bài thi",
+    "confirm_submit": "Bạn có chắc chắn muốn nộp bài sớm không?"
+  },
+  "generator": {
+    "title": "Tạo nội dung tự động bằng AI",
+    "subtitle": "Sinh bài tập, từ vựng hoặc câu hỏi trắc nghiệm tự động",
+    "topic_label": "Chủ đề / Từ khóa",
+    "topic_placeholder": "Nhập chủ đề cần tạo (ví dụ: Docker, Vue 3, IELTS Reading...)",
+    "level_label": "Mức độ",
+    "count_label": "Số lượng",
+    "type_label": "Loại tài liệu",
+    "prompt_label": "Yêu cầu bổ sung (tùy chọn)",
+    "generate_btn": "Bắt đầu sinh nội dung",
+    "generating": "AI đang tạo nội dung, vui lòng đợi...",
+    "generated_success": "Đã tạo thành công {count} mục mới!",
+    "generated_error": "Không thể sinh nội dung. Vui lòng thử lại sau."
+  },
+  "evaluator": {
+    "title": "Chấm điểm & Phân tích AI",
+    "analyzing": "Đang phân tích bài làm...",
+    "overall_score": "Điểm tổng quan: {score}/10",
+    "grammar_feedback": "Ngữ pháp & Cấu trúc",
+    "vocabulary_feedback": "Vốn từ vựng",
+    "coherence_feedback": "Độ mạch lạc",
+    "pronunciation_feedback": "Phát âm & Ngữ điệu",
+    "improvement_tips": "Gợi ý cải thiện"
+  },
+  "drawer": {
+    "add_title": "Thêm mới kiến thức",
+    "edit_title": "Cập nhật kiến thức",
+    "name": "Tiêu đề / Thuật ngữ",
+    "definition": "Định nghĩa / Nội dung",
+    "category": "Danh mục",
+    "level": "Cấp độ",
+    "tags": "Thẻ phân loại (cách nhau bởi dấu phẩy)",
+    "code_snippet": "Đoạn mã mẫu (nếu có)"
+  }
+}

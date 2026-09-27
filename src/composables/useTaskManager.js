@@ -101,10 +101,10 @@ export function useTaskManager(options = {}) {
 
     // Drawer selection
     const selectDrawerItem = (item) => {
-        const idx = filteredItems.value.findIndex((t) => t.id === item.id)
-        if (idx !== -1) {
-            currentIndex.value = idx
-            if (onIndexChange) onIndexChange(activeItem.value, idx)
+        const targetIndex = filteredItems.value.findIndex((taskItem) => taskItem.id === item.id)
+        if (targetIndex !== -1) {
+            currentIndex.value = targetIndex
+            if (onIndexChange) onIndexChange(activeItem.value, targetIndex)
         }
         drawerOpen.value = false
     }

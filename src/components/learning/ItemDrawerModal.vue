@@ -12,11 +12,11 @@
                             <i :class="icon || 'fa-solid fa-list-check'" class="text-sm"></i>
                         </div>
                         <div>
-                            <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ title || "Danh sách bài tập" }}</h3>
-                            <p class="text-[11px] text-gray-500 dark:text-gray-400 font-mono">{{ items.length }} mục có sẵn</p>
+                            <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ title || $translate('learning.drawer.details') }}</h3>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400 font-mono">{{ items.length }} {{ $translate('learning.drawer.items') }}</p>
                         </div>
                     </div>
-                    <button @click="$emit('close')" class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center justify-center transition border border-gray-300 dark:border-gray-700" title="Đóng danh sách">
+                    <button @click="$emit('close')" class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center justify-center transition border border-gray-300 dark:border-gray-700" :title="$translate('common.actions.close')">
                         ✕
                     </button>
                 </div>
@@ -28,7 +28,7 @@
                         <input
                             :value="searchQuery"
                             @input="$emit('update:searchQuery', $event.target.value)"
-                            :placeholder="searchPlaceholder || 'Tìm theo tiêu đề, nội dung...'"
+                            :placeholder="searchPlaceholder || $translate('learning.controls.search_placeholder')"
                             class="w-full pl-8 pr-7 py-2 bg-gray-50 dark:bg-gray-800/90 rounded-xl border border-gray-300 dark:border-gray-700 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-indigo-500"
                         />
                         <button v-if="searchQuery" @click="$emit('update:searchQuery', '')" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
@@ -56,10 +56,10 @@
                             </span>
                             <div class="flex items-center gap-1.5 flex-wrap justify-end">
                                 <span v-if="item.status === 'studying'" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border bg-rose-100 dark:bg-rose-950/60 border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300">
-                                    Cần học lại
+                                    {{ $translate('learning.vocab.learning_count', { count: '' }).replace(/[:0-9]/g, '').trim() }}
                                 </span>
                                 <span v-else-if="item.status === 'mastered'" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300">
-                                    Đã thuộc
+                                    {{ $translate('learning.vocab.mastered_count', { count: '' }).replace(/[:0-9]/g, '').trim() }}
                                 </span>
                                 <span v-if="item[badgeKey] || item.level || item.category" :class="['px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border', getLevelBadgeClass(item[badgeKey] || item.level)]">
                                     {{ item[badgeKey] || item.level || item.category }}
@@ -76,7 +76,7 @@
 
                     <div v-if="!items.length" class="text-center py-12 text-gray-400 dark:text-gray-500 text-xs">
                         <i class="fa-solid fa-box-open text-2xl mb-2 block"></i>
-                        <span>Không tìm thấy mục phù hợp.</span>
+                        <span>{{ $translate('learning.tech.empty_state') }}</span>
                     </div>
                 </div>
             </div>

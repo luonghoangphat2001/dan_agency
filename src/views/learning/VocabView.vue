@@ -11,7 +11,7 @@
                         <div class="bg-white dark:bg-gray-850 rounded-2xl border border-gray-200 dark:border-gray-700 p-2.5 shadow-sm dark:shadow-md flex items-center gap-2 overflow-x-auto">
                             <!-- Topic Select -->
                             <select v-model="vocabTopicNo" @change="loadVocab" class="h-10 px-3 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-700 text-xs text-gray-800 dark:text-gray-200 font-semibold focus:outline-none focus:border-indigo-400 shrink-0">
-                                <option v-for="t in vocabTopics" :key="t.id" :value="t.topic_no">{{ t.name }} (Topic {{ t.topic_no }})</option>
+                                <option v-for="topic in vocabTopics" :key="topic.id" :value="topic.topic_no">{{ topic.name }} (Topic {{ topic.topic_no }})</option>
                             </select>
 
                             <!-- Search Input -->

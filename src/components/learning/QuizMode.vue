@@ -5,12 +5,12 @@
             <div class="flex items-center gap-3">
                 <i class="fa-solid fa-fire text-amber-500 text-2xl"></i>
                 <div>
-                    <span class="text-xs text-gray-400 uppercase font-semibold">Chuỗi đúng</span>
-                    <p class="text-lg font-bold text-amber-400">{{ streak }} câu</p>
+                    <span class="text-xs text-gray-400 uppercase font-semibold">{{ $translate('learning.quiz.correct_answers', { count: '' }).replace(/[:0-9]/g, '').trim() }}</span>
+                    <p class="text-lg font-bold text-amber-400">{{ streak }}</p>
                 </div>
             </div>
             <div class="text-center">
-                <span class="text-xs text-gray-400 uppercase font-semibold">Điểm</span>
+                <span class="text-xs text-gray-400 uppercase font-semibold">{{ $translate('learning.quiz.score', { score: '', total: '', percent: '' }).split(':')[0] }}</span>
                 <p class="text-lg font-bold text-indigo-400">{{ score }}</p>
             </div>
             <div class="flex items-center gap-2">
@@ -23,7 +23,7 @@
         <!-- Question Card -->
         <div v-if="currentQuestion" class="bg-gray-800/90 border border-gray-700/80 rounded-3xl p-6 shadow-xl mb-4">
             <div class="flex items-center justify-between text-xs text-gray-400 mb-3">
-                <span class="font-mono">Câu {{ currentIndex + 1 }} / {{ totalQuestions }}</span>
+                <span class="font-mono">{{ $translate('learning.quiz.question', { current: currentIndex + 1, total: totalQuestions }) }}</span>
                 <span class="px-2 py-0.5 rounded bg-gray-700 font-semibold">{{ currentQuestion.level || "General" }}</span>
             </div>
             <h3 class="text-base md:text-lg font-bold text-white leading-relaxed mb-6">
@@ -43,11 +43,11 @@
         <!-- Quiz Completed State -->
         <div v-else class="bg-gray-800/90 border border-gray-700/80 rounded-3xl p-8 text-center shadow-xl">
             <i class="fa-solid fa-trophy text-5xl text-amber-400 block mb-3"></i>
-            <h3 class="text-xl font-bold text-white mb-2">Hoàn thành bài Quiz!</h3>
+            <h3 class="text-xl font-bold text-white mb-2">{{ $translate('learning.quiz.result_title') }}</h3>
             <p class="text-sm text-gray-300 mb-6">
-                Bạn đã đạt được <strong class="text-indigo-400 font-bold">{{ score }}</strong> điểm với chuỗi tối đa <strong class="text-amber-400">{{ maxStreak }}</strong> câu!
+                {{ $translate('learning.quiz.score', { score: score, total: totalQuestions, percent: Math.round((score / (totalQuestions * 10 || 1)) * 100) }) }}
             </p>
-            <button @click="$emit('restart')" class="px-6 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition shadow-lg shadow-indigo-600/30">Làm lại bài mới</button>
+            <button @click="$emit('restart')" class="px-6 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition shadow-lg shadow-indigo-600/30">{{ $translate('learning.quiz.retake') }}</button>
         </div>
     </div>
 </template>

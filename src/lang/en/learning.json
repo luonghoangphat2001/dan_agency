@@ -1,0 +1,122 @@
+{
+  "nav": {
+    "tech": "Technical Knowledge",
+    "vocab": "Vocabulary & Flashcards",
+    "quiz": "Quiz Practice",
+    "exam": "Exams & Tests",
+    "reading": "Reading Skills",
+    "writing": "Writing Skills",
+    "speaking": "Speaking Skills",
+    "ielts": "IELTS Preparation",
+    "discord": "Discord Community"
+  },
+  "sidebar": {
+    "title": "Dan Studio",
+    "subtitle": "Learning Center",
+    "section_core": "Core Paths",
+    "section_practice": "Practice & Skills",
+    "section_community": "Community & Extras"
+  },
+  "controls": {
+    "generate_ai": "Generate with AI",
+    "filter_level": "Level",
+    "filter_category": "Category",
+    "filter_type": "Type",
+    "search_placeholder": "Search knowledge, vocabulary...",
+    "show_explanation": "Show explanation",
+    "hide_explanation": "Hide explanation",
+    "flip_card": "Flip card",
+    "listen_pronunciation": "Listen pronunciation",
+    "play_audio": "Play audio",
+    "stop_audio": "Stop",
+    "record_speech": "Record",
+    "evaluating_speech": "Grading speech...",
+    "add_item": "Add new item",
+    "edit_item": "Edit item",
+    "delete_item": "Delete item",
+    "select_all": "Select all"
+  },
+  "tech": {
+    "title": "Technical Knowledge Base",
+    "subtitle": "Summary of architecture, frameworks, and modern technologies",
+    "empty_state": "No technical content found matching criteria",
+    "card_view": "Card View",
+    "mindmap_view": "Mindmap View",
+    "code_example": "Code Example",
+    "key_takeaways": "Key Takeaways",
+    "practice_quiz": "Practice this topic"
+  },
+  "vocab": {
+    "title": "Vocabulary & Terminology",
+    "subtitle": "Smart memorization via 3D flashcards and spaced repetition",
+    "empty_state": "No vocabulary items in this category",
+    "mastered_count": "Mastered: {count}",
+    "learning_count": "Learning: {count}",
+    "definition": "Definition",
+    "examples": "Examples",
+    "synonyms": "Synonyms",
+    "antonyms": "Antonyms",
+    "collocations": "Collocations",
+    "tap_to_flip": "Click to flip card"
+  },
+  "quiz": {
+    "title": "Quiz Practice",
+    "subtitle": "Reinforce knowledge with adaptive quiz questions",
+    "question": "Question {current}/{total}",
+    "time_remaining": "Time remaining: {time}",
+    "submit_answer": "Confirm Answer",
+    "next_question": "Next Question",
+    "finish_quiz": "Submit Quiz",
+    "result_title": "Quiz Results",
+    "score": "Score: {score}/{total} ({percent}%)",
+    "correct_answers": "Correct: {count}",
+    "incorrect_answers": "Incorrect: {count}",
+    "time_spent": "Time spent: {time}",
+    "review_answers": "Review Answers",
+    "retake": "Retake this quiz"
+  },
+  "exam": {
+    "title": "Exams & Assessments",
+    "subtitle": "Real exam simulation with timer and detailed analysis",
+    "start_exam": "Start Exam",
+    "exam_rules": "Exam Rules",
+    "duration": "Duration: {minutes} mins",
+    "total_questions": "Total questions: {count}",
+    "exam_in_progress": "Exam in progress",
+    "confirm_submit": "Are you sure you want to submit early?"
+  },
+  "generator": {
+    "title": "AI Content Generator",
+    "subtitle": "Automatically generate exercises, vocabulary, or quizzes",
+    "topic_label": "Topic / Keywords",
+    "topic_placeholder": "Enter topic to generate (e.g. Docker, Vue 3, IELTS Reading...)",
+    "level_label": "Level",
+    "count_label": "Quantity",
+    "type_label": "Content Type",
+    "prompt_label": "Additional prompt (optional)",
+    "generate_btn": "Start Generating",
+    "generating": "AI is generating content, please wait...",
+    "generated_success": "Successfully generated {count} new items!",
+    "generated_error": "Failed to generate content. Please try again later."
+  },
+  "evaluator": {
+    "title": "AI Grading & Feedback",
+    "analyzing": "Analyzing your submission...",
+    "overall_score": "Overall Score: {score}/10",
+    "grammar_feedback": "Grammar & Structure",
+    "vocabulary_feedback": "Vocabulary",
+    "coherence_feedback": "Coherence & Flow",
+    "pronunciation_feedback": "Pronunciation & Intonation",
+    "improvement_tips": "Suggestions for Improvement"
+  },
+  "drawer": {
+    "add_title": "Add New Knowledge",
+    "edit_title": "Update Knowledge",
+    "name": "Title / Term",
+    "definition": "Definition / Content",
+    "category": "Category",
+    "level": "Level",
+    "tags": "Tags (comma separated)",
+    "code_snippet": "Code snippet (optional)"
+  }
+}

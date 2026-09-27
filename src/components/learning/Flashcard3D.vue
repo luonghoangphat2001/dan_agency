@@ -25,7 +25,7 @@
                             v-if="wordTitle"
                             @click.stop="speak(wordTitle)"
                             class="w-9 h-9 rounded-xl text-base text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-600 hover:text-white transition flex items-center justify-center shadow-xs border border-indigo-200 dark:border-indigo-800 shrink-0"
-                            title="Phát âm tiếng Anh"
+                            :title="$translate('learning.controls.listen_pronunciation')"
                         >
                             <i class="fa-solid fa-volume-high"></i>
                         </button>
@@ -34,7 +34,7 @@
                             @click.stop="$emit('bookmark', question)"
                             class="w-9 h-9 rounded-xl bg-white dark:bg-slate-800 text-slate-400 hover:text-amber-500 transition flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-xs shrink-0"
                             :class="question?.is_bookmarked ? '!text-amber-500' : ''"
-                            title="Đánh dấu yêu thích"
+                            :title="$translate('common.actions.save')"
                         >
                             <i :class="question?.is_bookmarked ? 'fa-solid fa-star text-amber-500' : 'fa-regular fa-star'"></i>
                         </button>
@@ -67,10 +67,10 @@
                 <div class="pt-3 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2">
                     <span class="flex items-center gap-1.5 font-medium text-[11px] sm:text-xs">
                         <i class="fa-solid fa-lightbulb text-amber-500 shrink-0"></i>
-                        <span>Bấm thẻ hoặc phím <kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300">Space</kbd> và <kbd class="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300">←</kbd> <kbd class="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300">→</kbd> để lật thẻ và chuyển tiếp</span>
+                        <span>{{ $translate('learning.vocab.tap_to_flip') }}</span>
                     </span>
                     <span class="text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-1.5 shrink-0">
-                        <span>Lật xem</span>
+                        <span>{{ $translate('learning.controls.flip_card') }}</span>
                         <i class="fa-solid fa-rotate text-xs"></i>
                     </span>
                 </div>
@@ -82,7 +82,7 @@
                 <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-200/80 dark:border-slate-800">
                     <div class="flex items-center gap-2">
                         <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                            Nghĩa & Giải thích
+                            {{ $translate('learning.vocab.definition') }}
                         </span>
                         <span class="text-xs text-slate-500 dark:text-slate-400 font-mono font-semibold">#{{ index + 1 }}</span>
                     </div>
@@ -91,7 +91,7 @@
                         v-if="wordTitle"
                         @click.stop="speak(wordTitle)"
                         class="w-9 h-9 rounded-xl text-base text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-600 hover:text-white transition flex items-center justify-center shadow-xs border border-indigo-200 dark:border-indigo-800 shrink-0"
-                        title="Phát âm tiếng Anh"
+                        :title="$translate('learning.controls.listen_pronunciation')"
                     >
                         <i class="fa-solid fa-volume-high"></i>
                     </button>
@@ -122,13 +122,13 @@
                     <div v-if="example" class="w-full rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 p-4 space-y-1.5 shadow-xs text-xs sm:text-sm">
                         <div class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                             <i class="fa-solid fa-quote-left text-[11px]"></i>
-                            <span>Ví dụ ngữ cảnh</span>
+                            <span>{{ $translate('learning.vocab.examples') }}</span>
                         </div>
                         <p class="italic font-medium text-slate-800 dark:text-slate-200 leading-relaxed pl-1">
                             "{{ example }}"
                         </p>
                         <p v-if="note" class="text-xs text-slate-500 dark:text-slate-400 pl-1 pt-1 border-t border-slate-100 dark:border-slate-800 font-normal">
-                            ↳ Dịch: {{ note }}
+                            ↳ {{ note }}
                         </p>
                     </div>
 
@@ -142,10 +142,10 @@
                 <div class="pt-3 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2">
                     <span class="flex items-center gap-1.5 font-medium text-[11px] sm:text-xs">
                         <i class="fa-solid fa-lightbulb text-amber-500 shrink-0"></i>
-                        <span>Bấm thẻ hoặc phím <kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300">Space</kbd> và <kbd class="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300">←</kbd> <kbd class="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300">→</kbd> để lật thẻ và chuyển tiếp</span>
+                        <span>{{ $translate('learning.vocab.tap_to_flip') }}</span>
                     </span>
                     <span class="text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-1.5 shrink-0">
-                        <span>Lật lại</span>
+                        <span>{{ $translate('learning.controls.flip_card') }}</span>
                         <i class="fa-solid fa-rotate-left text-xs"></i>
                     </span>
                 </div>
