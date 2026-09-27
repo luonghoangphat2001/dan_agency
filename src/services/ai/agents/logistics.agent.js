@@ -5,6 +5,7 @@
 
 const BaseProposalAgent = require('@services/ai/agents/base-proposal.agent');
 const ReorderService = require('@services/ai/agents/logistics/reorder.service');
+const localization = require('@lang');
 
 /**
  * LogisticsAgent
@@ -52,7 +53,7 @@ class LogisticsAgent extends BaseProposalAgent {
     const proposal = this.createProposal({
       workflowId,
       type: 'purchase_order_draft',
-      summary: `${analysis.shortages.length} sản phẩm cần bổ sung tồn kho`,
+      summary: localization.t('agents.logistics.inventory_restock_summary', { count: analysis.shortages.length }),
       evidence: analysis.shortages.map((item) => ({
         source_ref: `inventory:${item.product_id}`,
         ...item,

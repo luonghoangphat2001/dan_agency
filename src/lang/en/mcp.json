@@ -1,0 +1,35 @@
+{
+  "tools": {
+    "web_search": {
+      "description": "Search the web via Google through OpenClaw.",
+      "schema_query": "Search query keywords",
+      "schema_num": "Number of results to retrieve",
+      "error_search_failed": "web_search error: :errorMessage"
+    },
+    "web_crawl": {
+      "description": "Crawl and extract full page text using headless Playwright browser.",
+      "schema_url": "Target webpage URL",
+      "schema_selector": "Main content CSS selector",
+      "error_crawl_failed": "web_crawl error: :errorMessage"
+    },
+    "http_fetch": {
+      "description": "Proxy HTTP requests through OpenClaw to target REST APIs.",
+      "schema_url": "Target URL",
+      "schema_method": "HTTP method",
+      "schema_headers": "Headers",
+      "schema_body": "Body payload",
+      "error_fetch_failed": "http_fetch error: :errorMessage"
+    },
+    "company_metrics": {
+      "description": "Read today's business metrics from SSOT.",
+      "schema_period": "Reporting period: today, month, quarter, or year",
+      "error_metrics_failed": "company_metrics error: :errorMessage"
+    }
+  },
+  "errors": {
+    "controller_unavailable": "The :controllerName is not available"
+  },
+  "session": {
+    "not_found": "MCP session not found"
+  }
+}

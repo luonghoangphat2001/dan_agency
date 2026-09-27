@@ -1,0 +1,28 @@
+{
+  "logistics": {
+    "inventory_restock_summary": ":count sản phẩm cần bổ sung tồn kho"
+  },
+  "rnd": {
+    "product_review_summary": ":candidatesCount/:analysisCount sản phẩm cần xem xét"
+  },
+  "cfo": {
+    "reconciliation_balanced": "Đối soát cân bằng",
+    "reconciliation_variance": "Chênh lệch đối soát: :variance",
+    "refund_proposal_summary": "Đề xuất hoàn :amount cho đơn :orderId"
+  },
+  "cskh": {
+    "negative_feedback_summary": "Phản hồi tiêu cực :feedbackId cần ưu tiên xử lý",
+    "feedback_draft_summary": "Phản hồi :feedbackId đã có bản nháp",
+    "default_customer_name": "quý khách",
+    "recovery_severe": "Xin lỗi :customerName về trải nghiệm chưa tốt. Chúng tôi đang ưu tiên kiểm tra và sẽ phản hồi hướng xử lý sớm nhất.",
+    "recovery_normal": "Cảm ơn :customerName đã gửi phản hồi. Chúng tôi đã ghi nhận để tiếp tục cải thiện dịch vụ."
+  },
+  "ops": {
+    "sla_exceeded_summary": "Đơn :orderId vượt SLA :overMinutes phút",
+    "sla_within_summary": "Đơn :orderId trong SLA"
+  },
+  "skills": {
+    "prompt_header": "[CÁC KỸ NĂNG NGHIỆP VỤ (SKILLS) KHẢ DỤNG]:",
+    "prompt_footer": "Khi cần thực hiện nghiệp vụ chuyên sâu tương ứng, hãy gọi tool \"skill_loader\" với tên skill để lấy tài liệu SOP hướng dẫn chi tiết."
+  }
+}

@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const localization = require('@lang');
+
 /**
  * WeeklyReviewService
  * Manages weekly review logic.
@@ -51,7 +53,7 @@ class WeeklyReviewService {
     const message = this.#format(weekNumber, year, sections);
     const receipt = await this.notificationGateway.notify({
       idempotencyKey: `ceo-weekly-review:${year}-W${weekNumber}`,
-      title: `CEO Weekly Business Review — Tuần ${weekNumber}/${year}`,
+      title: localization.t('ceo.weekly_review.title', { weekNumber, year }),
       message,
       severity: degraded || Number(sections.goalOffTrack?.count || 0) > 0
         ? 'warning'
@@ -65,11 +67,11 @@ class WeeklyReviewService {
     const value = (section, fallback = 'degraded') =>
       section?.degraded ? fallback : JSON.stringify(section);
     return [
-      `📅 **Tuần:** ${weekNumber}/${year}`,
-      `📈 **Xu hướng tuần:** ${value(sections.weeklyTrends)}`,
-      `🎯 **Mục tiêu lệch:** ${value(sections.goalOffTrack)}`,
-      `💰 **Tài chính tuần:** ${value(sections.financeWeekly?.data || sections.financeWeekly)}`,
-      `💡 **Hành động đề xuất:** ${value(sections.recommendedActions)}`,
+      `📅 **${localization.t('ceo.weekly_review.section_week')}:** ${weekNumber}/${year}`,
+      `📈 **${localization.t('ceo.weekly_review.section_trends')}:** ${value(sections.weeklyTrends)}`,
+      `🎯 **${localization.t('ceo.weekly_review.section_goal_off_track')}:** ${value(sections.goalOffTrack)}`,
+      `💰 **${localization.t('ceo.weekly_review.section_finance')}:** ${value(sections.financeWeekly?.data || sections.financeWeekly)}`,
+      `💡 **${localization.t('ceo.weekly_review.section_actions')}:** ${value(sections.recommendedActions)}`,
     ].join('\n');
   }
 

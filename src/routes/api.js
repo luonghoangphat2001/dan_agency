@@ -158,6 +158,19 @@ function createApiRouter(controllers = {}) {
     orchestratorRouter.use('/dashboard', dashboardRouter);
   }
 
+  // Workspace Sandbox Router Group
+  const workspaceController = resolveController(controllers, ['workspace']);
+  if (workspaceController) {
+    const workspaceRouter = Router();
+    workspaceRouter.post('/read', workspaceController.readFile.bind(workspaceController));
+    workspaceRouter.post('/write', workspaceController.writeFile.bind(workspaceController));
+    workspaceRouter.get('/list', workspaceController.listFiles.bind(workspaceController));
+    workspaceRouter.post('/list', workspaceController.listFiles.bind(workspaceController));
+    workspaceRouter.post('/delete', workspaceController.deleteFile.bind(workspaceController));
+    workspaceRouter.post('/command', workspaceController.executeCommand.bind(workspaceController));
+    orchestratorRouter.use('/workspace', workspaceRouter);
+  }
+
   router.use('/orchestrator/v1', orchestratorRouter);
 
   return router;

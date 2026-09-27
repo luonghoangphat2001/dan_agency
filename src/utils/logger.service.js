@@ -7,11 +7,32 @@ const fs = require('fs');
 const path = require('path');
 
 /**
+ * Resolve the openclaw project root by walking upward to find package.json.
+ * @returns {string}
+ */
+function resolveProjectRoot() {
+  let dir = __dirname;
+  for (let i = 0; i < 10; i++) {
+    if (fs.existsSync(path.join(dir, 'package.json'))) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return path.resolve(__dirname, '../../..');
+}
+
+const DEFAULT_LOG_FILE = process.env.OPENCLAW_LOG_FILE
+  ? path.resolve(process.env.OPENCLAW_LOG_FILE)
+  : path.join(resolveProjectRoot(), '.log');
+
+/**
  * LoggerService
  * Manages logger logic.
  */
 class LoggerService {
-  constructor(logFile = path.resolve(__dirname, '../../../.log')) {
+  constructor(logFile = DEFAULT_LOG_FILE) {
     this.logFile = logFile;
   }
 

@@ -32,12 +32,14 @@ const ReadModelService = require('@services/reporting/dashboard/read-model.servi
 const DecisionJournalPolicy = require('@policy/compliance/decision-journal.policy');
 const agentRegistry = require('@services/ai/agents/agent-registry');
 
-// Controllers (5 Core Controllers)
+// Controllers
 const WebController = require('@controllers/WebController');
 const ApprovalController = require('@controllers/ApprovalController');
 const CeoController = require('@controllers/CeoController');
 const OperatorController = require('@controllers/OperatorController');
 const DashboardController = require('@controllers/DashboardController');
+const WorkspaceController = require('@controllers/WorkspaceController');
+const WorkspaceService = require('@services/sandbox/WorkspaceService');
 
 /**
  * Creates and wires all OOP Controllers with their dependencies (SOLID DI).
@@ -111,12 +113,13 @@ function createControllers({
 
   const capabilityRegistry = buildCapabilityRegistry();
 
-  // 3. Controllers (5 Core Controllers)
+  // 3. Controllers
   const webController = new WebController({ searchService, crawlService, automateService, fetchService });
   const approvalController = new ApprovalController(approvalDecisionService, bulkApprovalService);
   const ceoController = new CeoController(ceoCommandDispatcher, ceoExceptionInboxService);
   const operatorController = new OperatorController(eventIntakeService, operatorControlService, eventReplayService);
   const dashboardController = new DashboardController(dashboardReadModelService, metricsRegistry, capabilityRegistry);
+  const workspaceController = new WorkspaceController(new WorkspaceService());
 
   return {
     web: webController,
@@ -134,6 +137,7 @@ function createControllers({
     dashboard: dashboardController,
     metrics: dashboardController,
     capability: dashboardController,
+    workspace: workspaceController,
   };
 }
 

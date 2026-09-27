@@ -1,0 +1,11 @@
+{
+  "daily": {
+    "title": "Daily Report of 5 AI Agents — :reportDate",
+    "data_date": "Data date",
+    "degraded_report": "failed to retrieve report (:errorCode)",
+    "completed": "completed",
+    "failed": "failed",
+    "awaiting_approval": "awaiting approval",
+    "action": "action"
+  }
+}

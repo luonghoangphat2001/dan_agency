@@ -5,6 +5,7 @@
 
 const BaseProposalAgent = require('@services/ai/agents/base-proposal.agent');
 const MenuAnalysisService = require('@services/ai/agents/rnd/menu-analysis.service');
+const localization = require('@lang');
 
 /**
  * RndAgent
@@ -41,7 +42,7 @@ class RndAgent extends BaseProposalAgent {
     return this.createProposal({
       workflowId,
       type: 'menu_review',
-      summary: `${candidates.length}/${analysis.length} sản phẩm cần xem xét`,
+      summary: localization.t('agents.rnd.product_review_summary', { candidatesCount: candidates.length, analysisCount: analysis.length }),
       evidence: analysis.map((item) => ({
         source_ref: `product:${item.product_id}`,
         ...item,

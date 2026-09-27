@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const localization = require('@lang');
+
 /**
  * ReportAggregatorService
  * Manages report aggregator logic.
@@ -35,7 +37,7 @@ class ReportAggregatorService {
 
     const receipt = await this.notificationGateway.notify({
       idempotencyKey: `daily-agent-report:${reportDate}`,
-      title: `Báo cáo ngày của 5 AI Đần — ${reportDate}`,
+      title: localization.t('reporting.daily.title', { reportDate }),
       message,
       severity: degraded > 0 || attention > 0 ? 'warning' : 'success',
     });
@@ -73,18 +75,24 @@ class ReportAggregatorService {
   }
 
   #format(reportDate, reports) {
-    const lines = [`Ngày dữ liệu: **${reportDate}**`, ''];
+    const dataDateLabel = localization.t('reporting.daily.data_date');
+    const lines = [`${dataDateLabel}: **${reportDate}**`, ''];
     reports.forEach((report) => {
       if (report.status === 'degraded') {
-        lines.push(`⚠️ **${report.agentId}**: chưa lấy được báo cáo (${report.errorCode})`);
+        const degradedMessage = localization.t('reporting.daily.degraded_report', { errorCode: report.errorCode });
+        lines.push(`⚠️ **${report.agentId}**: ${degradedMessage}`);
         return;
       }
       const icon = report.status === 'attention' ? '⚠️' : '✅';
       const metrics = report.metrics;
+      const completedLabel = localization.t('reporting.daily.completed');
+      const failedLabel = localization.t('reporting.daily.failed');
+      const awaitingApprovalLabel = localization.t('reporting.daily.awaiting_approval');
+      const actionLabel = localization.t('reporting.daily.action');
       lines.push(
         `${icon} **${report.agentId}**: ${metrics.workflowCount} workflow · `
-        + `${metrics.completedCount} xong · ${metrics.failedCount} lỗi · `
-        + `${metrics.awaitingApprovalCount} chờ duyệt · ${metrics.actionCount} action`
+        + `${metrics.completedCount} ${completedLabel} · ${metrics.failedCount} ${failedLabel} · `
+        + `${metrics.awaitingApprovalCount} ${awaitingApprovalLabel} · ${metrics.actionCount} ${actionLabel}`
       );
     });
     return lines.join('\n');

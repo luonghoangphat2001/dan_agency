@@ -1,0 +1,35 @@
+{
+  "tools": {
+    "web_search": {
+      "description": "Tìm kiếm thông tin trên Google qua OpenClaw. Dùng cho tin tức, dữ liệu web thời gian thực.",
+      "schema_query": "Từ khóa tìm kiếm",
+      "schema_num": "Số kết quả cần lấy",
+      "error_search_failed": "Lỗi web_search: :errorMessage"
+    },
+    "web_crawl": {
+      "description": "Đọc toàn bộ nội dung một trang web bằng trình duyệt headless Playwright.",
+      "schema_url": "URL trang web cần cào",
+      "schema_selector": "CSS selector phần nội dung chính",
+      "error_crawl_failed": "Lỗi web_crawl: :errorMessage"
+    },
+    "http_fetch": {
+      "description": "Gửi HTTP request qua proxy của OpenClaw tới REST API hoặc trang web đơn giản.",
+      "schema_url": "URL đích",
+      "schema_method": "HTTP method",
+      "schema_headers": "Headers",
+      "schema_body": "Body payload",
+      "error_fetch_failed": "Lỗi http_fetch: :errorMessage"
+    },
+    "company_metrics": {
+      "description": "Đọc các chỉ số kinh doanh hôm nay từ SSOT (doanh thu, đơn hàng, khách hàng, hoàn tiền).",
+      "schema_period": "Kỳ báo cáo: today, month, quarter, hoặc year",
+      "error_metrics_failed": "Lỗi company_metrics: :errorMessage"
+    }
+  },
+  "errors": {
+    "controller_unavailable": "Bộ điều khiển :controllerName không khả dụng"
+  },
+  "session": {
+    "not_found": "Phiên làm việc MCP không tồn tại hoặc đã hết hạn"
+  }
+}

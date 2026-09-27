@@ -1,0 +1,30 @@
+{
+  "errors": {
+    "path_traversal_forbidden": "Không được phép truy cập đường dẫn ngoài thư mục làm việc (workspace): :targetPath",
+    "file_not_found": "Không tìm thấy file trong workspace: :filePath",
+    "command_timeout": "Lệnh thực thi vượt quá thời gian cho phép (:timeoutMs ms)",
+    "dangerous_command_blocked": "Lệnh nguy hiểm bị chặn bởi chính sách an toàn sandbox: :command",
+    "command_required": "Câu lệnh command là bắt buộc.",
+    "execution_failed": "Thực thi lệnh thất bại: :errorMessage"
+  },
+  "tools": {
+    "read_file": {
+      "description": "Đọc nội dung văn bản của một file trong thư mục làm việc (workspace).",
+      "schema_path": "Đường dẫn tương đối tới file trong workspace"
+    },
+    "write_file": {
+      "description": "Tạo mới hoặc ghi đè nội dung file trong thư mục làm việc (workspace).",
+      "schema_path": "Đường dẫn tương đối tới file trong workspace",
+      "schema_content": "Nội dung văn bản cần ghi vào file"
+    },
+    "list_files": {
+      "description": "Liệt kê danh sách file và thư mục bên trong thư mục làm việc (workspace).",
+      "schema_path": "Thư mục con cần liệt kê (để trống nếu muốn xem thư mục gốc workspace)"
+    },
+    "execute_command": {
+      "description": "Thực thi lệnh shell / bash an toàn bên trong môi trường làm việc cô lập (sandbox).",
+      "schema_command": "Câu lệnh shell cần thực thi",
+      "schema_timeout": "Thời gian timeout tối đa (mili giây, mặc định 15000)"
+    }
+  }
+}

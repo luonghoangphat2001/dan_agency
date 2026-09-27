@@ -1,0 +1,11 @@
+{
+  "daily": {
+    "title": "Báo cáo ngày của 5 AI Đần — :reportDate",
+    "data_date": "Ngày dữ liệu",
+    "degraded_report": "chưa lấy được báo cáo (:errorCode)",
+    "completed": "xong",
+    "failed": "lỗi",
+    "awaiting_approval": "chờ duyệt",
+    "action": "action"
+  }
+}

@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const localization = require('@lang');
 
 /**
  * Service responsible for JSON Web Token (JWT) cryptographic generation and verification in OpenClaw.
@@ -83,7 +84,7 @@ class TokenService {
       const payload = JSON.parse(Buffer.from(encodedPayload, 'base64url').toString('utf8'));
       const now = Math.floor(Date.now() / 1000);
       if (payload.exp && payload.exp < now) {
-        return { error: 'Token đã hết hạn. Vui lòng đăng nhập lại.', expired: true };
+        return { error: localization.t('auth.token_expired'), expired: true };
       }
       return { payload };
     } catch {

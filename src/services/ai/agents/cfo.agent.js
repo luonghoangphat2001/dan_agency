@@ -5,6 +5,7 @@
 
 const BaseProposalAgent = require('@services/ai/agents/base-proposal.agent');
 const AnalysisService = require('@services/ai/agents/cfo/analysis.service');
+const localization = require('@lang');
 
 /**
  * CfoAgent
@@ -42,8 +43,8 @@ class CfoAgent extends BaseProposalAgent {
       workflowId,
       type: 'reconciliation',
       summary: analysis.balanced
-        ? 'Đối soát cân bằng'
-        : `Chênh lệch đối soát: ${analysis.variance}`,
+        ? localization.t('agents.cfo.reconciliation_balanced')
+        : localization.t('agents.cfo.reconciliation_variance', { variance: analysis.variance }),
       evidence: [{
         source_ref: `finance-summary:${period}`,
         ...analysis,
@@ -72,7 +73,7 @@ class CfoAgent extends BaseProposalAgent {
     const proposal = this.createProposal({
       workflowId,
       type: 'refund',
-      summary: `Đề xuất hoàn ${amount} cho đơn ${orderId}`,
+      summary: localization.t('agents.cfo.refund_proposal_summary', { amount, orderId }),
       evidence: [{
         source_ref: `order:${orderId}`,
         order_total: Number(orderResult.data.total || 0),

@@ -5,6 +5,7 @@
 
 const BaseProposalAgent = require('@services/ai/agents/base-proposal.agent');
 const OperationsService = require('@services/ai/agents/ops/operations.service');
+const localization = require('@lang');
 
 /**
  * OpsAgent
@@ -59,8 +60,8 @@ class OpsAgent extends BaseProposalAgent {
       workflowId,
       type: 'order_operations',
       summary: sla.overdue
-        ? `Đơn ${orderId} vượt SLA ${sla.elapsed_minutes - sla.threshold_minutes} phút`
-        : `Đơn ${orderId} trong SLA`,
+        ? localization.t('agents.ops.sla_exceeded_summary', { orderId, overMinutes: sla.elapsed_minutes - sla.threshold_minutes })
+        : localization.t('agents.ops.sla_within_summary', { orderId }),
       evidence: [{
         source_ref: `order:${orderId}`,
         status: order.status,

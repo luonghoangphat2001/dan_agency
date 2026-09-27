@@ -1,0 +1,24 @@
+{
+  "exception": {
+    "notification_title": ":added new exceptions require CEO review",
+    "notification_message": "Approval :approval · Dead-letter :deadLetter · Conflict :conflict · KPI :kpiDeviation"
+  },
+  "weekly_review": {
+    "title": "CEO Weekly Business Review — Week :weekNumber/:year",
+    "section_week": "Week",
+    "section_trends": "Weekly Trends",
+    "section_goal_off_track": "Off-Track Goals",
+    "section_finance": "Weekly Finance",
+    "section_actions": "Recommended Actions"
+  },
+  "daily_brief": {
+    "title": "CEO Daily Brief — :reportDate",
+    "section_date": "Date",
+    "section_goals": "Goals",
+    "section_kpis": "KPIs",
+    "section_finance": "Finance",
+    "section_risks": "Risks",
+    "section_decisions": "Pending Decisions",
+    "section_completed": "Completed"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "errors": {
+    "path_traversal_forbidden": "Access outside of workspace is forbidden: :targetPath",
+    "file_not_found": "File not found in workspace: :filePath",
+    "command_timeout": "Command execution exceeded timeout (:timeoutMs ms)",
+    "dangerous_command_blocked": "Dangerous command blocked by sandbox security policy: :command",
+    "command_required": "Command is required.",
+    "execution_failed": "Command execution failed: :errorMessage"
+  },
+  "tools": {
+    "read_file": {
+      "description": "Read text content of a file located within the workspace sandbox.",
+      "schema_path": "Relative file path inside the workspace"
+    },
+    "write_file": {
+      "description": "Create or overwrite file content within the workspace sandbox.",
+      "schema_path": "Relative file path inside the workspace",
+      "schema_content": "Text content to write into the file"
+    },
+    "list_files": {
+      "description": "List files and directories inside the workspace sandbox.",
+      "schema_path": "Subdirectory to inspect (empty for workspace root)"
+    },
+    "execute_command": {
+      "description": "Execute a shell / bash command safely within the isolated sandbox environment.",
+      "schema_command": "Shell command line to execute",
+      "schema_timeout": "Maximum timeout in milliseconds (default 15000)"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "exception": {
+    "notification_title": ":added ngoại lệ mới cần CEO xem",
+    "notification_message": "Approval :approval · Dead-letter :deadLetter · Conflict :conflict · KPI :kpiDeviation"
+  },
+  "weekly_review": {
+    "title": "CEO Weekly Business Review — Tuần :weekNumber/:year",
+    "section_week": "Tuần",
+    "section_trends": "Xu hướng tuần",
+    "section_goal_off_track": "Mục tiêu lệch",
+    "section_finance": "Tài chính tuần",
+    "section_actions": "Hành động đề xuất"
+  },
+  "daily_brief": {
+    "title": "CEO Daily Brief — :reportDate",
+    "section_date": "Ngày",
+    "section_goals": "Mục tiêu",
+    "section_kpis": "KPI",
+    "section_finance": "Tiền",
+    "section_risks": "Rủi ro",
+    "section_decisions": "Chờ quyết định",
+    "section_completed": "Đã hoàn tất"
+  }
+}

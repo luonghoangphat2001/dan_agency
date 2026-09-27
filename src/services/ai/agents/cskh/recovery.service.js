@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const localization = require('@lang');
+
 /**
  * RecoveryService
  * Manages recovery logic.
@@ -23,10 +25,11 @@ class RecoveryService {
    */
   build(feedback) {
     const severe = feedback.sentiment === 'negative' || Number(feedback.rating) <= 2;
-    const customerName = feedback.customer_name || 'quý khách';
+    const defaultCustomerName = localization.t('agents.cskh.default_customer_name');
+    const customerName = feedback.customer_name || defaultCustomerName;
     const replyContent = severe
-      ? `Xin lỗi ${customerName} về trải nghiệm chưa tốt. Chúng tôi đang ưu tiên kiểm tra và sẽ phản hồi hướng xử lý sớm nhất.`
-      : `Cảm ơn ${customerName} đã gửi phản hồi. Chúng tôi đã ghi nhận để tiếp tục cải thiện dịch vụ.`;
+      ? localization.t('agents.cskh.recovery_severe', { customerName })
+      : localization.t('agents.cskh.recovery_normal', { customerName });
 
     return Object.freeze({
       severe,

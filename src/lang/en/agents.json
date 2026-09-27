@@ -1,0 +1,28 @@
+{
+  "logistics": {
+    "inventory_restock_summary": ":count products require inventory restock"
+  },
+  "rnd": {
+    "product_review_summary": ":candidatesCount/:analysisCount products require review"
+  },
+  "cfo": {
+    "reconciliation_balanced": "Reconciliation balanced",
+    "reconciliation_variance": "Reconciliation variance: :variance",
+    "refund_proposal_summary": "Proposed refund of :amount for order :orderId"
+  },
+  "cskh": {
+    "negative_feedback_summary": "Negative feedback :feedbackId requires priority handling",
+    "feedback_draft_summary": "Feedback :feedbackId draft ready",
+    "default_customer_name": "valued customer",
+    "recovery_severe": "We apologize to :customerName for the unsatisfactory experience. We are actively investigating and will respond with a resolution shortly.",
+    "recovery_normal": "Thank you :customerName for your feedback. We have recorded it to continuously improve our service."
+  },
+  "ops": {
+    "sla_exceeded_summary": "Order :orderId exceeded SLA by :overMinutes minutes",
+    "sla_within_summary": "Order :orderId within SLA"
+  },
+  "skills": {
+    "prompt_header": "[AVAILABLE DOMAIN SKILLS (SKILL.md)]:",
+    "prompt_footer": "When handling corresponding specialized tasks, invoke tool \"skill_loader\" with the skill name to retrieve detailed SOP instructions."
+  }
+}

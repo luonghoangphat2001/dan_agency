@@ -1,6 +1,6 @@
 'use strict';
 
-const OrchestratorIntegrationHarness = require('../support/orchestrator.integration-harness');
+const OrchestratorIntegrationHarness = require('@test/support/orchestrator.integration-harness');
 
 describe('orchestration integration baseline', () => {
   test('aggregates all registered agents and preserves one-message-per-day delivery', async () => {

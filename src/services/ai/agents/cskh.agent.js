@@ -5,6 +5,7 @@
 
 const BaseProposalAgent = require('@services/ai/agents/base-proposal.agent');
 const RecoveryService = require('@services/ai/agents/cskh/recovery.service');
+const localization = require('@lang');
 
 /**
  * CskhAgent
@@ -81,8 +82,8 @@ class CskhAgent extends BaseProposalAgent {
       workflowId,
       type: 'customer_recovery',
       summary: recovery.severe
-        ? `Phản hồi tiêu cực ${feedbackId} cần ưu tiên xử lý`
-        : `Phản hồi ${feedbackId} đã có bản nháp`,
+        ? localization.t('agents.cskh.negative_feedback_summary', { feedbackId })
+        : localization.t('agents.cskh.feedback_draft_summary', { feedbackId }),
       evidence: [{
         source_ref: `customer-feedback:${feedbackId}`,
         rating: feedback.rating,

@@ -15,10 +15,21 @@ class ClassifierService {
    * @returns {*} Result of operation.
    */
   classifyOutput({ text = '', confidenceScore = 1.0 }) {
+    const normalizedText = (text || '').toLowerCase();
     let category = 'INFERENCE';
-    if (text.startsWith('FACT:') || text.includes('dữ liệu từ SSOT')) {
+    if (
+      text.startsWith('FACT:') ||
+      normalizedText.includes('dữ liệu từ ssot') ||
+      normalizedText.includes('data from ssot') ||
+      normalizedText.includes('from ssot')
+    ) {
       category = 'FACT';
-    } else if (text.startsWith('RECOMMENDATION:') || text.includes('đề xuất') || text.includes('propose')) {
+    } else if (
+      text.startsWith('RECOMMENDATION:') ||
+      normalizedText.includes('đề xuất') ||
+      normalizedText.includes('propose') ||
+      normalizedText.includes('recommend')
+    ) {
       category = 'RECOMMENDATION';
     }
 

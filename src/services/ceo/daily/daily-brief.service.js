@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const localization = require('@lang');
+
 /**
  * DailyBriefService
  * Manages daily brief logic.
@@ -50,7 +52,7 @@ class DailyBriefService {
     const message = this.#format(reportDate, sections);
     const receipt = await this.notificationGateway.notify({
       idempotencyKey: `ceo-daily-brief:${reportDate}`,
-      title: `CEO Daily Brief — ${reportDate}`,
+      title: localization.t('ceo.daily_brief.title', { reportDate }),
       message,
       severity: degraded || Number(sections.risks?.critical || 0) > 0
         ? 'warning'
@@ -63,13 +65,13 @@ class DailyBriefService {
     const value = (section, fallback = 'degraded') =>
       section?.degraded ? fallback : JSON.stringify(section);
     return [
-      `📅 **Ngày:** ${date}`,
-      `🎯 **Mục tiêu:** ${value(sections.goals)}`,
-      `📊 **KPI:** ${value(sections.kpis)}`,
-      `💰 **Tiền:** ${value(sections.finance?.data || sections.finance)}`,
-      `⚠️ **Rủi ro:** ${value(sections.risks)}`,
-      `🧑‍⚖️ **Chờ quyết định:** ${value(sections.decisions)}`,
-      `✅ **Đã hoàn tất:** ${value(sections.completed)}`,
+      `📅 **${localization.t('ceo.daily_brief.section_date')}:** ${date}`,
+      `🎯 **${localization.t('ceo.daily_brief.section_goals')}:** ${value(sections.goals)}`,
+      `📊 **${localization.t('ceo.daily_brief.section_kpis')}:** ${value(sections.kpis)}`,
+      `💰 **${localization.t('ceo.daily_brief.section_finance')}:** ${value(sections.finance?.data || sections.finance)}`,
+      `⚠️ **${localization.t('ceo.daily_brief.section_risks')}:** ${value(sections.risks)}`,
+      `🧑‍⚖️ **${localization.t('ceo.daily_brief.section_decisions')}:** ${value(sections.decisions)}`,
+      `✅ **${localization.t('ceo.daily_brief.section_completed')}:** ${value(sections.completed)}`,
     ].join('\n');
   }
 

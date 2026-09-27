@@ -3,6 +3,7 @@
 const config = require('@config/config');
 const TokenService = require('@services/auth/token.service');
 const ApiResponse = require('@utils/api-response');
+const localization = require('@lang');
 
 /**
  * Authentication Middleware for OpenClaw.
@@ -53,15 +54,15 @@ class AuthMiddleware {
             return next();
           }
           if (result.expired) {
-            return ApiResponse.unauthorized(res, 'Token đã hết hạn. Vui lòng đăng nhập lại.', 'TOKEN_EXPIRED');
+            return ApiResponse.unauthorized(res, localization.t('auth.token_expired'), 'TOKEN_EXPIRED');
           }
         }
 
-        return ApiResponse.unauthorized(res, 'Token không hợp lệ.', 'INVALID_TOKEN');
+        return ApiResponse.unauthorized(res, localization.t('auth.invalid_token'), 'INVALID_TOKEN');
       }
     }
 
-    return ApiResponse.unauthorized(res, 'Unauthorized', 'UNAUTHORIZED');
+    return ApiResponse.unauthorized(res, localization.t('auth.unauthorized'), 'UNAUTHORIZED');
   }
 }
 

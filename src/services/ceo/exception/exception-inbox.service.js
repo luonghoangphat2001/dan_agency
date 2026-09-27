@@ -4,6 +4,7 @@
 'use strict';
 
 const AppError = require('@utils/errors/app.error');
+const localization = require('@lang');
 
 /**
  * ExceptionInboxService
@@ -38,9 +39,13 @@ class ExceptionInboxService {
       const date = this.clock().toISOString().slice(0, 10);
       await this.notificationGateway.notify({
         idempotencyKey: `ceo-exception-refresh:${date}:${added}`,
-        title: `${added} ngoại lệ mới cần CEO xem`,
-        message: `Approval ${counts.approval} · Dead-letter ${counts.deadLetter} · `
-          + `Conflict ${counts.conflict} · KPI ${counts.kpiDeviation}`,
+        title: localization.t('ceo.exception.notification_title', { added }),
+        message: localization.t('ceo.exception.notification_message', {
+          approval: counts.approval,
+          deadLetter: counts.deadLetter,
+          conflict: counts.conflict,
+          kpiDeviation: counts.kpiDeviation,
+        }),
         severity: counts.deadLetter > 0 ? 'critical' : 'warning',
       });
     }
