@@ -2,7 +2,7 @@
 
 /**
  * Seed default learning categories, stacks and English modules.
- * @param {import('../../models/Database')} db
+ * @param {import('@models/Database')} db
  */
 module.exports = async function run(db) {
     // 1. Seed Categories

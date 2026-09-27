@@ -2,7 +2,7 @@
 
 /**
  * Move misclassified English learning items into the correct modules.
- * @param {import('../../models/Database')} db
+ * @param {import('@models/Database')} db
  */
 module.exports = async function run(db) {
     // 3c. Auto-migration: Move all reading, writing, speaking, ielts items to their designated modules

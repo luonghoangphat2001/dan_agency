@@ -4,7 +4,7 @@ const { unpackItems } = require('@services/learning/ContentNormalizer');
 
 /**
  * Unpack accidentally serialized learning-item wrappers.
- * @param {import('../../models/Database')} db
+ * @param {import('@models/Database')} db
  */
 module.exports = async function run(db) {
     try {

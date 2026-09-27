@@ -16,7 +16,7 @@ const schemaMigrations = [
 ];
 
 const seeders = [
-  require('@database/seeders/learning'),
+  require('@database/seeders/core/learning'),
 ];
 
 const dataMigrations = [

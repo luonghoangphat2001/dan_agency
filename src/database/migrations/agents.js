@@ -2,7 +2,7 @@
 
 /**
  * Initialize the agents database tables.
- * @param {import('../../models/Database')} db
+ * @param {import('@models/Database')} db
  * @param {{ addColumnIfMissing: Function, widenColumnIfNeeded: Function }} helpers
  */
 module.exports = async function initializeAgents(db, helpers) {
@@ -42,7 +42,40 @@ module.exports = async function initializeAgents(db, helpers) {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     `);
 
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS agent_runs (
+        id VARCHAR(36) PRIMARY KEY,
+        user_id VARCHAR(100) NOT NULL,
+        platform VARCHAR(50) NOT NULL DEFAULT 'web',
+        channel_id VARCHAR(100) NULL,
+        prompt TEXT NOT NULL,
+        status ENUM('running', 'success', 'failed', 'timeout') DEFAULT 'running',
+        final_answer LONGTEXT NULL,
+        total_steps INT DEFAULT 0,
+        total_tokens_in INT DEFAULT 0,
+        total_tokens_out INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_user_platform (user_id, platform),
+        INDEX idx_created (created_at)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
 
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS agent_steps (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        run_id VARCHAR(36) NOT NULL,
+        step_index INT NOT NULL,
+        thought TEXT NULL,
+        tool_name VARCHAR(100) NULL,
+        tool_input JSON NULL,
+        tool_output LONGTEXT NULL,
+        duration_ms INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (run_id) REFERENCES agent_runs(id) ON DELETE CASCADE,
+        INDEX idx_run_step (run_id, step_index)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
 };
 
 

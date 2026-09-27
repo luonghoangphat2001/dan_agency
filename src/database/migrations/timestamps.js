@@ -6,7 +6,7 @@
  * - updated_at: DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
  * - deleted_at: DATETIME NULL (for soft deletion support)
  *
- * @param {import('../../models/Database')} db
+ * @param {import('@models/Database')} db
  * @param {{ addColumnIfMissing: Function, addIndexIfMissing: Function }} helpers
  */
 module.exports = async function initializeTimestamps(db, helpers) {

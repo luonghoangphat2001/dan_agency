@@ -2,7 +2,7 @@
 
 /**
  * Initialize the users database table (Pure DDL).
- * @param {import('../../models/Database')} db
+ * @param {import('@models/Database')} db
  * @param {{ addColumnIfMissing: Function, widenColumnIfNeeded: Function }} helpers
  */
 module.exports = async function initializeUsers(db, helpers) {

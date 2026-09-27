@@ -2,7 +2,7 @@
 
 /**
  * Initialize the system config database table (Pure DDL).
- * @param {import('../../models/Database')} db
+ * @param {import('@models/Database')} db
  */
 module.exports = async function initializeConfig(db) {
   await db.query(`

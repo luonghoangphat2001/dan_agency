@@ -2,7 +2,7 @@
 
 /**
  * Initialize the notifications database tables.
- * @param {import('../../models/Database')} db
+ * @param {import('@models/Database')} db
  * @param {{ addColumnIfMissing: Function, widenColumnIfNeeded: Function }} helpers
  */
 module.exports = async function initializeNotifications(db, helpers) {
