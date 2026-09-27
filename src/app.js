@@ -51,6 +51,15 @@ class App {
 
     // 2. REST API routes
     this.app.use('/', createApiRouter(this.controllers));
+
+    // 3. Model Context Protocol (MCP) Server
+    try {
+      const { createMcpServer, createMcpRouter } = require('@mcp/MCPServer');
+      const mcpServer = createMcpServer(this.controllers);
+      this.app.use('/mcp', createMcpRouter(mcpServer));
+    } catch (err) {
+      console.warn('[OpenClaw] MCP server initialization warning:', err.message);
+    }
   }
 
   /**

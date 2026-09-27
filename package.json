@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "OpenClaw microservice — web search, crawl, fetch, automate",
   "main": "src/server.js",
+  "bin": {
+    "openclaw": "./bin/openclaw.js"
+  },
   "engines": {
     "node": ">=19"
   },
@@ -13,6 +16,7 @@
     "seed": "node scripts/seed.js"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.1",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "axios": "^1.6.0",
@@ -40,15 +44,24 @@
     "@database": "src/database",
     "@docs": "src/docs",
     "@app": "src/app.js",
-    "@server": "src/server.js"
+    "@server": "src/server.js",
+    "@lang": "src/lang",
+    "@mcp": "src/mcp"
   },
   "jest": {
-    "setupFiles": ["dotenv/config"],
+    "setupFiles": [
+      "dotenv/config"
+    ],
     "moduleNameMapper": {
+      "^@lang$": "<rootDir>/src/lang/index.js",
+      "^@lang/(.*)$": "<rootDir>/src/lang/$1",
       "^@config$": "<rootDir>/src/config/index.js",
       "^@config/(.*)$": "<rootDir>/src/config/$1",
       "^@app$": "<rootDir>/src/app.js",
       "^@server$": "<rootDir>/src/server.js",
+      "^@mcp$": "<rootDir>/src/mcp",
+      "^@mcp/(.*)$": "<rootDir>/src/mcp/$1",
+      "^@test/(.*)$": "<rootDir>/test/$1",
       "^@utils$": "<rootDir>/src/utils",
       "^@utils/(.*)$": "<rootDir>/src/utils/$1",
       "^@services$": "<rootDir>/src/services",
