@@ -1,6 +1,6 @@
 'use strict';
 
-const QuizRepository = require('../../src/models/QuizRepository');
+const QuizRepository = require('@models/QuizRepository');
 
 describe('QuizRepository adaptive history', () => {
   it('aggregates only the requested user and item ids', async () => {

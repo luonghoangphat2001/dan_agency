@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const { buildPracticeExam, difficultyFor } = require('../../src/services/learning/PracticeExamBuilder');
+const { buildPracticeExam, difficultyFor } = require('@services/learning/PracticeExamBuilder');
 
 describe('PracticeExamBuilder', () => {
   const fixedRandom = () => 0.42;

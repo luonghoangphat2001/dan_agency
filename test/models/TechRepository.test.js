@@ -1,6 +1,6 @@
 'use strict';
 
-const TechRepository = require('../../src/models/TechRepository');
+const TechRepository = require('@models/TechRepository');
 
 describe('TechRepository', () => {
   let db;

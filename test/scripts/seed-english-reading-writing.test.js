@@ -6,7 +6,7 @@ const {
   validItem,
   generationPrompt,
   seedModule,
-} = require('../../scripts/seed-english-reading-writing');
+} = require('@database/seeders/content/seed-english-reading-writing');
 
 function readingItem(title, level = 'beginner') {
   return {

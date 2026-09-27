@@ -1,6 +1,6 @@
 'use strict';
 
-const TaskController = require('../../src/controllers/TaskController');
+const TaskController = require('@controllers/TaskController');
 
 describe('TaskController', () => {
   let mockRepo;

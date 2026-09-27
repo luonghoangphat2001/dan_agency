@@ -1,6 +1,6 @@
 'use strict';
 
-const QuizEngine = require('../../src/services/learning/QuizEngine');
+const QuizEngine = require('@services/learning/QuizEngine');
 
 describe('QuizEngine', () => {
   let mockVocabRepo;

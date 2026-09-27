@@ -1,6 +1,6 @@
 'use strict';
 
-const ApprovalCommandService = require('../../src/services/openclaw/ApprovalCommandService');
+const ApprovalCommandService = require('@services/openclaw/ApprovalCommandService');
 
 describe('ApprovalCommandService', () => {
   const command = {

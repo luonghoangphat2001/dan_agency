@@ -5,7 +5,7 @@ jest.mock('../../src/models/Database', () => ({
   getInstance: jest.fn().mockResolvedValue({ query: mockQuery }),
 }));
 
-const InsightRepository = require('../../src/models/InsightRepository');
+const InsightRepository = require('@models/InsightRepository');
 
 describe('InsightRepository', () => {
   let repo;

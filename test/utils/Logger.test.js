@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const Logger = require('../../src/utils/Logger');
+const Logger = require('@utils/Logger');
 
 describe('Logger utility', () => {
   const logDir = path.join(__dirname, '../../logs');

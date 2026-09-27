@@ -4,7 +4,7 @@ const {
   MIN_WEIGHT,
   weightForPerformance,
   weightedShuffle,
-} = require('../../src/services/learning/AdaptiveSelector');
+} = require('@services/learning/AdaptiveSelector');
 
 describe('AdaptiveSelector', () => {
   it('raises wrong-item weight and keeps mastered items eligible', () => {

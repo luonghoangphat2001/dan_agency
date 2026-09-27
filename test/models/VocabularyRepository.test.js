@@ -1,6 +1,6 @@
 'use strict';
 
-const VocabularyRepository = require('../../src/models/VocabularyRepository');
+const VocabularyRepository = require('@models/VocabularyRepository');
 
 describe('VocabularyRepository', () => {
   let db;

@@ -1,6 +1,6 @@
 'use strict';
 
-const AgentLoop = require('../../src/services/ai/AgentLoop');
+const AgentLoop = require('@services/ai/AgentLoop');
 
 describe('AgentLoop — memory tools', () => {
   let mockProvider, mockOpenClaw, mockInsightRepo;

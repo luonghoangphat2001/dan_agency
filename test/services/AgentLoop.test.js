@@ -1,6 +1,6 @@
 'use strict';
 
-const AgentLoop = require('../../src/services/ai/AgentLoop');
+const AgentLoop = require('@services/ai/AgentLoop');
 
 function makeProvider(responses) {
   let callCount = 0;

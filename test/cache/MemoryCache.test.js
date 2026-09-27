@@ -1,6 +1,6 @@
 'use strict';
 
-const { memoryCache, MemoryCache } = require('../../src/cache');
+const { memoryCache, MemoryCache } = require('@cache');
 
 describe('MemoryCache', () => {
   let cache;

@@ -1,6 +1,6 @@
 'use strict';
 
-const UserController = require('../../src/controllers/UserController');
+const UserController = require('@controllers/UserController');
 
 describe('UserController', () => {
   let mockUserRepo;

@@ -1,6 +1,6 @@
 'use strict';
 
-const OpenClawMonitorService = require('../../src/services/openclaw/OpenClawMonitorService');
+const OpenClawMonitorService = require('@services/openclaw/OpenClawMonitorService');
 
 describe('T122 supplemental: OpenClaw Monitor Service', () => {
   test('loads overview from OpenClaw and legacy interactions from local repository', async () => {

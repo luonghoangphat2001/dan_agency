@@ -4,14 +4,14 @@ const assert = require('assert');
 const {
   banks: interviewBanks,
   buildSeedItems,
-} = require('../../scripts/seed-tech-learning');
+} = require('@database/seeders/content/seed-tech-learning');
 const {
   LEVEL,
   SEED_OWNER,
   banks,
   buildFundamentalItems,
   seedTechFundamentals,
-} = require('../../scripts/seed-tech-fundamentals');
+} = require('@database/seeders/content/seed-tech-fundamentals');
 
 describe('seed-tech-fundamentals', () => {
   it('builds exactly 100 unique beginner theory questions per stack', () => {

@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const LearningService = require('../../src/services/learning/LearningService');
+const LearningService = require('@services/learning/LearningService');
 
 describe('LearningService', () => {
   let service;

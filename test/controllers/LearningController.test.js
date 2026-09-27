@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const LearningController = require('../../src/controllers/LearningController');
+const LearningController = require('@controllers/LearningController');
 
 describe('LearningController', () => {
   let controller;

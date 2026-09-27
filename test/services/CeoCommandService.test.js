@@ -1,6 +1,6 @@
 'use strict';
 
-const CeoCommandService = require('../../src/services/openclaw/CeoCommandService');
+const CeoCommandService = require('@services/openclaw/CeoCommandService');
 
 describe('CeoCommandService', () => {
   function build() {

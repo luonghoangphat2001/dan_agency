@@ -1,7 +1,7 @@
 'use strict';
 
 const XLSX = require('xlsx');
-const VocabularyController = require('../../src/controllers/VocabularyController');
+const VocabularyController = require('@controllers/VocabularyController');
 
 describe('VocabularyController importWords', () => {
   let repo;

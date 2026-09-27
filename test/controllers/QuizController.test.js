@@ -1,6 +1,6 @@
 'use strict';
 
-const QuizController = require('../../src/controllers/QuizController');
+const QuizController = require('@controllers/QuizController');
 
 describe('QuizController', () => {
   let controller;

@@ -7,7 +7,7 @@ const {
   levels,
   buildSeedItems,
   seedTechLearning,
-} = require('../../scripts/seed-tech-learning');
+} = require('@database/seeders/content/seed-tech-learning');
 
 describe('seed-tech-learning', () => {
   it('builds exactly 100 unique theory questions per stack with balanced levels', () => {

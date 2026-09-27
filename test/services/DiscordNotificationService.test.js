@@ -1,6 +1,6 @@
 'use strict';
 
-const DiscordNotificationService = require('../../src/services/notification/DiscordNotificationService');
+const DiscordNotificationService = require('@services/notification/DiscordNotificationService');
 
 describe('DiscordNotificationService', () => {
   let repo;

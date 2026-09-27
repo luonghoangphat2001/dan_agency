@@ -1,6 +1,6 @@
 'use strict';
 
-const OpenClawService = require('../../src/services/openclaw/OpenClawService');
+const OpenClawService = require('@services/openclaw/OpenClawService');
 
 describe('T122 supplemental: OpenClaw dashboard API client', () => {
   test('reads dashboard overview with service bearer authentication', async () => {

@@ -1,6 +1,6 @@
 'use strict';
 
-const VocabularyService = require('../../src/services/learning/VocabularyService');
+const VocabularyService = require('@services/learning/VocabularyService');
 
 describe('VocabularyService', () => {
   let mockVocabRepo;

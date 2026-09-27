@@ -1,6 +1,6 @@
 'use strict';
 
-const TokenService = require('../../src/services/auth/TokenService');
+const TokenService = require('@services/auth/TokenService');
 
 describe('TokenService', () => {
   test('generates valid token and verifies payload', () => {

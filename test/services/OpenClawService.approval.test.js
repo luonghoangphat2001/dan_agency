@@ -1,6 +1,6 @@
 'use strict';
 
-const OpenClawService = require('../../src/services/openclaw/OpenClawService');
+const OpenClawService = require('@services/openclaw/OpenClawService');
 
 describe('OpenClawService approval API', () => {
   test('posts a versioned CEO decision using the OpenClaw Bearer secret', async () => {

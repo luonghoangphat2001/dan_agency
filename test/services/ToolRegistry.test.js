@@ -1,6 +1,6 @@
 'use strict';
 
-const ToolRegistry = require('../../src/services/ai/ToolRegistry');
+const ToolRegistry = require('@services/ai/ToolRegistry');
 
 const EXPECTED_NAMES = ['web_search', 'web_crawl', 'http_fetch', 'browser_automate', 'save_memory', 'recall_memory', 'company_dashboard_metrics', 'schedule_manage'];
 

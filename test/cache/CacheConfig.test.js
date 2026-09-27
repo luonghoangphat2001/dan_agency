@@ -1,6 +1,6 @@
 'use strict';
 
-const { CacheConfig } = require('../../src/cache');
+const { CacheConfig } = require('@cache');
 
 describe('CacheConfig', () => {
   test('defines numeric TTLs for models, config, stats', () => {

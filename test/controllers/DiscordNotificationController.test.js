@@ -1,6 +1,6 @@
 'use strict';
 
-const DiscordNotificationController = require('../../src/controllers/DiscordNotificationController');
+const DiscordNotificationController = require('@controllers/DiscordNotificationController');
 
 describe('DiscordNotificationController', () => {
   const response = () => ({

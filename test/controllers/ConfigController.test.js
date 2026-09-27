@@ -1,6 +1,6 @@
 'use strict';
 
-const ConfigController = require('../../src/controllers/ConfigController');
+const ConfigController = require('@controllers/ConfigController');
 
 describe('ConfigController', () => {
   let mockConfigRepo;
@@ -22,7 +22,7 @@ describe('ConfigController', () => {
     controller = new ConfigController(mockConfigRepo);
   });
 
-  test('get returns log_retention_days and active_model', () => {
+  test('get returns log_retention_days, active_model, and dynamic metadata', () => {
     const res = {
       json: jest.fn(),
     };
@@ -31,6 +31,26 @@ describe('ConfigController', () => {
       expect.objectContaining({
         active_model: 'gemini',
         log_retention_days: 30,
+        platforms: expect.any(Array),
+        additionalProviders: expect.any(Array),
+        promptFields: expect.any(Array),
+        agents: expect.any(Array),
+      })
+    );
+  });
+
+  test('getMeta returns schema and UI metadata', () => {
+    const res = {
+      json: jest.fn(),
+    };
+    controller.getMeta({}, res);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        platforms: expect.any(Array),
+        additionalProviders: expect.any(Array),
+        promptFields: expect.any(Array),
+        agents: expect.any(Array),
+        ai_providers: expect.any(Array),
       })
     );
   });

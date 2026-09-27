@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const { parseJson, unpackItems, normalizeItem } = require('../../src/services/learning/ContentNormalizer');
+const { parseJson, unpackItems, normalizeItem } = require('@services/learning/ContentNormalizer');
 
 describe('ContentNormalizer', () => {
   it('extracts balanced JSON from an AI response with surrounding text', () => {

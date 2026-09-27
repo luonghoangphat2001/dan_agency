@@ -3,7 +3,7 @@
 const mockQuery = jest.fn();
 const mockQueryOne = jest.fn();
 
-const TaskRepository = require('../../src/models/TaskRepository');
+const TaskRepository = require('@models/TaskRepository');
 
 describe('TaskRepository', () => {
   let repo;

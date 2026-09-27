@@ -1,6 +1,6 @@
 'use strict';
 
-const ApiResponse = require('../../src/utils/ApiResponse');
+const ApiResponse = require('@utils/ApiResponse');
 
 describe('ApiResponse', () => {
   function fakeRes() {

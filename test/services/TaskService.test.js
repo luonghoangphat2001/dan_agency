@@ -11,7 +11,7 @@ jest.mock('../../src/models/Database', () => ({
   getInstance: jest.fn().mockResolvedValue({}),
 }));
 
-const TaskService = require('../../src/services/scheduler/TaskService');
+const TaskService = require('@services/scheduler/TaskService');
 
 describe('TaskService', () => {
   let mockAIService;

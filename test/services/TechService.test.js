@@ -1,6 +1,6 @@
 'use strict';
 
-const TechService = require('../../src/services/learning/TechService');
+const TechService = require('@services/learning/TechService');
 
 describe('TechService', () => {
   let techRepo;

@@ -1,7 +1,7 @@
 'use strict';
 
-const ModelsController = require('../../src/controllers/ModelsController');
-const { memoryCache } = require('../../src/cache');
+const ModelsController = require('@controllers/ModelsController');
+const { memoryCache } = require('@cache');
 
 describe('ModelsController', () => {
   let controller;

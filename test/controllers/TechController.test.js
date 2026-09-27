@@ -1,6 +1,6 @@
 'use strict';
 
-const TechController = require('../../src/controllers/TechController');
+const TechController = require('@controllers/TechController');
 
 describe('TechController', () => {
   let techRepo;

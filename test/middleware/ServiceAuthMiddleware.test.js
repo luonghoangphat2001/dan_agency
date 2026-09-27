@@ -1,6 +1,6 @@
 'use strict';
 
-const ServiceAuthMiddleware = require('../../src/middleware/ServiceAuthMiddleware');
+const ServiceAuthMiddleware = require('@middleware/ServiceAuthMiddleware');
 
 describe('ServiceAuthMiddleware', () => {
   const response = () => ({

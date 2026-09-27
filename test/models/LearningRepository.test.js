@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const LearningRepository = require('../../src/models/LearningRepository');
+const LearningRepository = require('@models/LearningRepository');
 
 describe('LearningRepository (4-Table Architecture)', () => {
   let repo;
