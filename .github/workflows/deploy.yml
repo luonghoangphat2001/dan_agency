@@ -6,12 +6,73 @@ on:
       - openclaw
   workflow_dispatch:
 
+concurrency:
+  group: deploy-hpdev-production
+  cancel-in-progress: false
+
 jobs:
   deploy:
     name: "Deploy OpenClaw Docker Container & Setup ENV"
     runs-on: ubuntu-latest
     steps:
       - name: "SSH Deploy & Auto Setup"
+        id: ssh_deploy
+        uses: appleboy/ssh-action@v1.0.3
+        continue-on-error: true
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          timeout: 60s
+          command_timeout: 10m
+          script: |
+            REPO_URL="https://github.com/${{ github.repository }}.git"
+            GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+            B64_TOKEN=$(echo -n "x-access-token:$GITHUB_TOKEN" | base64 | tr -d '\n' || echo "")
+
+            echo "==> Kéo mã nguồn mới nhất của nhánh openclaw..."
+            cd /home/hpdev/openclaw.hpdev.name.vn
+            git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $B64_TOKEN"
+            git fetch "$REPO_URL" openclaw
+            git reset --hard FETCH_HEAD
+            git config --local --unset http.https://github.com/.extraheader || true
+
+            echo "==> Tự động cấu hình file .env trên Server..."
+            if [ ! -f ".env" ]; then
+              {
+                echo "PORT=4000"
+                echo "NODE_ENV=production"
+                echo "API_SECRET=changeme"
+                echo "SCHEMA_BASE_URL=https://openclaw.hpdev.name.vn/schemas/v1"
+                echo "ORCHESTRATOR_DB_HOST=127.0.0.1"
+                echo "ORCHESTRATOR_DB_PORT=3306"
+                echo "ORCHESTRATOR_DB_NAME=dan_ai"
+                echo "ORCHESTRATOR_DB_USER=dan_ai_user"
+                echo "ORCHESTRATOR_DB_PASSWORD=dan_ai_password"
+                echo "DAN_AI_API_URL=https://api.hpdev.name.vn"
+              } > .env
+              echo "[Deploy] Đã khởi tạo file .env cho OpenClaw thành công!"
+            fi
+
+            echo "==> Triển khai Container Docker cho OpenClaw..."
+            if command -v docker >/dev/null 2>&1; then
+              docker build -t dan_ai_openclaw .
+              docker stop dan_ai_openclaw 2>/dev/null || true
+              docker rm dan_ai_openclaw 2>/dev/null || true
+              docker run -d --name dan_ai_openclaw --restart unless-stopped -p 4000:4000 --env-file .env dan_ai_openclaw 2>/dev/null || docker run -d --name dan_ai_openclaw --restart unless-stopped -p 4000:4000 dan_ai_openclaw
+            fi
+
+            mkdir -p tmp && touch tmp/restart.txt
+            echo "==> Deploy OpenClaw và cấu hình .env thành công lúc $(date)!"
+
+      - name: "Wait before retry if SSH handshake failed"
+        if: steps.ssh_deploy.outcome == 'failure'
+        run: sleep 15
+
+      - name: "SSH Deploy & Auto Setup (Retry on transient handshake failure)"
+        if: steps.ssh_deploy.outcome == 'failure'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
