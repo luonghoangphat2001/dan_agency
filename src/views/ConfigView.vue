@@ -7,9 +7,9 @@
                         <span class="p-1.5 sm:p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-base sm:text-lg flex items-center justify-center">
                             <i class="fa-solid fa-gear"></i>
                         </span>
-                        <span>Cấu hình Hệ thống</span>
+                        <span>{{ $translate('manager.config.title') }}</span>
                     </h1>
-                    <p class="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-1">Quản trị mô hình AI đa nền tảng, OpenClaw, Providers và Prompts</p>
+                    <p class="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $translate('manager.config.subtitle') }}</p>
                 </div>
                 <div class="flex items-center gap-2 sm:gap-3 self-end sm:self-auto">
                     <span v-if="saveMessage" class="text-xs font-medium px-3 py-1.5 rounded-xl border flex items-center gap-1.5 shadow-sm" :class="saveOk ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800/60' : 'text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/60 border-red-300 dark:border-red-800/60'">
@@ -18,7 +18,7 @@
                     </span>
                     <button @click="save" :disabled="saving" class="px-4 sm:px-5 py-2 sm:py-2.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:opacity-50 text-white rounded-xl font-semibold text-xs transition shadow-md flex items-center gap-2">
                         <i :class="saving ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-floppy-disk'"></i>
-                        <span>{{ saving ? "Đang lưu…" : "Lưu cấu hình" }}</span>
+                        <span>{{ saving ? $translate('common.actions.saving') : $translate('manager.config.save_config') }}</span>
                     </button>
                 </div>
             </header>
@@ -31,12 +31,12 @@
                                 <span class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-base text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                                     <i :class="platform.iconClass"></i>
                                 </span>
-                                <span>{{ platform.title }}</span>
+                                <span>{{ $translate(platform.titleKey) }}</span>
                             </h2>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ platform.description }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $translate(platform.descriptionKey) }}</p>
                         </div>
                         <div class="text-right shrink-0">
-                            <span class="text-[11px] text-gray-400 block">Đang dùng</span><span class="text-sm font-bold" :class="platform.color">{{ providerName(form[platform.field]) }}</span>
+                            <span class="text-[11px] text-gray-400 block">{{ $translate('manager.config.in_use') }}</span><span class="text-sm font-bold" :class="platform.color">{{ providerName(form[platform.field]) }}</span>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2">
@@ -156,30 +156,30 @@
                         <div>
                             <h2 class="flex items-center gap-2 font-bold mb-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
                                 <i class="fa-solid fa-graduation-cap text-emerald-500"></i>
-                                <span>Learning Hub — Tuỳ biến System Prompts AI</span>
+                                <span>Learning Hub - Tuỳ biến System Prompts AI</span>
                             </h2>
                             <p class="!mb-0">Tuỳ chỉnh System Prompt cho các chức năng sinh bài và chấm điểm; để trống để dùng mặc định.</p>
                         </div>
                         <button @click="fillAllPrompts" class="px-3 py-1.5 bg-indigo-900/60 hover:bg-indigo-800 text-indigo-300 rounded-lg text-xs font-medium border border-indigo-700 whitespace-nowrap flex items-center gap-1.5">
                             <i class="fa-solid fa-clipboard-list text-xs"></i>
-                            <span>Nhập tất cả mẫu</span>
+                            <span>{{ $translate('manager.config.prompts.apply_all_templates') }}</span>
                         </button>
                     </div>
                     <label v-for="prompt in promptFields" :key="prompt.key" class="block">
                         <span class="flex items-center justify-between mb-1">
                             <b class="text-xs text-indigo-400 flex items-center gap-1.5">
                                 <i :class="prompt.iconClass" class="text-xs"></i>
-                                <span>{{ prompt.label }}</span>
+                                <span>{{ $translate(prompt.labelKey) }}</span>
                             </b>
                             <span class="flex gap-2">
-                                <button type="button" @click="form[prompt.key] = prompt.template" class="text-xs text-indigo-400 underline flex items-center gap-1">
+                                <button type="button" @click="applyPromptTemplate(prompt)" class="text-xs text-indigo-400 underline flex items-center gap-1">
                                     <i class="fa-solid fa-paste text-[10px]"></i>
-                                    <span>Nhập mẫu</span>
+                                    <span>{{ $translate('manager.config.prompts.apply_template') }}</span>
                                 </button>
-                                <button type="button" @click="form[prompt.key] = ''" class="text-xs text-gray-500">Xóa</button>
+                                <button type="button" @click="form[prompt.key] = ''" class="text-xs text-gray-500">{{ $translate('manager.config.prompts.clear') }}</button>
                             </span>
                         </span>
-                        <textarea v-model="form[prompt.key]" rows="3" class="field text-xs font-mono" :placeholder="prompt.placeholder"></textarea>
+                        <textarea v-model="form[prompt.key]" rows="3" class="field text-xs font-mono" :placeholder="$translate(prompt.placeholderKey)"></textarea>
                     </label>
                 </section>
             </div>
@@ -229,6 +229,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import { translate } from "@/lang"
 import { getConfig, getModelsByProvider, updateConfig } from "@/api/config"
 import { cleanLogs } from "@/api/stats"
 
@@ -236,6 +237,7 @@ const route = useRoute()
 const router = useRouter()
 const validTabs = ["models", "providers", "openclaw", "prompts", "logs"]
 const activeTab = computed(() => (validTabs.includes(route.params.tab) ? route.params.tab : "models"))
+
 watch(
     () => route.params.tab,
     (tab) => {
@@ -243,12 +245,14 @@ watch(
     },
     { immediate: true },
 )
+
 const fallbackProviders = [
     { key: "claude", shortLabel: "Claude", iconClass: "fa-solid fa-brain" },
     { key: "chatgpt", shortLabel: "ChatGPT", iconClass: "fa-solid fa-robot" },
     { key: "gemini", shortLabel: "Gemini", iconClass: "fa-solid fa-wand-magic-sparkles" },
 ]
 const providers = ref(fallbackProviders)
+
 const getProviderIcon = (key) => {
     const s = String(key || "").toLowerCase()
     if (s.includes("gemini")) return "fa-solid fa-wand-magic-sparkles"
@@ -257,92 +261,47 @@ const getProviderIcon = (key) => {
     if (s.includes("deepseek")) return "fa-solid fa-compass"
     return "fa-solid fa-microchip"
 }
-const defaultModelOptions = {
-    gemini: [
-        { id: "models/gemini-2.5-flash", label: "Gemini 2.5 Flash" },
-        { id: "models/gemini-2.0-flash", label: "Gemini 2.0 Flash" },
-        { id: "models/gemini-1.5-pro", label: "Gemini 1.5 Pro" },
-        { id: "models/gemini-1.5-flash", label: "Gemini 1.5 Flash" },
-    ],
-    claude: [
-        { id: "claude-sonnet-4-6", label: "Claude 3.7 Sonnet" },
-        { id: "claude-3-5-sonnet-latest", label: "Claude 3.5 Sonnet" },
-        { id: "claude-3-5-haiku-latest", label: "Claude 3.5 Haiku" },
-        { id: "claude-3-opus-latest", label: "Claude 3 Opus" },
-    ],
-    chatgpt: [
-        { id: "gpt-4o", label: "GPT-4o" },
-        { id: "gpt-4o-mini", label: "GPT-4o Mini" },
-        { id: "o1", label: "o1" },
-        { id: "o3-mini", label: "o3-mini" },
-    ],
-    deepseek: [
-        { id: "deepseek-chat", label: "deepseek-chat (DeepSeek V3)" },
-        { id: "deepseek-reasoner", label: "deepseek-reasoner (DeepSeek R1)" },
-        { id: "deepseek-v4-flash", label: "deepseek-v4-flash" },
-        { id: "deepseek-coder", label: "deepseek-coder" },
-        { id: "deepseek-ai/DeepSeek-V3", label: "deepseek-ai/DeepSeek-V3" },
-        { id: "deepseek-ai/DeepSeek-R1", label: "deepseek-ai/DeepSeek-R1" },
-    ],
-    kimi: [
-        { id: "kimi-k2.6", label: "kimi-k2.6" },
-        { id: "kimi-latest", label: "kimi-latest" },
-        { id: "moonshot-v1-8k", label: "moonshot-v1-8k" },
-        { id: "moonshot-v1-32k", label: "moonshot-v1-32k" },
-        { id: "moonshot-v1-128k", label: "moonshot-v1-128k" },
-        { id: "moonshot-v1-auto", label: "moonshot-v1-auto" },
-    ],
-    vllm: [
-        { id: "llama3.1", label: "llama3.1" },
-        { id: "meta-llama/Meta-Llama-3.1-8B-Instruct", label: "Meta-Llama-3.1-8B-Instruct" },
-        { id: "meta-llama/Meta-Llama-3.1-70B-Instruct", label: "Meta-Llama-3.1-70B-Instruct" },
-        { id: "mistralai/Mistral-7B-Instruct-v0.3", label: "Mistral-7B-Instruct-v0.3" },
-        { id: "Qwen/Qwen2.5-7B-Instruct", label: "Qwen2.5-7B-Instruct" },
-        { id: "Qwen/Qwen2.5-14B-Instruct", label: "Qwen2.5-14B-Instruct" },
-        { id: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B", label: "DeepSeek-R1-Distill-Qwen-14B" },
-    ],
-    ollama: [
-        { id: "llama3.1", label: "llama3.1" },
-        { id: "llama3.2", label: "llama3.2" },
-        { id: "llama3.3", label: "llama3.3" },
-        { id: "deepseek-r1", label: "deepseek-r1" },
-        { id: "deepseek-r1:14b", label: "deepseek-r1:14b" },
-        { id: "qwen2.5", label: "qwen2.5" },
-        { id: "mistral", label: "mistral" },
-        { id: "phi4", label: "phi4" },
-        { id: "gemma2", label: "gemma2" },
-    ],
-    nvidia: [
-        { id: "meta/llama-3.2-11b-vision-instruct", label: "meta/llama-3.2-11b-vision-instruct" },
-        { id: "meta/llama-3.2-90b-vision-instruct", label: "meta/llama-3.2-90b-vision-instruct" },
-        { id: "meta/llama-3.2-3b-instruct", label: "meta/llama-3.2-3b-instruct" },
-        { id: "meta/llama-3.2-1b-instruct", label: "meta/llama-3.2-1b-instruct" },
-        { id: "nvidia/llama-3.1-nemotron-70b-instruct", label: "nvidia/llama-3.1-nemotron-70b-instruct" },
-        { id: "nvidia/llama-3.1-nemotron-51b-instruct", label: "nvidia/llama-3.1-nemotron-51b-instruct" },
-        { id: "mistralai/mistral-large-2-instruct", label: "mistralai/mistral-large-2-instruct" },
-        { id: "deepseek-ai/deepseek-r1", label: "deepseek-ai/deepseek-r1" },
-        { id: "deepseek-ai/deepseek-coder-6.7b-instruct", label: "deepseek-ai/deepseek-coder-6.7b-instruct" },
-    ],
-    cloudflare: [
-        { id: "@cf/meta/llama-3.3-70b-instruct-fp8-fast", label: "@cf/meta/llama-3.3-70b-instruct-fp8-fast" },
-        { id: "@cf/meta/llama-3.1-8b-instruct", label: "@cf/meta/llama-3.1-8b-instruct" },
-        { id: "@cf/meta/llama-3.1-70b-instruct", label: "@cf/meta/llama-3.1-70b-instruct" },
-        { id: "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b", label: "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b" },
-        { id: "@cf/mistral/mistral-7b-instruct-v0.2", label: "@cf/mistral/mistral-7b-instruct-v0.2" },
-        { id: "@cf/qwen/qwen1.5-7b-chat-awq", label: "@cf/qwen/qwen1.5-7b-chat-awq" },
-    ],
-}
 
 const allProviders = ["gemini", "claude", "chatgpt", "deepseek", "kimi", "vllm", "ollama", "nvidia", "cloudflare"]
 const modelOptions = reactive(
-    Object.fromEntries(allProviders.map((p) => [p, [...(defaultModelOptions[p] || [])]]))
+    Object.fromEntries(allProviders.map((provider) => [provider, []]))
 )
+
 const platforms = [
-    { key: "discord", field: "discord_active_model", iconClass: "fa-brands fa-discord", title: "Discord Bot — Model Mặc Định", description: "Mô hình AI xử lý tin nhắn trực tiếp và lệnh trong server Discord", color: "text-indigo-400" },
-    { key: "telegram", field: "telegram_active_model", iconClass: "fa-brands fa-telegram", title: "Telegram Bot — Model Mặc Định", description: "Mô hình AI xử lý tin nhắn chat và lệnh trong bot Telegram", color: "text-blue-400" },
-    { key: "learning", field: "learning_active_model", iconClass: "fa-solid fa-graduation-cap", title: "Learning Hub — Model Mặc Định", description: "Dùng để sinh bài tập Tech, Vocab, Quiz và chấm điểm AI", color: "text-emerald-400" },
-    { key: "web", field: "active_model", iconClass: "fa-solid fa-desktop", title: "Web Chat — Model Mặc Định", description: "Mô hình AI mặc định cho giao diện Web Dashboard Chat", color: "text-purple-400" },
+    {
+        key: "discord",
+        field: "discord_active_model",
+        iconClass: "fa-brands fa-discord",
+        titleKey: "manager.config.platforms.discord.title",
+        descriptionKey: "manager.config.platforms.discord.description",
+        color: "text-indigo-400"
+    },
+    {
+        key: "telegram",
+        field: "telegram_active_model",
+        iconClass: "fa-brands fa-telegram",
+        titleKey: "manager.config.platforms.telegram.title",
+        descriptionKey: "manager.config.platforms.telegram.description",
+        color: "text-blue-400"
+    },
+    {
+        key: "learning",
+        field: "learning_active_model",
+        iconClass: "fa-solid fa-graduation-cap",
+        titleKey: "manager.config.platforms.learning.title",
+        descriptionKey: "manager.config.platforms.learning.description",
+        color: "text-emerald-400"
+    },
+    {
+        key: "web",
+        field: "active_model",
+        iconClass: "fa-solid fa-desktop",
+        titleKey: "manager.config.platforms.web.title",
+        descriptionKey: "manager.config.platforms.web.description",
+        color: "text-purple-400"
+    },
 ]
+
 const additionalProviders = [
     { key: "deepseek", field: "deepseek_model", label: "DeepSeek", iconClass: "fa-solid fa-compass text-sky-400", placeholder: "deepseek-chat" },
     { key: "kimi", field: "kimi_model", label: "Kimi", iconClass: "fa-solid fa-brain text-purple-400", placeholder: "kimi-k2.6" },
@@ -351,6 +310,7 @@ const additionalProviders = [
     { key: "nvidia", field: "nvidia_model", label: "NVIDIA NIM", iconClass: "fa-solid fa-microchip text-green-400", placeholder: "meta/llama-3.2-11b-vision-instruct" },
     { key: "cloudflare", field: "cloudflare_model", label: "Cloudflare AI", iconClass: "fa-solid fa-cloud text-amber-400", placeholder: "@cf/meta/llama-3.1-8b-instruct" },
 ]
+
 const agents = [
     { key: "dan_rnd", label: "R&D" },
     { key: "dan_logistics", label: "Logistics" },
@@ -358,67 +318,95 @@ const agents = [
     { key: "dan_ops", label: "Operations" },
     { key: "dan_cskh", label: "CSKH" },
 ]
+
 const promptFields = [
-    ["learning_prompt_tech", "Tech Questions Prompt", "fa-solid fa-laptop-code", "Sinh câu hỏi cho 6 Tech Stacks"],
-    ["learning_prompt_vocab", "Vocabulary Prompt", "fa-solid fa-book-open", "Sinh từ vựng 50 Topics"],
-    ["learning_prompt_quiz", "Quiz Prompt", "fa-solid fa-puzzle-piece", "Soạn đề trắc nghiệm"],
-    ["learning_prompt_reading", "Reading Comprehension Prompt", "fa-solid fa-book-open-reader", "Soạn bài đọc hiểu"],
-    ["learning_prompt_writing", "Writing Studio Prompt", "fa-solid fa-pen-fancy", "Soạn đề luyện viết"],
-    ["learning_prompt_speaking", "Speaking Prompt", "fa-solid fa-microphone-lines", "Kịch bản luyện nói"],
-    ["learning_prompt_ielts", "IELTS Prep Prompt", "fa-solid fa-graduation-cap", "Đề thi IELTS"],
-    ["learning_prompt_eval_tech", "Tech Mock Interview Evaluator", "fa-solid fa-robot", "AI chấm điểm Tech"],
-    ["learning_prompt_eval_reading", "Reading Evaluator", "fa-solid fa-robot", "AI chấm đọc hiểu"],
-    ["learning_prompt_eval_writing", "Writing Evaluator", "fa-solid fa-robot", "AI chấm và sửa bài viết"],
-    ["learning_prompt_eval_speaking", "Speaking Evaluator", "fa-solid fa-robot", "AI chấm bài nói"],
-    ["learning_prompt_eval_ielts", "IELTS Evaluator", "fa-solid fa-robot", "AI chấm IELTS"],
-].map(([key, label, iconClass, placeholder]) => ({ key, label, iconClass, placeholder, template: `Bạn là chuyên gia ${label}. Hãy xử lý {{count}} nội dung cho {{topicName}} ở cấp độ {{level}} và chỉ trả về JSON đúng schema Learning.` }))
-const form = reactive({ active_model: "gemini", learning_active_model: "gemini", discord_active_model: "claude", telegram_active_model: "gemini", gemini_model: "models/gemini-2.5-flash", claude_model: "claude-sonnet-4-6", chatgpt_model: "gpt-4o", claude_base_url: "", system_prompt: "", openclaw_enabled: true, openclaw_url: "", google_cx: "", log_retention_days: 14 })
+    { key: "learning_prompt_tech", iconClass: "fa-solid fa-laptop-code", labelKey: "manager.config.prompts.learning_prompt_tech.label", placeholderKey: "manager.config.prompts.learning_prompt_tech.placeholder" },
+    { key: "learning_prompt_vocab", iconClass: "fa-solid fa-book-open", labelKey: "manager.config.prompts.learning_prompt_vocab.label", placeholderKey: "manager.config.prompts.learning_prompt_vocab.placeholder" },
+    { key: "learning_prompt_quiz", iconClass: "fa-solid fa-puzzle-piece", labelKey: "manager.config.prompts.learning_prompt_quiz.label", placeholderKey: "manager.config.prompts.learning_prompt_quiz.placeholder" },
+    { key: "learning_prompt_reading", iconClass: "fa-solid fa-book-open-reader", labelKey: "manager.config.prompts.learning_prompt_reading.label", placeholderKey: "manager.config.prompts.learning_prompt_reading.placeholder" },
+    { key: "learning_prompt_writing", iconClass: "fa-solid fa-pen-fancy", labelKey: "manager.config.prompts.learning_prompt_writing.label", placeholderKey: "manager.config.prompts.learning_prompt_writing.placeholder" },
+    { key: "learning_prompt_speaking", iconClass: "fa-solid fa-microphone-lines", labelKey: "manager.config.prompts.learning_prompt_speaking.label", placeholderKey: "manager.config.prompts.learning_prompt_speaking.placeholder" },
+    { key: "learning_prompt_ielts", iconClass: "fa-solid fa-graduation-cap", labelKey: "manager.config.prompts.learning_prompt_ielts.label", placeholderKey: "manager.config.prompts.learning_prompt_ielts.placeholder" },
+    { key: "learning_prompt_eval_tech", iconClass: "fa-solid fa-robot", labelKey: "manager.config.prompts.learning_prompt_eval_tech.label", placeholderKey: "manager.config.prompts.learning_prompt_eval_tech.placeholder" },
+    { key: "learning_prompt_eval_reading", iconClass: "fa-solid fa-robot", labelKey: "manager.config.prompts.learning_prompt_eval_reading.label", placeholderKey: "manager.config.prompts.learning_prompt_eval_reading.placeholder" },
+    { key: "learning_prompt_eval_writing", iconClass: "fa-solid fa-robot", labelKey: "manager.config.prompts.learning_prompt_eval_writing.label", placeholderKey: "manager.config.prompts.learning_prompt_eval_writing.placeholder" },
+    { key: "learning_prompt_eval_speaking", iconClass: "fa-solid fa-robot", labelKey: "manager.config.prompts.learning_prompt_eval_speaking.label", placeholderKey: "manager.config.prompts.learning_prompt_eval_speaking.placeholder" },
+    { key: "learning_prompt_eval_ielts", iconClass: "fa-solid fa-robot", labelKey: "manager.config.prompts.learning_prompt_eval_ielts.label", placeholderKey: "manager.config.prompts.learning_prompt_eval_ielts.placeholder" },
+]
+
+const resolvePromptTemplate = (promptConfig) => {
+    const label = translate(promptConfig.labelKey)
+    return translate("manager.config.prompt_template_placeholder", { label })
+}
+
+const form = reactive({
+    active_model: "gemini",
+    learning_active_model: "gemini",
+    discord_active_model: "claude",
+    telegram_active_model: "gemini",
+    gemini_model: "models/gemini-2.5-flash",
+    claude_model: "claude-sonnet-4-6",
+    chatgpt_model: "gpt-4o",
+    claude_base_url: "",
+    system_prompt: "",
+    openclaw_enabled: true,
+    openclaw_url: "",
+    google_cx: "",
+    log_retention_days: 14,
+})
+
 for (const item of additionalProviders) form[item.field] = ""
 for (const agent of agents) {
     form[`agent_${agent.key}_primary`] = ""
     form[`agent_${agent.key}_fallback`] = ""
 }
 for (const prompt of promptFields) form[prompt.key] = ""
-const saving = ref(false),
-    saveMessage = ref(""),
-    saveOk = ref(false),
-    cleanMessage = ref("")
+
+const saving = ref(false)
+const saveMessage = ref("")
+const saveOk = ref(false)
+const cleanMessage = ref("")
+
 const providerName = (key) => providers.value.find((p) => (p.key || p.id) === key)?.display || providers.value.find((p) => (p.key || p.id) === key)?.label || key
+
 const normalizeModels = (rows) => (rows || []).map((model) => (typeof model === "string" ? { id: model, label: model } : { id: model.id || model.value, label: model.label || model.name || model.id || model.value }))
+
 const ensureModel = (provider, value) => {
     if (value && modelOptions[provider] && !modelOptions[provider].some((model) => model.id === value)) {
         modelOptions[provider].unshift({ id: value, label: value })
     }
 }
+
 const load = async () => {
-    allProviders.forEach((provider) => {
-        modelOptions[provider] = [...(defaultModelOptions[provider] || [])]
-    })
     const [config, ...models] = await Promise.all([
         getConfig(),
         ...allProviders.map((p) => getModelsByProvider(p).catch(() => ({ models: [] }))),
     ])
-    providers.value = config.ai_providers?.length ? config.ai_providers.map((p) => ({ ...p, key: p.key || p.id })) : fallbackProviders
+
+    providers.value = config.ai_providers?.length
+        ? config.ai_providers.map((p) => ({ ...p, key: p.key || p.id }))
+        : fallbackProviders
+
     Object.keys(form).forEach((key) => {
-        if (config[key] !== undefined) form[key] = key === "openclaw_enabled" ? String(config[key]) === "true" : config[key]
+        if (config[key] !== undefined) {
+            form[key] = key === "openclaw_enabled" ? String(config[key]) === "true" : config[key]
+        }
     })
+
     allProviders.forEach((provider, index) => {
         const remote = normalizeModels(models[index]?.models)
-        if (remote.length > 0) {
-            const existingIds = new Set(remote.map((m) => m.id))
-            const defaults = (defaultModelOptions[provider] || []).filter((m) => !existingIds.has(m.id))
-            modelOptions[provider] = [...remote, ...defaults]
-        }
+        modelOptions[provider] = remote
         const val = form[`${provider}_model`]
         if (val) ensureModel(provider, val)
     })
 }
+
 const save = async () => {
     saving.value = true
     saveMessage.value = ""
     try {
         await updateConfig({ ...form, openclaw_enabled: form.openclaw_enabled ? "true" : "false" })
-        saveMessage.value = "Đã lưu!"
+        saveMessage.value = translate("manager.config.save_success")
         saveOk.value = true
         setTimeout(() => (saveMessage.value = ""), 2500)
     } catch (error) {
@@ -428,10 +416,17 @@ const save = async () => {
         saving.value = false
     }
 }
-const fillAllPrompts = () =>
-    promptFields.forEach((prompt) => {
-        form[prompt.key] = prompt.template
+
+const applyPromptTemplate = (promptConfig) => {
+    form[promptConfig.key] = resolvePromptTemplate(promptConfig)
+}
+
+const fillAllPrompts = () => {
+    promptFields.forEach((promptConfig) => {
+        form[promptConfig.key] = resolvePromptTemplate(promptConfig)
     })
+}
+
 const cleanLogsNow = async () => {
     try {
         const res = await cleanLogs(form.log_retention_days)
@@ -440,6 +435,7 @@ const cleanLogsNow = async () => {
         cleanMessage.value = error.message
     }
 }
+
 onMounted(load)
 </script>
 
