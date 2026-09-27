@@ -2,6 +2,7 @@
 
 const { buildPracticeExam } = require('@services/learning/PracticeExamBuilder');
 const { performanceMap } = require('@services/learning/AdaptiveSelector');
+const localization = require('@lang');
 
 /**
  * Controller for unified Learning Hub API (Tech & English).
@@ -402,7 +403,7 @@ class LearningController {
       }
 
       if (!buffer) {
-        return res.status(400).json({ ok: false, error: 'Chưa đính kèm file Excel' });
+        return res.status(400).json({ ok: false, error: localization.t('learning.validation.excel_attachment_required') });
       }
 
       const result = await this.#learningService.importFromExcel(id, buffer);

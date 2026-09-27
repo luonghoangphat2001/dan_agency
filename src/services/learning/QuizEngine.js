@@ -1,6 +1,7 @@
 'use strict';
 
 const { performanceMap, weightedShuffle } = require('@services/learning/AdaptiveSelector');
+const localization = require('@lang');
 
 /**
  * QuizEngine: Generates questions for all 5 quiz modes (Multiple Choice, IPA Match, Fill in Blank, Spelling, Flashcards)
@@ -32,7 +33,7 @@ class QuizEngine {
 
     const allWords = await this.#vocabRepo.findWords(topicNo, { limit: 500 });
     if (!allWords.length) {
-      throw new Error('Chưa có từ vựng trong chủ đề này để tạo Quiz.');
+      throw new Error(localization.t('learning.quiz.insufficient_words_in_topic'));
     }
 
     const userId = String(opts.userId || '').trim();
@@ -67,7 +68,7 @@ class QuizEngine {
    */
   async submitAnswer(payload) {
     const userId = String(payload.userId || 'guest').trim();
-    const username = String(payload.username || 'Học viên').trim();
+    const username = String(payload.username || localization.t('learning.default_student_name')).trim();
     const wordId = Number(payload.wordId);
     const quizType = String(payload.quizType || 'multiple_choice').toLowerCase();
     const userAns = String(payload.answer || '').trim();
@@ -155,7 +156,7 @@ class QuizEngine {
       id: target.id,
       number: num,
       type: 'multiple_choice',
-      prompt: `📖 Nghĩa tiếng Việt của từ này là gì?`,
+      prompt: localization.t('learning.quiz.prompt_multiple_choice'),
       word: target.word,
       pronunciation: target.pronunciation ? `/${target.pronunciation.replace(/^\/|\/$/g, '')}/` : null,
       options,
@@ -173,7 +174,7 @@ class QuizEngine {
       id: target.id,
       number: num,
       type: 'ipa_matching',
-      prompt: `🎧 Phiên âm chuẩn Mỹ **${pron}** tương ứng với từ tiếng Anh nào?`,
+      prompt: localization.t('learning.quiz.prompt_ipa_matching', { pron }),
       pronunciation: pron,
       meaningHint: target.meaning,
       options,
@@ -192,7 +193,7 @@ class QuizEngine {
       id: target.id,
       number: num,
       type: 'fill_blank',
-      prompt: `📝 Chọn từ đúng điền vào chỗ trống:`,
+      prompt: localization.t('learning.quiz.prompt_fill_blank'),
       sentence,
       meaning: target.meaning,
       options,
@@ -207,7 +208,7 @@ class QuizEngine {
       id: target.id,
       number: num,
       type: 'spelling',
-      prompt: `🔤 Ghép chữ cái thành từ có nghĩa: **"${target.meaning}"**${pronStr}`,
+      prompt: localization.t('learning.quiz.prompt_spelling', { meaning: target.meaning, pronStr }),
       scrambled: chars,
       meaning: target.meaning,
       wordLength: target.word.length,
@@ -223,7 +224,7 @@ class QuizEngine {
       front: {
         word: target.word,
         pronunciation: pronStr,
-        topicName: target.topic_name || `Chủ đề ${target.topic_no}`,
+        topicName: target.topic_name || localization.t('learning.quiz.default_topic_name', { topicNo: target.topic_no }),
       },
       back: {
         meaning: target.meaning,
@@ -249,7 +250,7 @@ class QuizEngine {
     // Fallbacks if set is too small
     let i = 1;
     while (set.size < count) {
-      set.add(`Đáp án lựa chọn ${i++}`);
+      set.add(localization.t('learning.quiz.fallback_option', { index: i++ }));
     }
     return Array.from(set);
   }

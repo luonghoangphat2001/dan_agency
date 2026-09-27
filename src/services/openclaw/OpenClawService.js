@@ -1,6 +1,7 @@
 'use strict';
 
 const axios = require('axios');
+const localization = require('@lang');
 
 /**
  * HTTP client wrapper for the OpenClaw microservice.
@@ -112,7 +113,7 @@ class OpenClawService {
     const response = await this.getDashboardOverview();
     const integration = response?.overview?.companyDashboard;
     if (!integration) {
-      throw new Error('OpenClaw chưa nhận được trạng thái Dashboard công ty');
+      throw new Error(localization.t('agent.errors.company_dashboard_status_missing'));
     }
     return integration;
   }
@@ -162,6 +163,50 @@ class OpenClawService {
     return this.#get(
       `/orchestrator/v1/dashboard/workflows/${encodeURIComponent(workflowId)}`,
     );
+  }
+
+  /**
+   * Reads a file in OpenClaw workspace sandbox.
+   * @param {string} relativePath
+   * @param {string} [encoding='utf8']
+   */
+  async workspaceReadFile(relativePath, encoding = 'utf8') {
+    return this.#post('/orchestrator/v1/workspace/read', { path: relativePath, encoding });
+  }
+
+  /**
+   * Writes content to a file in OpenClaw workspace sandbox.
+   * @param {string} relativePath
+   * @param {string} content
+   * @param {string} [encoding='utf8']
+   */
+  async workspaceWriteFile(relativePath, content, encoding = 'utf8') {
+    return this.#post('/orchestrator/v1/workspace/write', { path: relativePath, content, encoding });
+  }
+
+  /**
+   * Lists files in OpenClaw workspace sandbox directory.
+   * @param {string} [relativePath='']
+   */
+  async workspaceListFiles(relativePath = '') {
+    return this.#post('/orchestrator/v1/workspace/list', { path: relativePath });
+  }
+
+  /**
+   * Deletes a file in OpenClaw workspace sandbox.
+   * @param {string} relativePath
+   */
+  async workspaceDeleteFile(relativePath) {
+    return this.#post('/orchestrator/v1/workspace/delete', { path: relativePath });
+  }
+
+  /**
+   * Executes a safe bash command in OpenClaw workspace sandbox.
+   * @param {string} command
+   * @param {object} [options={}]
+   */
+  async workspaceExecuteCommand(command, { timeoutMs = 15000, environmentVariables = {} } = {}) {
+    return this.#post('/orchestrator/v1/workspace/command', { command, timeoutMs, environmentVariables });
   }
 
   async #get(path) {

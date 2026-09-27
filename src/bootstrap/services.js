@@ -8,9 +8,11 @@ const VocabularyService = require('@services/learning/VocabularyService');
 const QuizEngine = require('@services/learning/QuizEngine');
 const TechService = require('@services/learning/TechService');
 const DiscordNotificationService = require('@services/notification/DiscordNotificationService');
+const AgentService = require('@services/agent/AgentService');
 
 async function createServices(repositories) {
   const {
+    db,
     userRepo,
     configRepo,
     conversationRepo,
@@ -20,6 +22,7 @@ async function createServices(repositories) {
     techRepo,
     discordNotificationRepo,
     insightRepo,
+    agentStateRepo,
   } = repositories;
 
   if (userRepo) {
@@ -36,6 +39,18 @@ async function createServices(repositories) {
   const techService = new TechService(techRepo, aiService, configRepo);
   await techService.seedInitialBankIfEmpty();
 
+  const discordNotificationService = new DiscordNotificationService(discordNotificationRepo, configRepo);
+
+  const agentService = new AgentService({
+    aiService,
+    database: db,
+    stateRepository: agentStateRepo,
+    conversationRepository: conversationRepo,
+    insightRepository: insightRepo,
+    openClawService: openClaw,
+    discordNotifyService: discordNotificationService,
+  });
+
   return {
     aiService,
     openClaw,
@@ -43,7 +58,8 @@ async function createServices(repositories) {
     vocabService: new VocabularyService(vocabRepo, configRepo),
     quizEngine: new QuizEngine(vocabRepo, quizRepo),
     techService,
-    discordNotificationService: new DiscordNotificationService(discordNotificationRepo, configRepo),
+    discordNotificationService,
+    agentService,
   };
 }
 

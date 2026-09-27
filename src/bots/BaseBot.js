@@ -1,5 +1,7 @@
 'use strict';
 
+const localization = require('@lang');
+
 /**
  * Shared base class for all bot implementations.
  * Centralises model switch/check command handling so each platform
@@ -87,7 +89,7 @@ class BaseBot {
       .trim();
 
     if (!prompt) {
-      await reply('Gọi tao hả? Hỏi gì đi 😤');
+      await reply(localization.t('bots.base.empty_mention_reply'));
       return { handled: true };
     }
 

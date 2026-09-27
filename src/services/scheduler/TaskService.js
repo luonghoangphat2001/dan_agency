@@ -4,11 +4,11 @@ const Database = require('@models/Database');
 const TaskRepository = require('@models/TaskRepository');
 
 class TaskService {
-  /** @type {import('../../models/TaskRepository')|null} */
+  /** @type {import('@models/TaskRepository')|null} */
   #taskRepo;
 
   /**
-   * @param {import('../../models/TaskRepository')|null} [taskRepo]
+   * @param {import('@models/TaskRepository')|null} [taskRepo]
    */
   constructor(taskRepo = null) {
     this.#taskRepo = taskRepo;
@@ -24,14 +24,14 @@ class TaskService {
    * Create a task record and start agentChat in the background.
    *
    * @param {object}                      opts
-   * @param {import('../ai/AIService')}   opts.aiService         Injected — already constructed
+   * @param {import('@services/ai/AIService')}   opts.aiService         Injected — already constructed
    * @param {string}                      opts.userId
    * @param {string}                      opts.username
    * @param {string}                      opts.platform          'discord' | 'telegram'
    * @param {string}                      opts.channelId
    * @param {string}                      opts.description       Short summary for dashboard
    * @param {string}                      opts.prompt            Full prompt for agentChat
-   * @param {import('../openclaw/OpenClawService')} opts.openClawService
+   * @param {import('@services/openclaw/OpenClawService')} opts.openClawService
    * @param {Function}                    opts.onComplete        callback(resultText, error)
    * @returns {Promise<number>} taskId
    */

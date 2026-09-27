@@ -2,6 +2,9 @@
 
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const TimeUtils = require('@utils/TimeUtils');
+const localization = require('@lang');
+const ContentNormalizer = require('@services/learning/ContentNormalizer');
+const SkillService = require('@services/agent/skills/SkillService');
 
 /**
  * Scheduler service: ticks every minute to fire due reminders,
@@ -16,15 +19,20 @@ class SchedulerService {
   #discordClient = null;
   /** @type {import('./VocabularyService')|null} */
   #vocabService = null;
+  /** @type {import('@services/agent/skills/SkillService')} */
+  #skillService;
 
   /**
    * @param {import('../models/ScheduleRepository')} scheduleRepo
    * @param {import('../models/ConfigRepository')} configRepo
+   * @param {import('./VocabularyService')|null} vocabService
+   * @param {import('@services/agent/skills/SkillService')|null} skillService
    */
-  constructor(scheduleRepo, configRepo, vocabService = null) {
+  constructor(scheduleRepo, configRepo, vocabService = null, skillService = null) {
     this.#scheduleRepo = scheduleRepo;
     this.#configRepo   = configRepo;
     this.#vocabService = vocabService;
+    this.#skillService = skillService || SkillService.getInstance();
   }
 
   /** Inject after DiscordBot has started. */
@@ -233,12 +241,12 @@ class SchedulerService {
       if (!channel) return;
 
       const hhmm    = TimeUtils.timeOf(row.remind_at);
-      const message = [
-        `⏰ **Nhắc trước ${label}!**`,
-        `👤 <@${row.user_id}>`,
-        `📌 ${row.title}`,
-        `🕐 Bắt đầu lúc **${hhmm}**`,
-      ].join('\n');
+      const message = localization.t('scheduler.notifications.advance_reminder', {
+        label,
+        userId: row.user_id,
+        title: row.title,
+        time: hhmm,
+      });
 
       await channel.send(message);
       this.#log('advance_sent', { source: 'schedule', scheduleId: row.id, label, channelId });
@@ -293,12 +301,11 @@ class SchedulerService {
     }
 
     const repeatLabel = this.#repeatLabel(row.repeat_type, row.remind_at);
-    const message = [
-      '⏰ **THÔNG BÁO LỊCH HỌC**',
-      `👤 **Học viên:** <@${row.user_id}>`,
-      `📌 **Nội dung:** ${row.title}`,
-      `🔁 **Lặp lại:** ${repeatLabel}`,
-    ].join('\n');
+    const message = localization.t('scheduler.notifications.class_reminder', {
+      userId: row.user_id,
+      title: row.title,
+      repeatLabel,
+    });
 
     await channel.send(message);
     this.#log('sent', { source: 'schedule', type: 'schedule_reminder', scheduleId: row.id, channelId });
@@ -431,7 +438,11 @@ class SchedulerService {
     });
 
     const nowStr = TimeUtils.promptNow(tz);
-    const prompt = `Hôm nay là ${nowStr}. Parse yêu cầu chỉnh sửa lịch từ text sau (tiếng Việt).
+    const skill = this.#skillService?.getSkill('schedule-intent');
+    const updateSection = skill?.sections?.['parse update prompt'] || skill?.sections?.parse_update_prompt;
+    const prompt = updateSection
+      ? this.#skillService.renderTemplate(updateSection, { nowStr, text, tz })
+      : `Hôm nay là ${nowStr}. Parse yêu cầu chỉnh sửa lịch từ text sau (tiếng Việt).
 Text: "${text}"
 Trả về JSON object (chỉ JSON, không giải thích):
 {"id":<số ID hoặc null>,"search_keyword":"<từ khoá tìm lịch hoặc null>","title":"<tiêu đề mới hoặc null>","remind_at":"<YYYY-MM-DD HH:MM:SS mới hoặc null>","repeat_type":"<none|daily|weekly hoặc null>"}`;
@@ -441,12 +452,8 @@ Trả về JSON object (chỉ JSON, không giải thích):
       const raw    = result.response.text().trim();
       console.log('[Schedule] parseAndUpdate Gemini response:', raw);
 
-      let parsed;
-      try {
-        const jsonStr   = raw.replace(/^```json?\s*/i, '').replace(/\s*```$/, '').trim();
-        const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
-        parsed = JSON.parse(jsonMatch ? jsonMatch[0] : jsonStr);
-      } catch {
+      const parsed = ContentNormalizer.parseJson(raw);
+      if (!parsed || typeof parsed !== 'object') {
         throw new Error('Gemini không trả về JSON hợp lệ');
       }
 
@@ -757,7 +764,11 @@ Trả về JSON object (chỉ JSON, không giải thích):
     const tz      = this.#configRepo.get('schedule_timezone') || 'Asia/Ho_Chi_Minh';
     const nowStr  = TimeUtils.promptNow(tz);
 
-    const prompt = `Hôm nay là ${nowStr}. Parse lịch từ text sau (tiếng Việt).
+    const skill = this.#skillService?.getSkill('schedule-intent');
+    const parseSection = skill?.sections?.['parse schedule prompt'] || skill?.sections?.parse_schedule_prompt;
+    const prompt = parseSection
+      ? this.#skillService.renderTemplate(parseSection, { nowStr, text, tz })
+      : `Hôm nay là ${nowStr}. Parse lịch từ text sau (tiếng Việt).
 Text: "${text}"
 Trả về JSON: { "title": "...", "remind_at": "YYYY-MM-DD HH:MM:SS" (giờ ${tz}), "repeat_type": "none|daily|weekly" }
 Chỉ trả JSON, không giải thích. Nếu không parse được, trả { "error": "..." }`;
@@ -766,16 +777,11 @@ Chỉ trả JSON, không giải thích. Nếu không parse được, trả { "er
     const raw = result.response.text().trim();
     console.log('[Schedule] Gemini parse response:', raw);
 
-    // Strip markdown code fences if present, then extract first {...} block
-    let jsonStr = raw.replace(/^```json?\s*/i, '').replace(/\s*```$/, '').trim();
-    const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
-    if (jsonMatch) jsonStr = jsonMatch[0];
-
-    try {
-      return JSON.parse(jsonStr);
-    } catch {
+    const parsed = ContentNormalizer.parseJson(raw);
+    if (!parsed || typeof parsed !== 'object') {
       return { error: `Không parse được JSON từ Gemini: ${raw}` };
     }
+    return parsed;
   }
 
   /**
@@ -791,10 +797,11 @@ Chỉ trả JSON, không giải thích. Nếu không parse được, trả { "er
     const [yyyy, mm, dd] = datePart.split('-').map(Number);
     const dow = new Date(Date.UTC(yyyy, mm - 1, dd)).getUTCDay();
     const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    const day = days[dow] || '';
 
-    if (repeatType === 'weekly') return `Hàng tuần (${days[dow]} ${hhmm})`;
-    if (repeatType === 'daily')  return `Hàng ngày (${hhmm})`;
-    return `Một lần (${days[dow]} ${hhmm})`;
+    if (repeatType === 'weekly') return localization.t('scheduler.repeat.weekly', { day, time: hhmm });
+    if (repeatType === 'daily')  return localization.t('scheduler.repeat.daily', { time: hhmm });
+    return localization.t('scheduler.repeat.once', { day, time: hhmm });
   }
 }
 

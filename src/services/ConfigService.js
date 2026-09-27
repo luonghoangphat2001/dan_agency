@@ -1,7 +1,14 @@
 'use strict';
 
 const { getProviderLabels } = require('@services/ai/ProviderCatalog');
-const { CONFIG_SCHEMA, MONITORED_AGENTS } = require('@schemas/schemas');
+const {
+  CONFIG_SCHEMA,
+  MONITORED_AGENTS,
+  PLATFORMS_METADATA,
+  ADDITIONAL_PROVIDERS_METADATA,
+  PROMPT_FIELDS_METADATA,
+  AGENTS_METADATA,
+} = require('@schemas/schemas');
 
 /**
  * Service responsible for configuration serialization, deserialization,
@@ -17,6 +24,22 @@ class ConfigService {
   constructor({ schema = CONFIG_SCHEMA, monitoredAgents = MONITORED_AGENTS } = {}) {
     this.#schema = schema;
     this.#monitoredAgents = monitoredAgents;
+  }
+
+  /**
+   * Returns schema and UI metadata for frontend configuration views.
+   * @returns {object}
+   */
+  getMetadata() {
+    return {
+      ai_providers: getProviderLabels(),
+      platforms: PLATFORMS_METADATA,
+      additionalProviders: ADDITIONAL_PROVIDERS_METADATA,
+      additional_providers: ADDITIONAL_PROVIDERS_METADATA,
+      promptFields: PROMPT_FIELDS_METADATA,
+      prompt_fields: PROMPT_FIELDS_METADATA,
+      agents: AGENTS_METADATA,
+    };
   }
 
   /**
@@ -56,8 +79,14 @@ class ConfigService {
       }
     }
 
-    // 3. Attach AI Provider labels for frontend select rendering
+    // 3. Attach AI Provider labels and UI schema metadata for frontend select and panel rendering
     result.ai_providers = getProviderLabels();
+    result.platforms = PLATFORMS_METADATA;
+    result.additionalProviders = ADDITIONAL_PROVIDERS_METADATA;
+    result.additional_providers = ADDITIONAL_PROVIDERS_METADATA;
+    result.promptFields = PROMPT_FIELDS_METADATA;
+    result.prompt_fields = PROMPT_FIELDS_METADATA;
+    result.agents = AGENTS_METADATA;
 
     return result;
   }

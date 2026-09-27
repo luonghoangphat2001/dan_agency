@@ -21,7 +21,17 @@ class ConfigController {
     this.#configRepo = configRepo;
     this.#configService = configService;
     this.get = this.get.bind(this);
+    this.getMeta = this.getMeta.bind(this);
     this.update = this.update.bind(this);
+  }
+
+  /**
+   * GET /api/config/meta
+   * Returns UI schema and layout metadata for configuration panels.
+   */
+  getMeta(_req, res) {
+    const meta = this.#configService.getMetadata();
+    res.json(meta);
   }
 
   /**

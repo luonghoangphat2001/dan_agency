@@ -1,5 +1,7 @@
 'use strict';
 
+const localization = require('@lang');
+
 /**
  * Controller for Web Dashboard Quiz endpoints.
  */
@@ -33,7 +35,7 @@ class QuizController {
   async submit(req, res) {
     try {
       const userId = req.session?.userId ? String(req.session.userId) : (req.body.user_id || 'admin_user');
-      const username = req.session?.username ? String(req.session.username) : (req.body.username || 'Học viên');
+      const username = req.session?.username ? String(req.session.username) : (req.body.username || localization.t('learning.default_student_name'));
       const result = await this.#quizEngine.submitAnswer({
         userId,
         username,

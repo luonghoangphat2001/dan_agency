@@ -4,6 +4,8 @@ const AIFactory         = require('@services/ai/AIFactory');
 const AgentLoop         = require('@services/ai/AgentLoop');
 const InsightRepository = require('@models/InsightRepository');
 const Database          = require('@models/Database');
+const SkillService      = require('@services/agent/skills/SkillService');
+const localization      = require('@lang');
 const {
   getProviderMeta,
   getProviderOrder,
@@ -21,16 +23,28 @@ class AIService {
   #conversationRepo;
   /** @type {import('../models/InsightRepository')|null} */
   #insightRepo;
+  /** @type {SkillService} */
+  #skillService;
 
   /**
    * @param {import('../models/ConfigRepository')} configRepo
    * @param {import('../models/ConversationRepository')} conversationRepo
    * @param {import('../models/InsightRepository')|null} [insightRepo]
+   * @param {SkillService|null} [skillService]
    */
-  constructor(configRepo, conversationRepo, insightRepo = null) {
+  constructor(configRepo, conversationRepo, insightRepo = null, skillService = null) {
     this.#configRepo = configRepo;
     this.#conversationRepo = conversationRepo;
     this.#insightRepo = insightRepo;
+    this.#skillService = skillService || new SkillService();
+  }
+
+  /**
+   * Returns the injected SkillService instance.
+   * @returns {SkillService}
+   */
+  getSkillService() {
+    return this.#skillService;
   }
 
   /**
@@ -45,7 +59,7 @@ class AIService {
 
     const configKey   = platform ? `${platform}_active_model` : 'active_model';
     const activeModel = this.#configRepo.get(configKey) || this.#configRepo.get('active_model') || 'gemini';
-    const systemPrompt = this.#configRepo.get('system_prompt') || 'You are a helpful assistant.';
+    const systemPrompt = this.#configRepo.get('system_prompt') || localization.t('agent.system.default_prompt');
 
     const history = await this.#conversationRepo.findByChannel(channelId, 10);
     const messages = [
@@ -91,10 +105,10 @@ class AIService {
 
     const configKey   = platform ? `${platform}_active_model` : 'active_model';
     const activeModel = this.#configRepo.get(configKey) || this.#configRepo.get('active_model') || 'gemini';
-    const systemPrompt = this.#configRepo.get('system_prompt') || 'You are a helpful assistant.';
+    const systemPrompt = this.#configRepo.get('system_prompt') || localization.t('agent.system.default_prompt');
 
     const history = await this.#conversationRepo.findByChannel(channelId, 10);
-    const augmentedPrompt = `${context}\n\nCâu hỏi của user: ${prompt}`;
+    const augmentedPrompt = localization.t('agent.system.augmented_prompt', { context, prompt });
     const messages = [
       ...history.map((h) => ({ role: h.role, content: h.content })),
       { role: 'user', content: augmentedPrompt },
@@ -137,7 +151,7 @@ class AIService {
 
     const configKey   = platform ? `${platform}_active_model` : 'active_model';
     const activeModel = this.#configRepo.get(configKey) || this.#configRepo.get('active_model') || 'gemini';
-    const systemPrompt = this.#configRepo.get('system_prompt') || 'You are a helpful assistant.';
+    const systemPrompt = this.#configRepo.get('system_prompt') || localization.t('agent.system.default_prompt');
 
     const history  = await this.#conversationRepo.findByChannel(channelId, 10);
     const messages = [
@@ -148,7 +162,11 @@ class AIService {
     console.log(`[AIService] agentChat | platform=${platform} model=${activeModel} user=${username}(${userId}) channel=${channelId} prompt="${prompt.slice(0, 80)}${prompt.length > 80 ? '…' : ''}"`);
 
     let enhancedSystemPrompt = systemPrompt;
-    enhancedSystemPrompt += '\n\n[OpenClaw orchestration policy]\nYou are an agent operating through OpenClaw. For any request about company/internal business data (Dashboard, products, orders, revenue, sales, inventory, agents, or operational metrics), you MUST call company_dashboard_metrics and use its result. For any request involving reminders, calendars, meetings, classes, work tasks, or schedules, you MUST call schedule_manage and use its result. Never claim that you lack access, never ask for a URL or credentials, and never invent numbers. Select structured tool arguments from the user\'s meaning, not fixed command phrases. For general knowledge or web research, use the appropriate OpenClaw web tool.';
+    // Load orchestration policy from skill file — avoids hardcoded business logic in source code.
+    const orchestrationSkill = this.#skillService.getSkill('openclaw-orchestration');
+    if (orchestrationSkill?.content) {
+      enhancedSystemPrompt += '\n\n' + orchestrationSkill.content;
+    }
     let iRepo = this.#insightRepo;
     try {
       if (!iRepo) {
@@ -158,7 +176,8 @@ class AIService {
       const mems = await iRepo.findByUser(userId, platform || 'unknown');
       if (mems && mems.length > 0) {
         const memStr = mems.map((m) => `- ${m.mem_key}: ${m.mem_value}`).join('\n');
-        enhancedSystemPrompt += `\n\n[Bộ nhớ về user này]\n${memStr}`;
+        const header = localization.t('agent.system.user_memory_header');
+        enhancedSystemPrompt += `\n\n${header}\n${memStr}`;
       }
     } catch (_) { /* memory does not block main flow */ }
 
@@ -215,7 +234,7 @@ class AIService {
   async chatOnce(messages, modelOverride = null, platform = null) {
     await this.#configRepo.refreshIfNeeded();
     const model = modelOverride || this.#configRepo.get(platform ? `${platform}_active_model` : 'active_model') || 'gemini';
-    const systemPrompt = this.#configRepo.get('system_prompt') || 'You are a helpful assistant.';
+    const systemPrompt = this.#configRepo.get('system_prompt') || localization.t('agent.system.default_prompt');
     const { result } = await this.#chatWithFallbacks('chat', model, messages, systemPrompt);
     return result.text ?? result;
   }
@@ -267,6 +286,26 @@ class AIService {
       .map((value) => value.trim())
       .filter(Boolean);
     return configuredIds.includes(String(userId));
+  }
+
+  /**
+   * Get active provider instance for Agent execution.
+   * @param {string} [model]
+   * @returns {import('./AIProvider')}
+   */
+  getProvider(model = null) {
+    const activeModel = model || this.#configRepo.get('active_model') || 'gemini';
+    return this.#createProvider(activeModel);
+  }
+
+  /**
+   * Get current model name.
+   * @param {string} [platform]
+   * @returns {string}
+   */
+  getCurrentModel(platform = null) {
+    const configKey = platform ? `${platform}_active_model` : 'active_model';
+    return this.#configRepo.get(configKey) || this.#configRepo.get('active_model') || 'gemini';
   }
 
   /** @param {string} model */
@@ -342,6 +381,7 @@ class AIService {
    * @param {import('./OpenClawService')} openClawService
    * @param {import('../models/InsightRepository')|null} insightRepo
    * @param {{userId: string, platform: string, channelId: string}|null} context
+   * @param {import('./SchedulerService')|null} schedulerService
    * @returns {Promise<{result: {text: string, tokensIn?: number, tokensOut?: number}, usedProvider: string}>}
    */
   async #agentChatWithFallbacks(primaryModel, messages, systemPrompt, openClawService, insightRepo, context, schedulerService = null) {
@@ -349,7 +389,8 @@ class AIService {
     for (const providerKey of this.#providerOrder(primaryModel)) {
       try {
         const provider = this.#createProvider(providerKey);
-        const result = await new AgentLoop(provider, openClawService, insightRepo, schedulerService).run(messages, systemPrompt, context);
+        const result = await new AgentLoop(provider, openClawService, insightRepo, schedulerService, this.#skillService)
+          .run(messages, systemPrompt, context);
         return { result, usedProvider: providerKey };
       } catch (err) {
         const message = err?.message || String(err);

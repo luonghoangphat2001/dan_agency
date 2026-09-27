@@ -4,127 +4,182 @@
  * Shared boundary for AI/imported learning content.
  * Keeps JSON repair and legacy wrapper handling out of controllers and DB code.
  */
-function parseJson(value) {
-  if (value && typeof value === 'object') return value;
-  if (typeof value !== 'string' || !value.trim()) return null;
+function parseJson(rawValue) {
+  if (rawValue && typeof rawValue === 'object') return rawValue;
+  if (typeof rawValue !== 'string' || !rawValue.trim()) return null;
 
-  const text = value.trim().replace(/^\uFEFF/, '');
-  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)(?:```|$)/i);
-  const candidate = fenced ? fenced[1].trim() : text;
-  try { return JSON.parse(candidate); } catch (_) {}
+  const sanitizedText = rawValue.trim().replace(/^\uFEFF/, '');
+  const markdownFenceMatch = sanitizedText.match(/```(?:json)?\s*([\s\S]*?)(?:```|$)/i);
+  const candidateJson = markdownFenceMatch ? markdownFenceMatch[1].trim() : sanitizedText;
 
-  const startsArray = candidate[0] === '[';
-  for (let start = 0; start < candidate.length; start++) {
-    if (candidate[start] !== '[' && candidate[start] !== '{') continue;
-    // If the outer array is incomplete, let the recovery pass below collect
-    // all complete objects instead of returning only the first object.
-    if (startsArray && candidate[start] === '{') continue;
-    const stack = [];
-    let quoted = false;
-    let escaped = false;
-    for (let i = start; i < candidate.length; i++) {
-      const ch = candidate[i];
-      if (quoted) {
-        if (escaped) escaped = false;
-        else if (ch === '\\') escaped = true;
-        else if (ch === '"') quoted = false;
-        continue;
-      }
-      if (ch === '"') { quoted = true; continue; }
-      if (ch === '[' || ch === '{') stack.push(ch);
-      if (ch === ']' || ch === '}') {
-        if (stack[stack.length - 1] !== (ch === ']' ? '[' : '{')) break;
-        stack.pop();
-        if (!stack.length) {
-          try { return JSON.parse(candidate.slice(start, i + 1)); } catch (_) {}
-          break;
-        }
-      }
-    }
+  try {
+    return JSON.parse(candidateJson);
+  } catch (_) {}
+
+  const balancedJson = extractBalancedJson(candidateJson);
+  if (balancedJson !== null) {
+    try {
+      return JSON.parse(balancedJson);
+    } catch (_) {}
   }
 
-  // A provider may truncate the final part of a JSON array. Recover every
-  // complete object inside it instead of returning one "Generated Content"
-  // fallback row and persisting the raw response.
-  const recovered = [];
-  let objectStart = -1;
-  let depth = 0;
-  let quoted = false;
-  let escaped = false;
-  for (let i = 0; i < candidate.length; i++) {
-    const ch = candidate[i];
-    if (quoted) {
-      if (escaped) escaped = false;
-      else if (ch === '\\') escaped = true;
-      else if (ch === '"') quoted = false;
-      continue;
-    }
-    if (ch === '"') { quoted = true; continue; }
-    if (ch === '{') {
-      if (depth === 0) objectStart = i;
-      depth++;
-    } else if (ch === '}' && depth > 0) {
-      depth--;
-      if (depth === 0 && objectStart >= 0) {
-        try { recovered.push(JSON.parse(candidate.slice(objectStart, i + 1))); } catch (_) {}
-        objectStart = -1;
-      }
-    }
+  const recoveredObjects = extractObjects(candidateJson);
+  if (recoveredObjects.length > 0) {
+    const isSingleNonArray = recoveredObjects.length === 1 && !candidateJson.startsWith('[');
+    return isSingleNonArray ? recoveredObjects[0] : recoveredObjects;
   }
-  if (recovered.length) return recovered.length === 1 ? recovered[0] : recovered;
 
   return null;
 }
 
-function isLearningItem(value) {
-  return value && typeof value === 'object' && (
-    typeof value.title === 'string' || typeof value.word === 'string'
-  );
-}
+/**
+ * Extracts the first balanced JSON block ([...] or {...}) using a single-pass depth counter.
+ */
+function extractBalancedJson(rawText) {
+  const delimiterMatch = rawText.match(/[{\[]/);
+  if (!delimiterMatch) return null;
 
-function unpackItems(items) {
-  const result = [];
-  const queue = Array.isArray(items) ? [...items] : [items];
+  const startIndex = delimiterMatch.index;
+  const openingDelimiter = rawText[startIndex];
+  const closingDelimiter = openingDelimiter === '[' ? ']' : '}';
 
-  while (queue.length) {
-    const value = queue.shift();
-    const parsed = typeof value === 'string' ? parseJson(value) : value;
-    if (!parsed) continue;
-    if (Array.isArray(parsed)) {
-      queue.unshift(...parsed);
+  let nestingDepth = 0;
+  let isInsideString = false;
+  let isEscapedChar = false;
+
+  for (let charIndex = startIndex; charIndex < rawText.length; charIndex++) {
+    const currentChar = rawText[charIndex];
+
+    if (isInsideString) {
+      if (isEscapedChar) {
+        isEscapedChar = false;
+      } else if (currentChar === '\\') {
+        isEscapedChar = true;
+      } else if (currentChar === '"') {
+        isInsideString = false;
+      }
       continue;
     }
 
-    // Legacy fallback rows stored the complete AI array in prompt/content.
-    if (!isLearningItem(parsed) || parsed.title === 'Generated Content') {
-      const nested = parseJson(parsed.prompt) || parseJson(parsed.content);
-      if (Array.isArray(nested)) {
-        queue.unshift(...nested);
+    if (currentChar === '"') {
+      isInsideString = true;
+    } else if (currentChar === openingDelimiter) {
+      nestingDepth++;
+    } else if (currentChar === closingDelimiter) {
+      nestingDepth--;
+      if (nestingDepth === 0) {
+        return rawText.slice(startIndex, charIndex + 1);
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Recovers all complete top-level JSON objects from text.
+ */
+function extractObjects(rawText) {
+  const parsedObjects = [];
+  let objectStartIndex = -1;
+  let nestingDepth = 0;
+  let isInsideString = false;
+  let isEscapedChar = false;
+
+  for (let charIndex = 0; charIndex < rawText.length; charIndex++) {
+    const currentChar = rawText[charIndex];
+
+    if (isInsideString) {
+      if (isEscapedChar) {
+        isEscapedChar = false;
+      } else if (currentChar === '\\') {
+        isEscapedChar = true;
+      } else if (currentChar === '"') {
+        isInsideString = false;
+      }
+      continue;
+    }
+
+    if (currentChar === '"') {
+      isInsideString = true;
+    } else if (currentChar === '{') {
+      if (nestingDepth === 0) {
+        objectStartIndex = charIndex;
+      }
+      nestingDepth++;
+    } else if (currentChar === '}' && nestingDepth > 0) {
+      nestingDepth--;
+      if (nestingDepth === 0 && objectStartIndex >= 0) {
+        try {
+          parsedObjects.push(JSON.parse(rawText.slice(objectStartIndex, charIndex + 1)));
+        } catch (_) {}
+        objectStartIndex = -1;
+      }
+    }
+  }
+
+  return parsedObjects;
+}
+
+function isLearningItem(target) {
+  return target && typeof target === 'object' && (
+    typeof target.title === 'string' || typeof target.word === 'string'
+  );
+}
+
+/**
+ * Unpacks nested arrays or legacy wrappers into flat learning items.
+ */
+function unpackItems(rawItems) {
+  const normalizedItems = [];
+  const pendingItems = Array.isArray(rawItems) ? [...rawItems] : [rawItems];
+
+  while (pendingItems.length > 0) {
+    const currentItem = pendingItems.shift();
+    const parsedItem = typeof currentItem === 'string' ? parseJson(currentItem) : currentItem;
+    if (!parsedItem) continue;
+
+    if (Array.isArray(parsedItem)) {
+      pendingItems.unshift(...parsedItem);
+      continue;
+    }
+
+    if (!isLearningItem(parsedItem) || parsedItem.title === 'Generated Content') {
+      const nestedContent = parseJson(parsedItem.prompt) || parseJson(parsedItem.content);
+      if (Array.isArray(nestedContent)) {
+        pendingItems.unshift(...nestedContent);
         continue;
       }
     }
-    if (isLearningItem(parsed)) result.push(normalizeItem(parsed));
+
+    if (isLearningItem(parsedItem)) {
+      normalizedItems.push(normalizeItem(parsedItem));
+    }
   }
-  return result;
+
+  return normalizedItems;
 }
 
-function normalizeItem(item, defaults = {}) {
-  const content = parseJson(item.content) || {};
-  const sampleSolution = parseJson(item.sample_solution ?? item.sampleSolution) || {};
-  const rawTitle = String(item.title || item.word || content.word || 'Untitled').trim();
-  // AI often adds a batch-local ordinal ("Câu hỏi 1:") to every title.
-  // The item order already provides numbering, so keep only the real title.
-  const title = rawTitle
+/**
+ * Normalizes learning item attributes and cleans AI title prefixes.
+ */
+function normalizeItem(rawItem, fallbackDefaults = {}) {
+  const contentPayload = parseJson(rawItem.content) || {};
+  const sampleSolution = parseJson(rawItem.sample_solution ?? rawItem.sampleSolution) || {};
+  const rawTitle = String(rawItem.title || rawItem.word || contentPayload.word || 'Untitled').trim();
+
+  const cleanedTitle = rawTitle
     .replace(/^(?:câu hỏi|cau hoi|question)\s*\d+\s*[:.)\-–—]\s*/i, '')
     .trim() || rawTitle;
+
   return {
-    ...item,
-    title,
-    prompt: String(item.prompt || content.example || '').trim(),
-    level: item.level || defaults.level || 'junior',
-    content,
+    ...rawItem,
+    title: cleanedTitle,
+    prompt: String(rawItem.prompt || contentPayload.example || '').trim(),
+    level: rawItem.level || fallbackDefaults.level || 'junior',
+    content: contentPayload,
     sample_solution: sampleSolution,
-    tags: item.tags || defaults.tags || '',
+    tags: rawItem.tags || fallbackDefaults.tags || '',
   };
 }
 

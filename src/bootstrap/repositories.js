@@ -13,6 +13,7 @@ const TechRepository = require('@models/TechRepository');
 const DiscordNotificationRepository = require('@models/DiscordNotificationRepository');
 const TaskRepository = require('@models/TaskRepository');
 const InsightRepository = require('@models/InsightRepository');
+const AgentStateRepository = require('@models/AgentStateRepository');
 
 async function createRepositories() {
   const db = Database.getInstance();
@@ -22,6 +23,7 @@ async function createRepositories() {
   await configRepo.init();
 
   return {
+    db,
     configRepo,
     conversationRepo: new ConversationRepository(db),
     userRepo: new UserRepository(db),
@@ -34,6 +36,8 @@ async function createRepositories() {
     discordNotificationRepo: new DiscordNotificationRepository(db),
     taskRepo: new TaskRepository(db),
     insightRepo: new InsightRepository(db),
+    agentStateRepo: new AgentStateRepository(db),
+    agentStateRepository: new AgentStateRepository(db),
   };
 }
 

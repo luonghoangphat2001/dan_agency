@@ -3,7 +3,32 @@
 const fs = require('fs');
 const path = require('path');
 
-const LOG_DIR = path.join(__dirname, '../../logs');
+/**
+ * Resolve the project root by locating the nearest package.json upward from this file.
+ * This avoids hard-coding a fixed number of "../" hops that break when files are moved.
+ * Priority: LOG_DIR env var > project-root/logs directory.
+ */
+function resolveProjectRoot() {
+  let dir = __dirname;
+  for (let i = 0; i < 10; i++) {
+    if (fs.existsSync(path.join(dir, 'package.json'))) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  // Absolute worst-case fallback: two levels up from src/utils/ is the project root
+  return path.resolve(__dirname, '../..');
+}
+
+const PROJECT_ROOT = resolveProjectRoot();
+const LOG_DIR = process.env.LOG_DIR
+  ? path.resolve(process.env.LOG_DIR)
+  : path.join(PROJECT_ROOT, 'logs');
+const ROOT_LOG_DIR = process.env.ROOT_LOG_DIR
+  ? path.resolve(process.env.ROOT_LOG_DIR)
+  : PROJECT_ROOT;
 const ROOT_LOG_FILES = [
   'stderr.log',
 ];
@@ -196,7 +221,7 @@ class Logger {
     }
 
     for (const filename of ROOT_LOG_FILES) {
-      const full = path.join(__dirname, '../../', filename);
+      const full = path.join(ROOT_LOG_DIR, filename);
       if (!fs.existsSync(full)) {
         continue;
       }
@@ -227,7 +252,7 @@ class Logger {
 
     const full = isDaily
       ? path.join(LOG_DIR, filename)
-      : path.join(__dirname, '../../', filename);
+      : path.join(ROOT_LOG_DIR, filename);
 
     if (fs.existsSync(full)) {
       return full;

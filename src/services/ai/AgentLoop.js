@@ -1,9 +1,31 @@
 'use strict';
 
+const fs           = require('fs');
+const path         = require('path');
+const localization = require('@lang');
+
 /** Maximum number of tool-call iterations before forcing a final text response. */
 // Keep multi-topic Telegram requests within Gemini's quota window while still
 // allowing one search round and one refinement round before final synthesis.
 const MAX_ITERATIONS = 2;
+
+/** Default capability routing prompt used when the capability-router skill is not loaded. */
+const DEFAULT_ROUTING_PROMPT =
+  'Classify this request as JSON only. Choose exactly one capability: '
+  + 'schedule_manage for reminders/calendar/meetings/events/tasks; '
+  + 'company_dashboard_metrics for internal company Dashboard/business data/orders/revenue/products/sales; '
+  + 'web_search for current public web research, search, weather, real-time facts, news, price, public information; '
+  + 'memory for explicit save/recall requests; none for ordinary conversation. '
+  + 'Schema: {"capability":"schedule_manage|company_dashboard_metrics|web_search|memory|none"}.';
+
+/** Default capability→tool map used when capabilities.json is not loaded. */
+const DEFAULT_CAPABILITIES = {
+  schedule_manage:            { tools: ['schedule_manage'],                                        mutating: true  },
+  company_dashboard_metrics:  { tools: ['company_dashboard_metrics'],                              mutating: true  },
+  web_search:                 { tools: ['web_search', 'web_crawl', 'http_fetch', 'browser_automate'], mutating: false },
+  memory:                     { tools: ['save_memory', 'recall_memory'],                           mutating: false },
+  none:                       { tools: null,                                                       mutating: false },
+};
 
 /**
  * Drives a multi-turn AI agent loop.
@@ -28,17 +50,25 @@ class AgentLoop {
   #scheduler;
   /** @type {{userId: string, platform: string, channelId: string}|null} */
   #context = null;
+  /** @type {string} */
+  #routingPrompt;
+  /** @type {Record<string, {tools: string[]|null, mutating: boolean}>} */
+  #capabilityMap;
 
   /**
    * @param {import('./ai/AIProvider')} provider
    * @param {import('./OpenClawService')} openClawService
    * @param {import('../models/InsightRepository')|null} insightRepo
+   * @param {import('./SchedulerService')|null} schedulerService
+   * @param {import('@services/agent/skills/SkillService')|null} skillService
    */
-  constructor(provider, openClawService, insightRepo = null, schedulerService = null) {
+  constructor(provider, openClawService, insightRepo = null, schedulerService = null, skillService = null) {
     this.#provider    = provider;
     this.#openClaw    = openClawService;
     this.#insightRepo = insightRepo;
-    this.#scheduler = schedulerService;
+    this.#scheduler   = schedulerService;
+    this.#routingPrompt = AgentLoop.#loadRoutingPrompt(skillService);
+    this.#capabilityMap = AgentLoop.#loadCapabilityMap(skillService);
   }
 
   /**
@@ -61,8 +91,9 @@ class AgentLoop {
       // round is only for summarising the tool result; exposing the same
       // mutation tool again can create duplicate reminders or actions.
       const isRestricted = Array.isArray(allowedToolNames);
+      const mutatingTools = this.#getMutatingTools();
       const roundTools = iter > 0 && isRestricted && allowedToolNames.some((name) =>
-        ['schedule_manage', 'company_dashboard_metrics'].includes(name)
+        mutatingTools.includes(name)
       ) ? [] : allowedToolNames;
       const round = await this.#provider.chatWithTools(current, systemPrompt, {
         allowedToolNames: roundTools,
@@ -108,7 +139,7 @@ class AgentLoop {
     // (and breaks Gemini's ChatSession input contract).
     const fallback = await this.#provider.chatWithTools(
       current,
-      systemPrompt + '\n\nHãy tổng hợp lại những gì bạn đã tìm được và đưa ra câu trả lời cuối cùng bằng tiếng Việt.',
+      systemPrompt + '\n\n' + localization.t('tools.agent_loop.final_synthesis_instruction'),
       { allowedToolNames: [], requireToolCall: false },
     );
     const text     = fallback.text ?? fallback;
@@ -118,9 +149,8 @@ class AgentLoop {
   }
 
   #formatCompletedAction(toolResults) {
-    const action = toolResults.find(({ name }) =>
-      ['schedule_manage', 'company_dashboard_metrics'].includes(name)
-    );
+    const mutatingTools = this.#getMutatingTools();
+    const action = toolResults.find(({ name }) => mutatingTools.includes(name));
     if (!action) return null;
 
     const data = typeof action.content === 'string'
@@ -134,25 +164,37 @@ class AgentLoop {
       const revenue = data.revenue ?? data.total_revenue ?? 0;
       const products = data.products ?? data.product_count ?? 0;
       const currency = data.currency || 'VND';
-      return `📊 Dashboard công ty — ${period}\n\nĐơn hàng: ${orderCount}\nDoanh thu: ${revenue} ${currency}\nSản phẩm: ${products}`;
+      return localization.t('tools.company_dashboard_metrics.summary', {
+        period,
+        orderCount,
+        revenue,
+        currency,
+        products
+      });
     }
 
     const schedule = data.schedule;
     switch (data.operation) {
       case 'create':
-        return `✅ Đã thêm lịch #${schedule?.id}: ${schedule?.title}\n📅 ${schedule?.remindAt}`;
+        return localization.t('tools.schedule_manage.created', {
+          id: schedule?.id,
+          title: schedule?.title,
+          remindAt: schedule?.remindAt
+        });
       case 'update':
         return data.status === 'not_found'
-          ? '❌ Không tìm thấy lịch cần cập nhật.'
-          : `✅ Đã cập nhật lịch #${schedule?.id || data.scheduleId}.`;
+          ? localization.t('tools.schedule_manage.not_found')
+          : localization.t('tools.schedule_manage.updated', { id: schedule?.id || data.scheduleId });
       case 'delete':
         return data.deleted
-          ? `✅ Đã xóa lịch #${data.scheduleId}.`
-          : `❌ Không tìm thấy lịch #${data.scheduleId}.`;
+          ? localization.t('tools.schedule_manage.deleted', { id: data.scheduleId })
+          : localization.t('tools.schedule_manage.not_found_with_id', { id: data.scheduleId });
       case 'list': {
         const schedules = data.schedules || [];
-        if (!schedules.length) return '📅 Hiện không có lịch phù hợp.';
-        return `📅 Có ${schedules.length} lịch:\n` + schedules
+        if (!schedules.length) {
+          return localization.t('tools.schedule_manage.empty');
+        }
+        return localization.t('tools.schedule_manage.list_header', { count: schedules.length }) + '\n' + schedules
           .map((item) => `#${item.id} — ${item.title} — ${item.remind_at}`)
           .join('\n');
       }
@@ -173,27 +215,63 @@ class AgentLoop {
     try {
       const route = await this.#provider.chat(
         [{ role: 'user', content: prompt }],
-        'Classify this request as JSON only. Choose exactly one capability: '
-        + 'schedule_manage for reminders/calendar/meetings/events/tasks; '
-        + 'company_dashboard_metrics for internal company Dashboard/business data/orders/revenue/products/sales; '
-        + 'web_search for current public web research, search, weather, real-time facts, news, price, public information; '
-        + 'memory for explicit save/recall requests; none for ordinary conversation. '
-        + 'Schema: {"capability":"schedule_manage|company_dashboard_metrics|web_search|memory|none"}.'
+        this.#routingPrompt,
       );
       const raw = String(route?.text ?? route ?? '').replace(/```json?|```/gi, '').trim();
       const capability = JSON.parse(raw).capability;
-      const capabilities = {
-        schedule_manage: ['schedule_manage'],
-        company_dashboard_metrics: ['company_dashboard_metrics'],
-        web_search: ['web_search', 'web_crawl', 'http_fetch', 'browser_automate'],
-        memory: ['save_memory', 'recall_memory'],
-        none: null,
-      };
-      return capabilities[capability] !== undefined ? capabilities[capability] : null;
+      const cfg = this.#capabilityMap[capability];
+      return cfg !== undefined ? cfg.tools : null;
     } catch (error) {
       console.warn('[AgentLoop] capability routing unavailable; using provider auto-routing:', error.message);
       return null;
     }
+  }
+
+  /**
+   * Load capability routing prompt from SkillService or fall back to default.
+   * @param {import('@services/agent/skills/SkillService')|null} skillService
+   * @returns {string}
+   */
+  static #loadRoutingPrompt(skillService) {
+    try {
+      const skill = skillService?.getSkill('capability-router');
+      if (skill?.content) {
+        console.log('[AgentLoop] capability-router prompt loaded from skill');
+        return skill.content;
+      }
+    } catch (_) { /* non-blocking */ }
+    return DEFAULT_ROUTING_PROMPT;
+  }
+
+  /**
+   * Load capability→tool map from skill directory or fall back to default.
+   * @param {import('@services/agent/skills/SkillService')|null} skillService
+   * @returns {Record<string, {tools: string[]|null, mutating: boolean}>}
+   */
+  static #loadCapabilityMap(skillService) {
+    try {
+      const skill = skillService?.getSkill('capability-router');
+      if (skill?.filePath) {
+        const capFile = path.join(path.dirname(skill.filePath), 'capabilities.json');
+        if (fs.existsSync(capFile)) {
+          const map = JSON.parse(fs.readFileSync(capFile, 'utf8'));
+          console.log('[AgentLoop] capabilities.json loaded from skill');
+          return map;
+        }
+      }
+    } catch (_) { /* non-blocking */ }
+    return DEFAULT_CAPABILITIES;
+  }
+
+  /**
+   * Returns the list of tool names considered side-effecting/mutating.
+   * Derived dynamically from the capability map — no hardcoded list.
+   * @returns {string[]}
+   */
+  #getMutatingTools() {
+    return Object.values(this.#capabilityMap)
+      .filter((cfg) => cfg.mutating && Array.isArray(cfg.tools))
+      .flatMap((cfg) => cfg.tools);
   }
 
   /**
@@ -228,7 +306,7 @@ class AgentLoop {
           this.#context.userId, this.#context.platform, this.#context.channelId,
           args.key, args.value, args.source || undefined
         );
-        return JSON.stringify({ ok: true, message: `Đã lưu: ${args.key}` });
+        return JSON.stringify({ ok: true, message: localization.t('tools.save_memory.saved', { key: args.key }) });
       }
       case 'recall_memory': {
         if (!this.#insightRepo || !this.#context) return JSON.stringify([]);
@@ -290,7 +368,7 @@ class AgentLoop {
         }
       }
     } catch (_) {}
-    return { results: [], message: `Không tìm thấy kết quả trực tuyến cho "${query}"` };
+    return { results: [], message: localization.t('tools.web_search.no_results', { query }) };
   }
 }
 

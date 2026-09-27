@@ -69,9 +69,24 @@ function createApiRouter(controllers) {
   userRouter.post('/password', authUser, controllers.user.changePassword);
   router.use('/', userRouter);
 
+  // ─── Autonomous ReAct Agent ───────────────────────────────────────────────
+  if (controllers.agent) {
+    const agentRouter = Router();
+    agentRouter.post('/chat', authUser, controllers.agent.chat);
+    agentRouter.get('/tools', authUser, controllers.agent.listTools);
+    agentRouter.get('/runs/:id', authUser, controllers.agent.getRun);
+    router.use('/agent', agentRouter);
+
+    // Public / web token endpoint aliases
+    publicRouter.post('/agent/chat', controllers.agent.chat);
+    publicRouter.get('/agent/tools', controllers.agent.listTools);
+    publicRouter.get('/agent/runs/:id', controllers.agent.getRun);
+  }
+
   // ─── Admin: configuration, models and analytics ───────────────────────────
   const configRouter = Router();
   configRouter.get('/', authAdmin, controllers.config.get);
+  configRouter.get('/meta', authAdmin, controllers.config.getMeta);
   configRouter.post('/', authAdmin, controllers.config.update);
   router.use('/config', configRouter);
 

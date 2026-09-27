@@ -16,12 +16,14 @@ const VocabularyController = require('@controllers/VocabularyController');
 const QuizController = require('@controllers/QuizController');
 const TechController = require('@controllers/TechController');
 const DiscordNotificationController = require('@controllers/DiscordNotificationController');
+const AgentController = require('@controllers/AgentController');
 const OpenClawMonitorService = require('@services/openclaw/OpenClawMonitorService');
 const TokenService = require('@services/auth/TokenService');
 
 function buildControllers(dependencies) {
   const {
     aiService,
+    agentService,
     configRepo,
     conversationRepo,
     userRepo,
@@ -43,6 +45,7 @@ function buildControllers(dependencies) {
   return {
     auth: new AuthController(userRepo, TokenService),
     chat: new ChatController(aiService),
+    agent: agentService ? new AgentController(agentService) : null,
     config: new ConfigController(configRepo),
     history: new HistoryController(conversationRepo),
     log: new LogController(),

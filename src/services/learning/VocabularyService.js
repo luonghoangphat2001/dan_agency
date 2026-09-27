@@ -1,6 +1,7 @@
 'use strict';
 
 const TimeUtils = require('@utils/TimeUtils');
+const SkillService = require('@services/agent/skills/SkillService');
 
 /**
  * Daily vocabulary notification workflow.
@@ -10,14 +11,18 @@ class VocabularyService {
   #vocabRepo;
   /** @type {import('../models/ConfigRepository')} */
   #configRepo;
+  /** @type {import('@services/agent/skills/SkillService')} */
+  #skillService;
 
   /**
    * @param {import('../models/VocabularyRepository')} vocabRepo
    * @param {import('../models/ConfigRepository')} configRepo
+   * @param {import('@services/agent/skills/SkillService')|null} skillService
    */
-  constructor(vocabRepo, configRepo) {
+  constructor(vocabRepo, configRepo, skillService = null) {
     this.#vocabRepo = vocabRepo;
     this.#configRepo = configRepo;
+    this.#skillService = skillService || SkillService.getInstance();
   }
 
   getConfig() {
@@ -134,12 +139,23 @@ class VocabularyService {
       const line3 = `Ex: ${w.example || 'No example available'}`;
       const line4 = `Trans: ${w.note || 'No translation available'}`;
       return [line1, line2, line3, line4].join('\n');
-    });
+    }).join('\n\n──────────────\n');
+
+    const skill = this.#skillService?.getSkill('learning-vocabulary');
+    const discordTemplate = skill?.sections?.discord_template || skill?.sections?.['discord template'];
+    if (discordTemplate && this.#skillService) {
+      return this.#skillService.renderTemplate(discordTemplate, {
+        topicNo: topic.topic_no,
+        topicName: topic.topic_name,
+        wordBlocks,
+      });
+    }
+
     return [
       "📚 **TODAY'S VOCABULARY LESSON**",
       `Topic ${topic.topic_no}: **${topic.topic_name}**`,
       '──────────────',
-      wordBlocks.join('\n\n──────────────\n'),
+      wordBlocks,
     ].join('\n');
   }
 
