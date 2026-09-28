@@ -248,7 +248,7 @@ watch(
     { immediate: true },
 )
 
-const providers = ref(providerConfig.fallbackProviders)
+const providers = ref([])
 
 const getProviderIcon = (key) => {
     const providerKeyString = String(key || "").toLowerCase()
@@ -258,9 +258,7 @@ const getProviderIcon = (key) => {
     return matchedKey ? providerConfig.providerIcons[matchedKey] : providerConfig.providerIcons.default
 }
 
-const modelOptions = reactive(
-    Object.fromEntries(providerConfig.defaultProviderList.map((providerName) => [providerName, []]))
-)
+const modelOptions = reactive({})
 
 const platforms = ref([])
 const additionalProviders = ref([])
@@ -356,7 +354,7 @@ const load = async () => {
 
     providers.value = config.ai_providers?.length
         ? config.ai_providers.map((providerItem) => ({ ...providerItem, key: providerItem.key || providerItem.id }))
-        : providerConfig.fallbackProviders
+        : []
 
     additionalProviders.value.forEach((providerItem) => {
         if (form[providerItem.field] === undefined) {
