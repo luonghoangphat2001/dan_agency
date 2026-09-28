@@ -258,9 +258,8 @@ const getProviderIcon = (key) => {
     return matchedKey ? providerConfig.providerIcons[matchedKey] : providerConfig.providerIcons.default
 }
 
-const allProviders = ref([...providerConfig.defaultProviderList])
 const modelOptions = reactive(
-    Object.fromEntries(allProviders.value.map((providerName) => [providerName, []]))
+    Object.fromEntries(providerConfig.defaultProviderList.map((providerName) => [providerName, []]))
 )
 
 const platforms = ref([])
@@ -357,7 +356,7 @@ const load = async () => {
 
     providers.value = config.ai_providers?.length
         ? config.ai_providers.map((providerItem) => ({ ...providerItem, key: providerItem.key || providerItem.id }))
-        : fallbackProviders
+        : providerConfig.fallbackProviders
 
     additionalProviders.value.forEach((providerItem) => {
         if (form[providerItem.field] === undefined) {
@@ -388,7 +387,16 @@ const load = async () => {
         }
     })
 
-    const providerKeyList = allProviders.value
+    // Derive provider key list from API response (providers already updated above)
+    const providerKeyList = providers.value.map((p) => p.key || p.id).filter(Boolean)
+
+    // Ensure modelOptions has entries for all API providers
+    providerKeyList.forEach((providerKey) => {
+        if (!(providerKey in modelOptions)) {
+            modelOptions[providerKey] = []
+        }
+    })
+
     const modelFetchResults = await Promise.all(
         providerKeyList.map((providerName) => getModelsByProvider(providerName).catch(() => ({ models: [] })))
     )
