@@ -53,127 +53,76 @@ jobs:
           cache-to: type=gha,mode=max
 
       # ========================================================
-      # SERVER DEPLOYMENT (api.hpdev.name.vn)
+      # SERVER DEPLOYMENT (api.hpdev.name.vn) via native SSH
       # ========================================================
       - name: Package API Files
         run: |
-          tar --exclude='.git' --exclude='node_modules' --exclude='.github' --exclude='.env' --exclude='api.tar.gz' -czf ../api.tar.gz .
+          tar --exclude='.git' \
+              --exclude='node_modules' \
+              --exclude='.github' \
+              --exclude='.env' \
+              --exclude='api.tar.gz' \
+              -czf ../api.tar.gz .
           mv ../api.tar.gz ./api.tar.gz
 
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add Server to Known Hosts
+        run: |
+          mkdir -p ~/.ssh
+          # Fetch and verify the host key to prevent MITM
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+          chmod 600 ~/.ssh/known_hosts
+
       - name: Upload api.tar.gz to Server
-        id: scp_upload
-        uses: appleboy/scp-action@v0.1.7
-        continue-on-error: true
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "api.tar.gz"
-          target: "/home/hpdev/api.hpdev.name.vn"
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          scp \
+            -P "$SSH_PORT" \
+            -o ConnectTimeout=30 \
+            -o ServerAliveInterval=15 \
+            -o BatchMode=yes \
+            ./api.tar.gz \
+            "$SSH_USER@$SSH_HOST:/home/hpdev/api.hpdev.name.vn/api.tar.gz"
 
-      - name: "Wait before SCP retry if handshake failed"
-        if: steps.scp_upload.outcome == 'failure'
-        run: sleep 20
+      - name: Deploy & Restart on Server
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh \
+            -p "$SSH_PORT" \
+            -o ConnectTimeout=30 \
+            -o ServerAliveInterval=15 \
+            -o BatchMode=yes \
+            "$SSH_USER@$SSH_HOST" bash -s << 'REMOTE_SCRIPT'
+              set -e
+              TARGET_DIR="/home/hpdev/api.hpdev.name.vn"
+              STAGING_DIR="/home/hpdev/.deploy-api-$$"
+              rm -rf "$STAGING_DIR"
+              mkdir -p "$STAGING_DIR"
 
-      - name: "Upload api.tar.gz to Server (Retry)"
-        if: steps.scp_upload.outcome == 'failure'
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "api.tar.gz"
-          target: "/home/hpdev/api.hpdev.name.vn"
-
-      - name: Deploy & Seed on Server
-        id: ssh_deploy
-        uses: appleboy/ssh-action@v1.0.3
-        continue-on-error: true
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          timeout: 60s
-          command_timeout: 5m
-          script: |
-            TARGET_DIR="/home/hpdev/api.hpdev.name.vn"
-            STAGING_DIR="/home/hpdev/.deploy-api-${{ github.sha }}"
-            rm -rf "$STAGING_DIR"
-            mkdir -p "$STAGING_DIR"
-
-            if [ -f "$TARGET_DIR/api.tar.gz" ]; then
               tar -xzf "$TARGET_DIR/api.tar.gz" -C "$STAGING_DIR"
               rm -f "$TARGET_DIR/api.tar.gz"
-            fi
 
-            # Kích hoạt môi trường NodeJS cPanel (đúng venv của api)
-            source /home/hpdev/nodevenv/api.hpdev.name.vn/19/bin/activate
+              source /home/hpdev/nodevenv/api.hpdev.name.vn/19/bin/activate
 
-            # Install/verify dependencies before replacing live application
-            # files. This prevents Passenger from restarting midway through a
-            # deployment and returning 503/MODULE_NOT_FOUND.
-            cp "$STAGING_DIR/package.json" "$TARGET_DIR/package.json"
-            if [ -f "$STAGING_DIR/package-lock.json" ]; then
-              cp "$STAGING_DIR/package-lock.json" "$TARGET_DIR/package-lock.json"
-            fi
-            cd "$TARGET_DIR"
-            npm install --omit=dev --no-audit --no-fund
-            node -e "require('dotenv'); require('express'); require('mysql2')"
+              cp "$STAGING_DIR/package.json" "$TARGET_DIR/package.json"
+              [ -f "$STAGING_DIR/package-lock.json" ] && cp "$STAGING_DIR/package-lock.json" "$TARGET_DIR/package-lock.json"
+              cd "$TARGET_DIR"
+              npm install --omit=dev --no-audit --no-fund
 
-            cp -a "$STAGING_DIR/." "$TARGET_DIR/"
-            rm -rf "$STAGING_DIR"
+              cp -a "$STAGING_DIR/." "$TARGET_DIR/"
+              rm -rf "$STAGING_DIR"
+              find "$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
 
-            # Dọn dẹp file rác macOS
-            find "$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
-
-            # Khởi động lại Passenger NodeJS
-            mkdir -p "$TARGET_DIR/tmp" && touch "$TARGET_DIR/tmp/restart.txt"
-            echo "==> [API] Deploy hoàn tất siêu tốc lúc $(date)!"
-
-      - name: "Wait before retry if SSH handshake failed"
-        if: steps.ssh_deploy.outcome == 'failure'
-        run: sleep 15
-
-      - name: "Deploy & Seed on Server (Retry)"
-        if: steps.ssh_deploy.outcome == 'failure'
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          timeout: 60s
-          command_timeout: 5m
-          script: |
-            TARGET_DIR="/home/hpdev/api.hpdev.name.vn"
-            STAGING_DIR="/home/hpdev/.deploy-api-${{ github.sha }}"
-            rm -rf "$STAGING_DIR"
-            mkdir -p "$STAGING_DIR"
-
-            if [ -f "$TARGET_DIR/api.tar.gz" ]; then
-              tar -xzf "$TARGET_DIR/api.tar.gz" -C "$STAGING_DIR"
-              rm -f "$TARGET_DIR/api.tar.gz"
-            fi
-
-            source /home/hpdev/nodevenv/api.hpdev.name.vn/19/bin/activate
-            cp "$STAGING_DIR/package.json" "$TARGET_DIR/package.json"
-            if [ -f "$STAGING_DIR/package-lock.json" ]; then
-              cp "$STAGING_DIR/package-lock.json" "$TARGET_DIR/package-lock.json"
-            fi
-            cd "$TARGET_DIR"
-            npm install --omit=dev --no-audit --no-fund
-            node -e "require('dotenv'); require('express'); require('mysql2')"
-
-            cp -a "$STAGING_DIR/." "$TARGET_DIR/"
-            rm -rf "$STAGING_DIR"
-
-            find "$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
-            mkdir -p "$TARGET_DIR/tmp" && touch "$TARGET_DIR/tmp/restart.txt"
-            echo "==> [API] Deploy hoàn tất siêu tốc lúc $(date)!"
+              mkdir -p "$TARGET_DIR/tmp" && touch "$TARGET_DIR/tmp/restart.txt"
+              echo "==> [API] Deploy hoàn tất lúc $(date)!"
+REMOTE_SCRIPT

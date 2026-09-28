@@ -14,7 +14,7 @@ function configureSecurity(app) {
 
   const allowedOrigins = config.cors.origins;
 
-  app.use(cors({
+  const corsOptions = {
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
@@ -26,7 +26,14 @@ function configureSecurity(app) {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-API-Key'],
     maxAge: 3600,
-  }));
+  };
+
+  // Respond to all OPTIONS preflight requests immediately.
+  // This must come before any other middleware so that reverse proxies
+  // (Nginx / Caddy upstream) that strip CORS headers still get a valid 204.
+  app.options('*', cors(corsOptions));
+
+  app.use(cors(corsOptions));
 }
 
 module.exports = configureSecurity;
