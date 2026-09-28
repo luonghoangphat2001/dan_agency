@@ -103,26 +103,26 @@ jobs:
             -o ServerAliveInterval=15 \
             -o BatchMode=yes \
             "$SSH_USER@$SSH_HOST" bash -s << 'REMOTE_SCRIPT'
-              set -e
-              TARGET_DIR="/home/hpdev/api.hpdev.name.vn"
-              STAGING_DIR="/home/hpdev/.deploy-api-$$"
-              rm -rf "$STAGING_DIR"
-              mkdir -p "$STAGING_DIR"
+set -e
+TARGET_DIR="/home/hpdev/api.hpdev.name.vn"
+STAGING_DIR="/home/hpdev/.deploy-api-$$"
+rm -rf "$STAGING_DIR"
+mkdir -p "$STAGING_DIR"
 
-              tar -xzf "$TARGET_DIR/api.tar.gz" -C "$STAGING_DIR"
-              rm -f "$TARGET_DIR/api.tar.gz"
+tar -xzf "$TARGET_DIR/api.tar.gz" -C "$STAGING_DIR"
+rm -f "$TARGET_DIR/api.tar.gz"
 
-              source /home/hpdev/nodevenv/api.hpdev.name.vn/19/bin/activate
+source /home/hpdev/nodevenv/api.hpdev.name.vn/19/bin/activate
 
-              cp "$STAGING_DIR/package.json" "$TARGET_DIR/package.json"
-              [ -f "$STAGING_DIR/package-lock.json" ] && cp "$STAGING_DIR/package-lock.json" "$TARGET_DIR/package-lock.json"
-              cd "$TARGET_DIR"
-              npm install --omit=dev --no-audit --no-fund
+cp "$STAGING_DIR/package.json" "$TARGET_DIR/package.json"
+[ -f "$STAGING_DIR/package-lock.json" ] && cp "$STAGING_DIR/package-lock.json" "$TARGET_DIR/package-lock.json"
+cd "$TARGET_DIR"
+npm install --omit=dev --no-audit --no-fund
 
-              cp -a "$STAGING_DIR/." "$TARGET_DIR/"
-              rm -rf "$STAGING_DIR"
-              find "$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
+cp -a "$STAGING_DIR/." "$TARGET_DIR/"
+rm -rf "$STAGING_DIR"
+find "$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
 
-              mkdir -p "$TARGET_DIR/tmp" && touch "$TARGET_DIR/tmp/restart.txt"
-              echo "==> [API] Deploy hoàn tất lúc $(date)!"
+mkdir -p "$TARGET_DIR/tmp" && touch "$TARGET_DIR/tmp/restart.txt"
+echo "==> [API] Deploy hoàn tất lúc $(date)!"
 REMOTE_SCRIPT
