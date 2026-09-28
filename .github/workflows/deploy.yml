@@ -82,29 +82,29 @@ jobs:
             ./dist.tar.gz \
             "$SSH_USER@$SSH_HOST:/home/hpdev/ai.hpdev.name.vn/dist.tar.gz"
 
-      - name: Extract & Deploy on Server
+      - name: Deploy on Server
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
           GH_SHA: ${{ github.sha }}
+          DEPLOY_SCRIPT: |
+            set -e
+            TARGET_DIR="/home/hpdev/ai.hpdev.name.vn"
+            cd "$TARGET_DIR"
+            rm -rf "$TARGET_DIR/assets" "$TARGET_DIR/images"
+            tar -xzf dist.tar.gz -C "$TARGET_DIR"
+            rm -f dist.tar.gz
+            grep -q "$GH_SHA" "$TARGET_DIR/version.json"
+            find "$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
+            echo "==> [AI] Deploy hoàn tất lúc $(date)!"
         run: |
-          ssh \
+          echo "$DEPLOY_SCRIPT" | ssh \
             -p "$SSH_PORT" \
             -o ConnectTimeout=30 \
             -o ServerAliveInterval=15 \
             -o BatchMode=yes \
-            "$SSH_USER@$SSH_HOST" bash << REMOTE_SCRIPT
-              set -e
-              TARGET_DIR="/home/hpdev/ai.hpdev.name.vn"
-              cd "\$TARGET_DIR"
-              rm -rf "\$TARGET_DIR/assets" "\$TARGET_DIR/images"
-              tar -xzf dist.tar.gz -C "\$TARGET_DIR"
-              rm -f dist.tar.gz
-              grep -q "${GH_SHA}" "\$TARGET_DIR/version.json"
-              find "\$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
-              echo "==> [AI] Deploy hoàn tất lúc \$(date)!"
-REMOTE_SCRIPT
+            "$SSH_USER@$SSH_HOST" bash
 
       - name: Verify production release
         run: |
