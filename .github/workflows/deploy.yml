@@ -73,7 +73,6 @@ jobs:
       - name: Add Server to Known Hosts
         run: |
           mkdir -p ~/.ssh
-          # Fetch and verify the host key to prevent MITM
           ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
           chmod 600 ~/.ssh/known_hosts
 
@@ -96,33 +95,28 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
+          DEPLOY_SCRIPT: |
+            set -e
+            TARGET_DIR="/home/hpdev/api.hpdev.name.vn"
+            STAGING_DIR="/home/hpdev/.deploy-api-$$"
+            rm -rf "$STAGING_DIR"
+            mkdir -p "$STAGING_DIR"
+            tar -xzf "$TARGET_DIR/api.tar.gz" -C "$STAGING_DIR"
+            rm -f "$TARGET_DIR/api.tar.gz"
+            source /home/hpdev/nodevenv/api.hpdev.name.vn/19/bin/activate
+            cp "$STAGING_DIR/package.json" "$TARGET_DIR/package.json"
+            [ -f "$STAGING_DIR/package-lock.json" ] && cp "$STAGING_DIR/package-lock.json" "$TARGET_DIR/package-lock.json"
+            cd "$TARGET_DIR"
+            npm install --omit=dev --no-audit --no-fund
+            cp -a "$STAGING_DIR/." "$TARGET_DIR/"
+            rm -rf "$STAGING_DIR"
+            find "$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
+            mkdir -p "$TARGET_DIR/tmp" && touch "$TARGET_DIR/tmp/restart.txt"
+            echo "==> [API] Deploy hoàn tất lúc $(date)!"
         run: |
-          ssh \
+          echo "$DEPLOY_SCRIPT" | ssh \
             -p "$SSH_PORT" \
             -o ConnectTimeout=30 \
             -o ServerAliveInterval=15 \
             -o BatchMode=yes \
-            "$SSH_USER@$SSH_HOST" bash -s << 'REMOTE_SCRIPT'
-set -e
-TARGET_DIR="/home/hpdev/api.hpdev.name.vn"
-STAGING_DIR="/home/hpdev/.deploy-api-$$"
-rm -rf "$STAGING_DIR"
-mkdir -p "$STAGING_DIR"
-
-tar -xzf "$TARGET_DIR/api.tar.gz" -C "$STAGING_DIR"
-rm -f "$TARGET_DIR/api.tar.gz"
-
-source /home/hpdev/nodevenv/api.hpdev.name.vn/19/bin/activate
-
-cp "$STAGING_DIR/package.json" "$TARGET_DIR/package.json"
-[ -f "$STAGING_DIR/package-lock.json" ] && cp "$STAGING_DIR/package-lock.json" "$TARGET_DIR/package-lock.json"
-cd "$TARGET_DIR"
-npm install --omit=dev --no-audit --no-fund
-
-cp -a "$STAGING_DIR/." "$TARGET_DIR/"
-rm -rf "$STAGING_DIR"
-find "$TARGET_DIR" -name '._*' -delete 2>/dev/null || true
-
-mkdir -p "$TARGET_DIR/tmp" && touch "$TARGET_DIR/tmp/restart.txt"
-echo "==> [API] Deploy hoàn tất lúc $(date)!"
-REMOTE_SCRIPT
+            "$SSH_USER@$SSH_HOST" bash
