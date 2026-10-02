@@ -11,7 +11,7 @@ class ReportingConfig {
       time: reader.requireString('DAILY_REPORT_TIME'),
       agentTimeoutMs: reader.requireNumber('DAILY_REPORT_AGENT_TIMEOUT_MS'),
     });
-    this.orchestratorProductionEnabled = reader.requireBoolean('ORCHESTRATOR_PRODUCTION_ENABLED');
+    this.orchestratorProductionEnabled = reader.requireBoolean('PRODUCTION_ENABLED');
     Object.freeze(this);
   }
 }

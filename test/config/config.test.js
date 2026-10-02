@@ -20,7 +20,7 @@ describe('Config', () => {
     DAILY_REPORT_TIMEZONE: 'Asia/Ho_Chi_Minh',
     DAILY_REPORT_TIME: '22:00',
     DAILY_REPORT_AGENT_TIMEOUT_MS: '10000',
-    ORCHESTRATOR_PRODUCTION_ENABLED: 'false',
+    PRODUCTION_ENABLED: 'false',
     INTELLIGENCE_LATENCY_WARNING_MS: '3000',
     INTELLIGENCE_TOKEN_WARNING: '4000',
     INTELLIGENCE_COST_WARNING_USD: '0.05',
@@ -28,12 +28,12 @@ describe('Config', () => {
     CEO_DAILY_BRIEF_TIMEZONE: 'Asia/Ho_Chi_Minh',
     CEO_DAILY_BRIEF_TIME: '07:30',
     CEO_DAILY_BRIEF_SECTION_TIMEOUT_MS: '5000',
-    ORCHESTRATOR_DB_HOST: '127.0.0.1',
-    ORCHESTRATOR_DB_PORT: '3306',
-    ORCHESTRATOR_DB_NAME: 'dan_ai',
-    ORCHESTRATOR_DB_USER: 'dan_ai_user',
-    ORCHESTRATOR_DB_POOL_MAX: '10',
-    ORCHESTRATOR_DB_POOL_MIN: '2',
+    DB_HOST: '127.0.0.1',
+    DB_PORT: '3306',
+    DB_NAME: 'dan_ai',
+    DB_USER: 'dan_ai_user',
+    DB_POOL_MAX: '10',
+    DB_POOL_MIN: '2',
   };
 
   test('successfully instantiates when all required environment variables are present', () => {
