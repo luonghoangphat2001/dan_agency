@@ -102,7 +102,7 @@ Tài liệu đặc tả chi tiết 20 Test Cases bao phủ toàn bộ luồng ng
   - *Kịch bản A*: Bị chặn lại và tự động chuyển hướng về `/login`.
   - *Kịch bản B*: Trang login có `guestOnly: true` nên tự động điều hướng vào `/chat`.
   - *Kịch bản C*: URL có `requiresAdmin: true` nên người dùng bị chặn và chuyển về `/chat`.
-  - *Kịch bản D*: Hệ thống chuyển tiếp qua external domain `https://learning.hpdev.name.vn/vocabulary`.
+  - *Kịch bản D*: Hệ thống chuyển tiếp tới domain được cấu hình bởi `VITE_LEARNING_URL` (local mặc định `http://localhost:8004/vocabulary`, production cấu hình `https://learning.hpdev.name.vn/vocabulary`).
 - **Kết quả thực tế (Actual Result)**: ✅ **PASS**
   - **Bằng chứng (Evidence)**:
     - `router.beforeEach` kích hoạt kiểm tra tuần tự `requiresAuth`, `guestOnly`, và `requiresAdmin`.

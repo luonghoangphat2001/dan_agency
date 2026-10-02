@@ -22,7 +22,7 @@
             </router-link>
 
             <!-- Learning Studio link -->
-            <a href="https://learning.hpdev.name.vn/" target="_blank" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/80 hover:text-gray-900 dark:hover:text-white">
+            <a :href="learningUrl" target="_blank" rel="noopener noreferrer" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/80 hover:text-gray-900 dark:hover:text-white">
                 <i class="fa-solid fa-graduation-cap w-4 text-center text-sm"></i>
                 <span v-if="!collapsed" class="sidebar-label flex-1">Learning Studio</span>
                 <i v-if="!collapsed" class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-400"></i>
@@ -145,6 +145,7 @@ import { useI18n } from "@/lang"
 const authStore = useAuthStore()
 const { isDark, toggleTheme } = useTheme()
 const { locale: currentActiveLocale, setLocale } = useI18n()
+const learningUrl = import.meta.env.VITE_LEARNING_URL || "http://localhost:8004/"
 
 const collapsed = ref(false)
 const mobileOpen = ref(false)

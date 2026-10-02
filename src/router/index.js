@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
+const learningUrl = import.meta.env.VITE_LEARNING_URL || 'http://localhost:8004/';
+
 const routes = [
   {
     path: '/',
@@ -26,7 +28,7 @@ const routes = [
         ? to.params.pathMatch.join('/')
         : to.params.pathMatch;
       const suffix = pathMatch ? `/${pathMatch}` : '/';
-      window.location.replace(`https://learning.hpdev.name.vn${suffix}`);
+      window.location.replace(`${learningUrl.replace(/\/$/, '')}${suffix}`);
       return false;
     },
   },

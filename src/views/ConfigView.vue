@@ -119,11 +119,42 @@
                         <i class="fa-solid fa-robot text-sky-500"></i>
                         <span>Model từng OpenClaw Agent</span>
                     </h2>
-                    <p>Chọn provider và model chính / fallback riêng cho 5 agent (R&D, Logistics, CFO, Operations, CSKH).</p>
+                    <p>Chọn loại model AI trước, sau đó chọn model chính / fallback riêng cho 5 agent (R&D, Logistics, CFO, Operations, CSKH).</p>
                     <div class="space-y-4">
-                        <div v-for="agent in agents" :key="agent.key" class="grid md:grid-cols-[180px_1fr_1fr] gap-3 items-end p-4 rounded-xl bg-gray-900/60 border border-gray-700">
+                        <div v-for="agent in agents" :key="agent.key" class="grid md:grid-cols-[180px_1fr_1fr] gap-3 items-start p-4 rounded-xl bg-gray-900/60 border border-gray-700">
                             <strong class="text-sm text-indigo-300">{{ agent.label }}</strong>
-                            <label> <span class="label">Primary model</span><input v-model.trim="form[`agent_${agent.key}_primary`]" class="field" placeholder="provider:model" /></label><label><span class="label">Fallback model</span><input v-model.trim="form[`agent_${agent.key}_fallback`]" class="field" placeholder="provider:model" /></label>
+                            <div v-for="role in agentModelRoles" :key="`${agent.key}-${role.key}`" class="space-y-2">
+                                <span class="label">{{ role.label }}</span>
+                                <label class="sr-only" :for="`${agent.key}-${role.key}-provider`">{{ role.label }} provider</label>
+                                <select
+                                    :id="`${agent.key}-${role.key}-provider`"
+                                    :value="getAgentProvider(agent, role.key)"
+                                    @change="setAgentProvider(agent, role.key, $event.target.value)"
+                                    class="field"
+                                >
+                                    <option value="" disabled>-- Chọn loại model AI --</option>
+                                    <option v-for="provider in providers" :key="provider.key" :value="provider.key">
+                                        {{ provider.label || provider.shortLabel || provider.key }}
+                                    </option>
+                                </select>
+                                <label class="sr-only" :for="`${agent.key}-${role.key}-model`">{{ role.label }} model</label>
+                                <select
+                                    :id="`${agent.key}-${role.key}-model`"
+                                    :value="getAgentModel(agent, role.key)"
+                                    @change="setAgentModel(agent, role.key, $event.target.value)"
+                                    :disabled="!getAgentProvider(agent, role.key)"
+                                    class="field disabled:opacity-50"
+                                >
+                                    <option value="" disabled>-- Chọn model --</option>
+                                    <option
+                                        v-for="model in getAgentModelOptions(agent, role.key)"
+                                        :key="model.id"
+                                        :value="model.id"
+                                    >
+                                        {{ model.label }}
+                                    </option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -259,6 +290,12 @@ const getProviderIcon = (key) => {
 }
 
 const modelOptions = reactive({})
+const agentModelProviders = reactive({})
+
+const agentModelRoles = [
+    { key: "primary", label: "Primary model" },
+    { key: "fallback", label: "Fallback model" },
+]
 
 const platforms = ref([])
 const additionalProviders = ref([])
@@ -310,6 +347,64 @@ const ensureModel = (providerName, modelValue) => {
     if (modelValue && modelOptions[providerName] && !modelOptions[providerName].some((modelItem) => modelItem.id === modelValue)) {
         modelOptions[providerName].unshift({ id: modelValue, label: modelValue })
     }
+}
+
+const splitAgentModel = (value) => {
+    const serializedValue = String(value || "")
+    const separatorIndex = serializedValue.indexOf(":")
+    if (separatorIndex === -1) {
+        return { provider: "", model: serializedValue }
+    }
+    return {
+        provider: serializedValue.slice(0, separatorIndex),
+        model: serializedValue.slice(separatorIndex + 1),
+    }
+}
+
+const agentFieldKey = (agent, role) => `agent_${agent.key}_${role}`
+
+const getAgentProvider = (agent, role) => agentModelProviders[agentFieldKey(agent, role)] || ""
+
+const getAgentModel = (agent, role) => {
+    const fieldKey = agentFieldKey(agent, role)
+    const { model } = splitAgentModel(form[fieldKey])
+    return model
+}
+
+const getAgentModelOptions = (agent, role) => {
+    const options = modelOptions[getAgentProvider(agent, role)] || []
+    const currentModel = getAgentModel(agent, role)
+    if (currentModel && !options.some((modelItem) => modelItem.id === currentModel)) {
+        return [{ id: currentModel, label: currentModel }, ...options]
+    }
+    return options
+}
+
+const setAgentProvider = (agent, role, provider) => {
+    const fieldKey = agentFieldKey(agent, role)
+    agentModelProviders[fieldKey] = provider
+    const currentModel = getAgentModel(agent, role)
+    const availableModels = modelOptions[provider] || []
+    const selectedModel = availableModels.some((modelItem) => modelItem.id === currentModel)
+        ? currentModel
+        : availableModels[0]?.id || ""
+    form[fieldKey] = provider && selectedModel ? `${provider}:${selectedModel}` : ""
+}
+
+const setAgentModel = (agent, role, model) => {
+    const fieldKey = agentFieldKey(agent, role)
+    const provider = getAgentProvider(agent, role)
+    form[fieldKey] = provider && model ? `${provider}:${model}` : ""
+}
+
+const syncAgentModelProviders = () => {
+    agents.value.forEach((agent) => {
+        agentModelRoles.forEach(({ key: role }) => {
+            const fieldKey = agentFieldKey(agent, role)
+            const parsed = splitAgentModel(form[fieldKey])
+            agentModelProviders[fieldKey] = parsed.provider
+        })
+    })
 }
 
 const load = async () => {
@@ -407,6 +502,8 @@ const load = async () => {
             ensureModel(providerName, activeModelName)
         }
     })
+
+    syncAgentModelProviders()
 }
 
 const save = async () => {
