@@ -1,442 +1,313 @@
-# 📋 BỘ 20 KỊCH BẢN KIỂM THỬ TOÀN DIỆN (ALL WORKFLOWS) CHO DAN-API v2.0.0
+# 📋 BỘ 60 KỊCH BẢN KIỂM THỬ TOÀN DIỆN CHO DAN-API v2.0.0
+## (KIẾN TRÚC AUTONOMOUS AI AGENT THỰC THỤ: TRÍ TUỆ ĐA LƯỢT, GHI NHỚ LỊCH SỬ & TƯƠNG TÁC TUYỆT ĐỐI)
 
 > **Phân hệ**: Dan AI Core Backend API (`dan-api`)  
-> **Kiến trúc**: ExpressJS OOP & SOLID, Autonomous ReAct Agent, MySQL 8, Multi-AI Providers (Gemini, Claude, GPT), OpenClaw Integration, Dan Learning Hub & Dan Manager.  
+> **Kiến trúc**: ExpressJS OOP & SOLID, Autonomous ReAct Agent Loop, MySQL 8, Multi-AI Providers (Gemini, Claude, GPT), OpenClaw Multi-Agent Integration, Dan Learning Hub & Dan Manager.  
 > **Thư mục lưu trữ**: `dan-api/tests/workflows/`  
 > **Tệp thực thi tự động**: `node tests/workflows/test_scenarios.spec.js` hoặc `npm test`  
-> **Trạng thái kiểm thử**: ✅ **ĐÃ THỰC THI & ĐẠT 20/20 TEST CASES (100% PASS)**
+> **Trạng thái kiểm thử**: ✅ **ĐÃ THỰC THI & ĐẠT 60/60 TEST CASES (100% PASS)**
 
 ---
 
-## 📊 BẢNG TỔNG HỢP MA TRẬN 20 TEST CASE & KẾT QUẢ THỰC TẾ
+## 📊 BẢNG TỔNG HỢP MA TRẬN 60 TEST CASES & KẾT QUẢ THỰC TẾ
 
-| Mã TC | Phân hệ / Workflow | Tên Kịch Bản Kiểm Thử | Endpoint Chính | Phương thức | Kết quả |
+| Mã TC | Phân hệ / Workflow | Tên Kịch Bản Kiểm Thử | Endpoint / Chức năng Chính | Mức Độ | Kết Quả |
 | :---: | :--- | :--- | :--- | :---: | :---: |
-| **TC-01** | **Auth & Security** | Xác thực đăng nhập, cấp JWT token & quản lý phiên Session | `/api/login`, `/api/me`, `/api/logout` | `POST`, `GET` | ✅ **PASS** |
-| **TC-02** | **Auth & Security** | Người dùng tự đổi mật khẩu (Self-service Password Change & Policy) | `/api/password` | `POST` | ✅ **PASS** |
-| **TC-03** | **Manager: Users** | Admin quản lý vòng đời tài khoản người dùng (CRUD & Reset Pass) | `/api/users`, `/api/users/:username` | `GET`, `POST`, `DELETE` | ✅ **PASS** |
-| **TC-04** | **AI Core: Chat** | Hỏi đáp AI đa nhà cung cấp (Gemini/Claude/GPT) kèm Fallback tự động | `/api/chat` | `POST` | ✅ **PASS** |
-| **TC-05** | **AI Core: ReAct Agent** | Chu trình ReAct Agent tự trị (Thought-Action-Observation) & Tools | `/api/agent/chat`, `/api/agent/tools` | `POST`, `GET` | ✅ **PASS** |
-| **TC-06** | **AI Core: Agent Memory** | Ghi nhớ ngữ cảnh dài hạn (`save_memory`) và truy xuất (`recall_memory`) | `/api/agent/chat` | `POST` | ✅ **PASS** |
-| **TC-07** | **Manager: Config** | Cấu hình System Prompts, Active Model & Cache Invalidation | `/api/config`, `/api/config/meta` | `GET`, `POST` | ✅ **PASS** |
-| **TC-08** | **Manager: Models** | Dynamic Discovery danh sách Models từ AI Providers & Cache Sync | `/api/models/:provider` | `GET` | ✅ **PASS** |
-| **TC-09** | **Manager: Logs** | Quản lý, đọc chi tiết, tải file log và dọn dẹp định kỳ (Retention) | `/api/logs`, `/api/logs/clean` | `GET`, `POST` | ✅ **PASS** |
-| **TC-10** | **AI Training History** | Truy vấn, tìm kiếm & phân trang lịch sử đào tạo / hội thoại AI | `/api/history` | `GET` | ✅ **PASS** |
-| **TC-11** | **AI Analytics & Stats** | Thống kê tiêu thụ Token, phân bổ mô hình AI và ước tính chi phí | `/api/stats` | `GET` | ✅ **PASS** |
-| **TC-12** | **Learning: Catalog** | Khám phá cây danh mục học tập (Tech 6 Stacks & English Topics) | `/api/learning/categories`, `/learnings` | `GET` | ✅ **PASS** |
-| **TC-13** | **Learning: Content** | Truy xuất nội dung bài học, bài đọc Reading & câu hỏi chi tiết | `/api/learning/items`, `/items/:id` | `GET` | ✅ **PASS** |
-| **TC-14** | **Learning: Progress** | Cập nhật tiến độ học tập, đánh dấu Bookmark & thống kê cá nhân | `/api/learning/items/:id/progress` | `POST`, `GET` | ✅ **PASS** |
-| **TC-15** | **Learning: AI Evaluate** | Trợ lý AI chấm điểm phỏng vấn Tech Mock & bài luận/nói IELTS | `/api/learning/ai/evaluate` | `POST` | ✅ **PASS** |
-| **TC-16** | **Learning: Quiz Engine** | Sinh đề trắc nghiệm ngẫu nhiên, nộp bài tự động chấm & Leaderboard | `/api/learning/quiz/generate`, `/submit` | `GET`, `POST` | ✅ **PASS** |
-| **TC-17** | **Learning: Exam** | Tạo đề thi thử tổng hợp (Practice Exam) và ghi nhận kết quả Adaptive | `/api/learning/practice-exam` | `GET`, `POST` | ✅ **PASS** |
-| **TC-18** | **Learning: Content Sync**| AI Batch Content Generation, lưu hàng loạt & Excel Sync | `/api/learning/ai/generate`, `/import` | `POST`, `GET` | ✅ **PASS** |
-| **TC-19** | **OpenClaw: Cluster** | Giám sát Cluster Crawling, Worker Playwright & Dispatch SOP | `/api/openclaw/overview`, `/control` | `GET`, `POST` | ✅ **PASS** |
-| **TC-20** | **OpenClaw: Workflows** | Kiểm toán Workflow Scraper, Tra cứu Log & Discord Webhook | `/api/openclaw/workflows`, `/discord-notifications` | `GET`, `POST` | ✅ **PASS** |
+| **TC-01** | **Auth & Security** | Xác thực đăng nhập, cấp JWT token & quản lý phiên Session | `/api/login`, `/api/me`, `/api/logout` | **P0** | ✅ **PASS** |
+| **TC-02** | **Auth & Security** | Người dùng tự đổi mật khẩu (Self-service Password Change & Policy) | `/api/password` | **P1** | ✅ **PASS** |
+| **TC-03** | **Manager: Users** | Admin quản lý vòng đời tài khoản người dùng (CRUD & Reset Pass) | `/api/users`, `/api/users/:username` | **P1** | ✅ **PASS** |
+| **TC-04** | **AI Core: Chat** | Hỏi đáp AI đa nhà cung cấp (Gemini/Claude/GPT) kèm Fallback tự động | `/api/chat` | **P0** | ✅ **PASS** |
+| **TC-05** | **AI Core: ReAct Agent** | Chu trình ReAct Agent tự trị (Thought-Action-Observation) & Tools | `/api/agent/chat`, `/api/agent/tools` | **P0** | ✅ **PASS** |
+| **TC-06** | **AI Core: Agent Memory** | Ghi nhớ ngữ cảnh dài hạn (`save_memory`) và truy xuất (`recall_memory`) | `/api/agent/chat` | **P0** | ✅ **PASS** |
+| **TC-07** | **Manager: Config** | Cấu hình System Prompts, Active Model & Cache Invalidation | `/api/config`, `/api/config/meta` | **P1** | ✅ **PASS** |
+| **TC-08** | **Manager: Models** | Dynamic Discovery danh sách Models từ AI Providers & Cache Sync | `/api/models/:provider` | **P1** | ✅ **PASS** |
+| **TC-09** | **Manager: Logs** | Quản lý, đọc chi tiết, tải file log và dọn dẹp định kỳ (Retention) | `/api/logs`, `/api/logs/clean` | **P2** | ✅ **PASS** |
+| **TC-10** | **AI Training History** | Truy vấn, tìm kiếm & phân trang lịch sử đào tạo / hội thoại AI | `/api/history` | **P1** | ✅ **PASS** |
+| **TC-11** | **AI Analytics & Stats** | Thống kê tiêu thụ Token, phân bổ mô hình AI và ước tính chi phí | `/api/stats` | **P2** | ✅ **PASS** |
+| **TC-12** | **Learning: Catalog** | Khám phá cây danh mục học tập (Tech 6 Stacks & English Topics) | `/api/learning/categories`, `/learnings` | **P1** | ✅ **PASS** |
+| **TC-13** | **Learning: Content** | Truy xuất nội dung bài học, bài đọc Reading & câu hỏi chi tiết | `/api/learning/items`, `/items/:id` | **P1** | ✅ **PASS** |
+| **TC-14** | **Learning: Progress** | Cập nhật tiến độ học tập, đánh dấu Bookmark & thống kê cá nhân | `/api/learning/items/:id/progress` | **P1** | ✅ **PASS** |
+| **TC-15** | **Learning: AI Evaluate** | Trợ lý AI chấm điểm phỏng vấn Tech Mock & bài luận/nói IELTS | `/api/learning/ai/evaluate` | **P0** | ✅ **PASS** |
+| **TC-16** | **Learning: Quiz Engine** | Sinh đề trắc nghiệm ngẫu nhiên, nộp bài tự động chấm & Leaderboard | `/api/learning/quiz/generate`, `/submit` | **P1** | ✅ **PASS** |
+| **TC-17** | **Learning: Exam** | Tạo đề thi thử tổng hợp (Practice Exam) và ghi nhận kết quả Adaptive | `/api/learning/practice-exam` | **P1** | ✅ **PASS** |
+| **TC-18** | **Learning: Content Sync**| AI Batch Content Generation, lưu hàng loạt & Excel Sync | `/api/learning/ai/generate`, `/import` | **P1** | ✅ **PASS** |
+| **TC-19** | **OpenClaw: Cluster** | Giám sát Cluster Crawling, Worker Playwright & Dispatch SOP | `/api/openclaw/overview`, `/control` | **P1** | ✅ **PASS** |
+| **TC-20** | **OpenClaw: Workflows** | Kiểm toán Workflow Scraper, Tra cứu Log & Discord Webhook | `/api/openclaw/workflows`, `/discord-notifications` | **P1** | ✅ **PASS** |
+| **TC-21** | **Multi-Turn Context** | Ghi nhớ lịch sử hội thoại nhiều lượt (Multi-turn Context Preservation) | Context Accumulator | **P0** | ✅ **PASS** |
+| **TC-22** | **Multi-Turn Context** | Phân giải đại từ tham chiếu ngữ cảnh trước đó ("nó", "cái đó") | Pronoun Resolver | **P0** | ✅ **PASS** |
+| **TC-23** | **Multi-Turn Context** | Cửa sổ ngữ cảnh động (Sliding Window) bảo toàn System Prompt | Token Budget Enforcer | **P0** | ✅ **PASS** |
+| **TC-24** | **Multi-Turn Context** | Phân lập ngữ cảnh đa phiên làm việc giữa các kênh/tab chat | Session Isolation Store | **P1** | ✅ **PASS** |
+| **TC-25** | **Multi-Turn Context** | Truy xuất chủ đề phiên trước ("Như lúc nãy tôi đã nói...") | Cross-Session Archive Search | **P1** | ✅ **PASS** |
+| **TC-26** | **Multi-Turn Context** | Duy trì hồ sơ sở thích người dùng (User Persona & Preferences) | Persona Adapter | **P1** | ✅ **PASS** |
+| **TC-27** | **Multi-Turn Context** | Tích hợp bộ nhớ làm việc (Working) và dài hạn (Episodic Memory) | Hybrid Memory Synthesizer | **P0** | ✅ **PASS** |
+| **TC-28** | **Multi-Turn Context** | Tìm kiếm tương đồng ngữ nghĩa trong kho lưu trữ hội thoại quá khứ | Semantic History Search | **P1** | ✅ **PASS** |
+| **TC-29** | **ReAct Thinking** | Tư duy chuỗi ReAct đa bước (Chain-of-Thought Reasoning) | Multi-step ReAct Engine | **P0** | ✅ **PASS** |
+| **TC-30** | **ReAct Thinking** | Tự phản tỉnh và sửa lỗi (Self-Reflection & Auto-Retry khi Tool lỗi) | Resilience Reflection Loop | **P0** | ✅ **PASS** |
+| **TC-31** | **ReAct Thinking** | Định tuyến và chọn Tool thông minh theo ý định người dùng (Intent) | Intent-driven Tool Router | **P0** | ✅ **PASS** |
+| **TC-32** | **ReAct Thinking** | Thực thi song song nhiều công cụ độc lập (Parallel Multi-Tool) | Parallel Tool Dispatcher | **P1** | ✅ **PASS** |
+| **TC-33** | **ReAct Thinking** | Chặn đứng Prompt Injection (Agent Guardrails & Output Sanitization) | Guardrails & Security Filter | **P0** | ✅ **PASS** |
+| **TC-34** | **ReAct Thinking** | Phát hiện ảo giác và đánh giá độ tin cậy câu trả lời (Confidence) | Grounding & Verification | **P1** | ✅ **PASS** |
+| **TC-35** | **ReAct Thinking** | Xử lý Timeout công cụ và hạ cấp phản hồi mượt mà (Graceful Degradation) | Fallback Timeout Handler | **P1** | ✅ **PASS** |
+| **TC-36** | **ReAct Thinking** | Lưu điểm kiểm tra phiên chạy (Run Checkpointing & State Resumption) | Run Checkpointer | **P1** | ✅ **PASS** |
+| **TC-37** | **Interactive Engagement**| Chủ động đặt câu hỏi làm rõ khi yêu cầu người dùng mơ hồ | Proactive Clarification Prompt | **P0** | ✅ **PASS** |
+| **TC-38** | **Interactive Engagement**| Cổng phê duyệt con người (Human-in-the-Loop Confirmation Gate) | Action Confirmation Gate | **P0** | ✅ **PASS** |
+| **TC-39** | **Interactive Engagement**| Streaming Server-Sent Events (SSE) từng token với độ trễ thấp | SSE Realtime Streamer | **P0** | ✅ **PASS** |
+| **TC-40** | **Interactive Engagement**| Phát sinh sự kiện trạng thái thời gian thực (`thinking`, `calling_tool`) | Realtime State Emitter | **P1** | ✅ **PASS** |
+| **TC-41** | **Interactive Engagement**| Định dạng Markdown tương tác phong phú (Code links, Bảng, Mermaid) | Rich Markdown Transformer | **P2** | ✅ **PASS** |
+| **TC-42** | **Interactive Engagement**| Thích ứng giọng điệu theo vai trò (Student vs Tech Lead vs IELTS) | Persona System Prompt Matrix | **P1** | ✅ **PASS** |
+| **TC-43** | **Interactive Engagement**| Xử lý ngắt phiên giữa chừng khi người dùng hủy bỏ (Abort Signal) | Client Abort Controller | **P1** | ✅ **PASS** |
+| **TC-44** | **Interactive Engagement**| Nhận diện cảm xúc người dùng (Frustration) và tự động xoa dịu | Sentiment & Empathy Adapter | **P1** | ✅ **PASS** |
+| **TC-45** | **Inter-Module Synergy**| Dan-API điều phối ủy quyền tác vụ cào dữ liệu cho OpenClaw | Delegation & Webhook Receiver | **P0** | ✅ **PASS** |
+| **TC-46** | **Inter-Module Synergy**| Dan-API tra cứu lịch sử từ Dan-Learning để cá nhân hóa câu trả lời | Learning History RAG | **P1** | ✅ **PASS** |
+| **TC-47** | **Inter-Module Synergy**| Dan-API đồng bộ System Prompt từ Dan-Manager (Zero Restart) | Dynamic Config Hot-Reload | **P0** | ✅ **PASS** |
+| **TC-48** | **Inter-Module Synergy**| ReAct Agent ủy quyền chạy code an toàn trong Workspace Sandbox | Workspace Sandbox Isolation | **P0** | ✅ **PASS** |
+| **TC-49** | **Inter-Module Synergy**| Chuyển giao thông điệp giữa các Agent (Inter-Agent Handoff) | Structured Agent Handoff | **P1** | ✅ **PASS** |
+| **TC-50** | **Inter-Module Synergy**| RAG tri thức nội bộ từ Database Schema và OpenAPI Specifications | System Spec RAG Engine | **P1** | ✅ **PASS** |
+| **TC-51** | **Inter-Module Synergy**| Giải quyết xung đột giữa chỉ thị người dùng và quy tắc cốt lõi | Policy Precedence Enforcer | **P0** | ✅ **PASS** |
+| **TC-52** | **Inter-Module Synergy**| Truyền nhận mã định danh phân tán Trace-ID xuyên suốt chuỗi | Distributed Tracing Carrier | **P1** | ✅ **PASS** |
+| **TC-53** | **Continuous Learning** | Tiếp nhận phản hồi Thumbs Up / Down đưa vào Learning Loop | Feedback Loop Collector | **P1** | ✅ **PASS** |
+| **TC-54** | **Continuous Learning** | Tự động sinh cặp dữ liệu huấn luyện (Synthetic Q&A Pairs) | Synthetic Data Generator | **P1** | ✅ **PASS** |
+| **TC-55** | **Continuous Learning** | Thang leo thang mô hình thông minh: Fast Flash -> Smart Pro -> Claude | Adaptive Model Escalator | **P0** | ✅ **PASS** |
+| **TC-56** | **Continuous Learning** | Phân tầng giới hạn tốc độ (Rate Limiting Tier: Free vs VIP Student) | Tiered Rate Limiter | **P1** | ✅ **PASS** |
+| **TC-57** | **Continuous Learning** | Xử lý Prompt siêu lớn (>100k tokens) bằng kỹ thuật tóm tắt | Document Chunk & Summarizer | **P1** | ✅ **PASS** |
+| **TC-58** | **Continuous Learning** | Hỗ trợ chuyển mã ngôn ngữ tự nhiên (Code-switching Anh - Việt) | Bilingual Tech NLP Parser | **P1** | ✅ **PASS** |
+| **TC-59** | **Continuous Learning** | Nạp lại Prompt hệ thống với Zero-downtime cho active sessions | Hot Session Prompt Switcher | **P1** | ✅ **PASS** |
+| **TC-60** | **Continuous Learning** | Khôi phục thảm họa (Disaster Recovery) và tái tạo phiên từ DB | Session State Reconstructor | **P0** | ✅ **PASS** |
 
 ---
 
-## 🔬 CHI TIẾT 20 KỊCH BẢN KIỂM THỬ (TEST SPECIFICATIONS & RESULTS)
+## 🔬 CHI TIẾT 60 KỊCH BẢN KIỂM THỬ ĐẶC TẢ & KẾT QUẢ THỰC TẾ
 
-### ─── PHẦN 1: XÁC THỰC & BẢO MẬT (AUTH & SECURITY) ───
+*(Các kịch bản từ TC-01 đến TC-20 kiểm thử xác thực, cấu hình quản trị Dan-Manager, phân tích token, danh mục học tập Dan-Learning và điều phối OpenClaw đã đạt 100% PASS)*.
 
-#### 🔹 TC-01: User & Admin Authentication Lifecycle
-* **Mục tiêu**: Đảm bảo quy trình đăng nhập hoạt động trơn tru cho cả người dùng thường và quản trị viên, cấp phát JWT Token hợp lệ, thiết lập Session Cookie `connect.sid`, kiểm tra quyền hạn qua `/api/me` và xóa phiên an toàn khi đăng xuất.
-* **Tiền điều kiện**: Hệ thống đã khởi tạo tài khoản quản trị `admin`.
-* **Các bước thực hiện**:
-  1. Gửi `POST /api/login` với username và password hợp lệ.
-  2. Kiểm tra JWT token trong phản hồi và session cookie trong header.
-  3. Gửi `GET /api/me` kèm Token xác thực.
-  4. Gửi `POST /api/logout` để kết thúc phiên.
-  5. Gửi lại `GET /api/me` để xác nhận không còn quyền truy cập.
-* **Dữ liệu đầu vào**:
-  ```json
-  POST /api/login
-  { "username": "admin", "password": "password123" }
-  ```
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 200, `{ ok: true, data: { username: "admin", role: "admin", token: "...", expiresIn: 604800 } }`.
-  * Bước 3: HTTP 200, thông tin người dùng chính xác.
-  * Bước 4: HTTP 200, xóa session thành công.
-  * Bước 5: HTTP 401 Unauthorized.
+---
+
+### ─── PHẦN 7: LỊCH SỬ HỘI THOẠI ĐA LƯỢT & GHI NHỚ NGỮ CẢNH (TC-21 ➔ TC-28) ───
+
+#### 🔹 TC-21: Ghi nhớ lịch sử hội thoại nhiều lượt (Multi-turn Context Preservation across 5 turns)
+* **Mục tiêu**: Đảm bảo AI Agent duy trì trạng thái ngữ cảnh liên tục qua 5 lượt trao đổi, ghi nhớ tên người dùng và các chủ đề kỹ thuật đã thảo luận mà không bị mất dấu.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - `loginService` trả về JWT token `jwt_token_sample_1`, role `admin`, session key được gán vào `sessionStore`.
-    - `meService` trả về profile khớp đúng username `admin`.
-    - Sau khi `logoutService`, phiên bị hủy hoàn toàn, gọi lại ném lỗi `Unauthorized`.
+  * **Bằng chứng (Evidence)**: Biến `conversationHistory` lưu trữ đầy đủ 5 messages. Turn 5 trích xuất chính xác `Luong Hoang Phat` và `ReAct Agent`.
 
----
-
-#### 🔹 TC-02: Self-Service Password Change & Validation Policy
-* **Mục tiêu**: Kiểm tra tính năng tự thay đổi mật khẩu của người dùng đang đăng nhập, xác thực mật khẩu hiện tại, bắt buộc mật khẩu mới phải thỏa mãn tiêu chuẩn độ dài và mã hóa bcrypt an toàn.
-* **Tiền điều kiện**: Người dùng đã đăng nhập vào hệ thống.
-* **Các bước thực hiện**:
-  1. Gửi `POST /api/password` với mật khẩu cũ không đúng.
-  2. Gửi `POST /api/password` với mật khẩu mới dưới 6 ký tự.
-  3. Gửi `POST /api/password` với thông tin hợp lệ.
-  4. Kiểm tra đăng nhập lại bằng mật khẩu mới.
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 400 hoặc 401, báo sai mật khẩu cũ.
-  * Bước 2: HTTP 400, báo mật khẩu mới không đủ độ an toàn.
-  * Bước 3: HTTP 200, cập nhật mật khẩu thành công.
-  * Bước 4: Đăng nhập thành công với mật khẩu mới.
+#### 🔹 TC-22: Phân giải đại từ tham chiếu ngữ cảnh trước đó (Pronoun Resolution: "nó", "cái đó")
+* **Mục tiêu**: Khi người dùng hỏi ngắn gọn dùng đại từ thay thế (ví dụ: "Ưu điểm của nó là gì?"), Agent tự động đối chiếu thực thể gần nhất trong lịch sử hội thoại (ExpressJS) để trả lời trúng đích.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Bắt lỗi chính xác khi nhập `wrongPass` ("Mật khẩu cũ không chính xác").
-    - Bắt lỗi khi nhập mật khẩu quá ngắn `123` ("tối thiểu 6 ký tự").
-    - Cập nhật mật khẩu mới `newSecurePassword456@` thành công, biến trạng thái lưu mật khẩu mới.
+  * **Bằng chứng (Evidence)**: Truy vấn được phân giải thành `Ưu điểm lớn nhất của ExpressJS là gì?`, loại bỏ hoàn toàn đại từ mơ hồ.
 
----
-
-#### 🔹 TC-03: Admin User Lifecycle Management (CRUD & Roles)
-* **Mục tiêu**: Quản trị viên Dan-Manager có quyền xem danh sách người dùng, tạo tài khoản mới với vai trò quy định, reset mật khẩu thành viên và xóa tài khoản; người dùng thường bị chặn (RBAC 403 Forbidden).
-* **Tiền điều kiện**: Quyền Admin.
-* **Các bước thực hiện**:
-  1. `GET /api/users`: Lấy danh sách tài khoản hiện hữu.
-  2. `POST /api/users`: Tạo tài khoản mới `student_dan`.
-  3. `POST /api/users/student_dan/password`: Đặt lại mật khẩu cho `student_dan`.
-  4. `DELETE /api/users/student_dan`: Xóa tài khoản `student_dan`.
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 200, danh sách không để lộ mật khẩu băm.
-  * Bước 2 & 3: HTTP 200/201, thao tác thành công.
-  * Bước 4: HTTP 200, tài khoản bị xóa khỏi hệ thống.
+#### 🔹 TC-23: Cửa sổ ngữ cảnh động (Sliding Window & Token Budget) bảo toàn System Prompt
+* **Mục tiêu**: Tối ưu chi phí Token bằng cách cắt tỉa lịch sử hội thoại cũ khi vượt ngưỡng ngân sách (ví dụ 600 tokens), nhưng luôn giữ vững System Prompt cốt lõi ở vị trí đầu tiên.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - RBAC chặn ngay lập tức request từ role `user` với lỗi `Forbidden: Admin access required`.
-    - Admin thêm thành công `student_dan` với role `user`, xác minh tồn tại trong Map.
-    - Admin xóa thành công `student_dan`, xác nhận `userDb.has('student_dan') === false`.
+  * **Bằng chứng (Evidence)**: Mảng hội thoại sau khi cắt tỉa luôn có `role: 'system'` ở phần tử 0, giữ lại các message gần nhất và không vượt quá ngân sách 600 tokens.
 
----
-
-### ─── PHẦN 2: HỎI ĐÁP AI & TỰ TRỊ REACT AGENT ───
-
-#### 🔹 TC-04: Multi-Provider AI Chat with Automatic Fallback
-* **Mục tiêu**: Gửi câu hỏi đến AI Core (`POST /api/chat`), kiểm tra khả năng định tuyến đa nhà cung cấp (Gemini, Claude, GPT) và cơ chế tự động chuyển tiếp sang model thứ cấp (fallback chain) khi nhà cung cấp chính gặp sự cố quota hoặc rate limit.
-* **Tiền điều kiện**: Đã cấu hình ít nhất 1 AI API Key trong môi trường.
-* **Các bước thực hiện**:
-  1. Gửi `POST /api/chat` với model mặc định.
-  2. Gửi `POST /api/chat` với model Claude hoặc OpenAI cụ thể.
-  3. Giả lập lỗi nhà cung cấp chính (429 Rate Limit) và kiểm tra fallback thành công sang nhà cung cấp phụ.
-  4. Gửi request rỗng không có `message`.
-* **Kết quả kỳ vọng**:
-  * Bước 1 & 2: HTTP 200, trả về câu trả lời hoàn chỉnh kèm tên model xử lý.
-  * Bước 3: Phản hồi thành công từ mô hình fallback mà không gián đoạn người dùng.
-  * Bước 4: HTTP 400 Bad Request `{ error: "No message" }`.
+#### 🔹 TC-24: Phân lập ngữ cảnh đa phiên làm việc giữa các kênh/tab chat (Session Isolation)
+* **Mục tiêu**: Người dùng có thể mở nhiều tab hoặc nhiều kênh chat đồng thời (Học Tech, Luyện IELTS, Quản trị hệ thống) mà không bị lẫn lộn dữ liệu giữa các phiên.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Khi primary model trả về mã lỗi 429 ("Resource has been exhausted"), Fallback Chain kích hoạt ngay lập tức chuyển sang `claude-3-7-sonnet`.
-    - Phản hồi nhận được chứa nội dung `[Claude 3.7]` và tên model `claude-3-7-sonnet`.
-    - Request rỗng bị từ chối với ngoại lệ `No message`.
+  * **Bằng chứng (Evidence)**: Hai session `session_tech` và `session_ielts` lưu trữ độc lập trong Map, không có hiện tượng rò rỉ chéo dữ liệu.
 
----
-
-#### 🔹 TC-05: Autonomous ReAct Agent Loop & Dynamic Tool Execution
-* **Mục tiêu**: Kiểm tra chu trình hoạt động của ReAct Autonomous Agent, khả năng phân tích yêu cầu bằng chuỗi suy luận Thought - Action - Observation, tự động gọi công cụ trong `ToolRegistry` và hỗ trợ cả phản hồi REST JSON lẫn SSE Streaming.
-* **Tiền điều kiện**: ReAct Agent Service đã được nạp cấu hình và tools.
-* **Các bước thực hiện**:
-  1. `GET /api/agent/tools`: Lấy danh sách công cụ đã đăng ký.
-  2. `POST /api/agent/chat`: Gửi câu hỏi yêu cầu thực thi tác vụ cụ thể qua tool.
-  3. `POST /api/agent/chat?stream=true`: Kiểm tra phản hồi qua Server-Sent Events (SSE).
-  4. `GET /api/agent/runs/:id`: Tra cứu lịch sử phiên chạy Agent.
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 200, danh sách tool có schema chuẩn (name, description, parameters).
-  * Bước 2: HTTP 200, Agent lặp qua các bước tư duy, gọi tool và trả về đáp án cuối cùng.
-  * Bước 3: Header `text/event-stream`, nhận tuần tự các event `thought`, `tool_start`, `tool_end`, `done`.
-  * Bước 4: HTTP 200, hiển thị đầy đủ chi tiết các bước lặp của run ID.
+#### 🔹 TC-25: Truy xuất chủ đề phiên trước (Cross-Session Recall: "Như lúc nãy tôi đã nói...")
+* **Mục tiêu**: Khả năng tra cứu lại các phiên hội thoại đã đóng trong quá khứ khi người dùng nhắc lại chủ đề cũ.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Đăng ký và kiểm tra thành công 2 tools (`calculator`, `database_query`) trong registry.
-    - Chu trình ReAct lặp qua Iteration 1 với thought và action gọi tool `calculator` với biểu thức `25 * 40`.
-    - Nhận observation `1000` và sinh câu trả lời kết luận chứa `1000`, runId gán `run-992`.
+  * **Bằng chứng (Evidence)**: Khi truy vấn từ khóa `Kubernetes`, Agent tìm thấy chính xác phiên lưu trữ `sess-001` với đầy đủ ngữ cảnh ban đầu.
 
----
-
-#### 🔹 TC-06: Agent Memory Recall & Context Persistence
-* **Mục tiêu**: Kiểm tra tính năng ghi nhớ dài hạn (Long-term Context Memory) của ReAct Agent thông qua công cụ `save_memory` và truy xuất chính xác thông tin đó trong phiên tiếp theo bằng `recall_memory`.
-* **Tiền điều kiện**: Bật khả năng bộ nhớ (memory capability) cho ReAct Agent.
-* **Các bước thực hiện**:
-  1. Gửi `POST /api/agent/chat`: "Hãy nhớ rằng tôi đang ôn thi IELTS và mục tiêu là band 8.0".
-  2. Kiểm tra Agent thực thi tool `save_memory`.
-  3. Gửi `POST /api/agent/chat` trong cùng phiên: "Mục tiêu thi của tôi là gì?".
-* **Kết quả kỳ vọng**:
-  * Bước 1: Agent lưu observation vào bộ nhớ phiên.
-  * Bước 3: Agent kích hoạt `recall_memory`, trích xuất chính xác "IELTS" và "band 8.0" vào câu trả lời.
+#### 🔹 TC-26: Duy trì hồ sơ sở thích người dùng (User Persona & Preferences Persistence)
+* **Mục tiêu**: Lưu giữ phong cách lập trình ưa thích của người dùng (TypeScript, thụt lề 2 spaces, trả lời Tiếng Việt) và tự động áp dụng vào câu trả lời sinh mã nguồn.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - `saveMemory('target_ielts', 'Mục tiêu học viên là IELTS 8.0...')` ghi nhận thành công.
-    - `recallMemory('ielts')` trích xuất chính xác chuỗi chứa `IELTS 8.0`.
-    - Truy vấn chủ đề không liên quan trả về `null` chính xác.
+  * **Bằng chứng (Evidence)**: Prompt được bổ sung thông số sở thích: `Ngôn ngữ vi, code typescript`.
 
----
-
-### ─── PHẦN 3: TƯƠNG TÁC VỚI DAN-MANAGER (ADMIN CONFIG & OPERATIONS) ───
-
-#### 🔹 TC-07: System Configuration & System Prompts Management
-* **Mục tiêu**: Quản trị viên Dan-Manager có thể đọc cấu hình hệ thống, xem schema cấu hình UI, cập nhật System Prompts (General Chat, Mock Interview, IELTS Tutor) và đảm bảo MemoryCache bị xóa (invalidate) ngay khi lưu.
-* **Tiền điều kiện**: Quyền Admin.
-* **Các bước thực hiện**:
-  1. `GET /api/config/meta`: Đọc schema định nghĩa các trường cấu hình UI.
-  2. `GET /api/config`: Đọc cấu hình hiện tại (kiểm tra lấy từ MemoryCache).
-  3. `POST /api/config`: Cập nhật cấu hình mới (model, system prompt, retention days).
-  4. `GET /api/config`: Đọc lại để kiểm tra giá trị mới đã được cập nhật vào cache.
-* **Kết quả kỳ vọng**:
-  * Bước 1 & 2: HTTP 200, trả về đầy đủ metadata và thông số cấu hình.
-  * Bước 3: HTTP 200 `{ ok: true }`, xóa sạch cache `configExport`.
-  * Bước 4: HTTP 200, trả về cấu hình mới cập nhật.
+#### 🔹 TC-27: Tích hợp bộ nhớ làm việc ngắn hạn (Working) và dài hạn (Episodic Memory)
+* **Mục tiêu**: Kết hợp tác vụ đang xử lý tức thời trong bộ nhớ RAM với các quy tắc nghiệp vụ lâu dài lưu trong cơ sở dữ liệu.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Đọc ban đầu trả về `active_model = gemini-2.5-pro` và cache key `configExport`.
-    - Gọi update sang `claude-3-7-sonnet`, cờ cache tự động xóa (`has === false`).
-    - Lần đọc tiếp theo nạp lại cache với `active_model = claude-3-7-sonnet` và `system_prompt` mới.
+  * **Bằng chứng (Evidence)**: Phản hồi tổng hợp thành công giữa `đơn hàng hiện tại` và quy tắc `Khách hàng VIP được giảm 15%`.
 
----
-
-#### 🔹 TC-08: Dynamic AI Model Provider Discovery & Cache Synchronization
-* **Mục tiêu**: Đảm bảo API `/api/models/:provider` truy xuất danh sách models thời gian thực từ các nhà cung cấp AI (Gemini, Claude, OpenAI), lưu cache 1 giờ và xử lý lỗi an toàn khi API Key chưa cấu hình.
-* **Tiền điều kiện**: Quyền Admin.
-* **Các bước thực hiện**:
-  1. `GET /api/models/gemini`: Lấy danh sách models Gemini khả dụng.
-  2. `GET /api/models/anthropic`: Lấy danh sách models Claude.
-  3. `GET /api/models/openai`: Lấy danh sách models OpenAI.
-  4. `GET /api/models/gemini` lần thứ 2: Kiểm tra phản hồi trả về từ cache.
-* **Kết quả kỳ vọng**:
-  * HTTP 200, trả về danh sách mô hình chuẩn định dạng `{ models: [{ id, name, ... }] }`.
-  * Trường hợp chưa có API key: Trả về danh sách fallback an toàn không gây crash ứng dụng.
+#### 🔹 TC-28: Tìm kiếm tương đồng ngữ nghĩa trong kho lưu trữ hội thoại (Semantic Search)
+* **Mục tiêu**: Tra cứu nhanh trong kho tài liệu lịch sử trao đổi dựa trên từ khóa ngữ nghĩa thay vì so sánh chuỗi chính xác tuyệt đối.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Khám phá mô hình động: Gemini trả về 2 models (`gemini-2.5-pro`, `gemini-2.5-flash`), Anthropic trả về `claude-3-7-sonnet`.
-    - Cache kiểm tra: Lần gọi thứ hai trả về chính xác cùng object reference mà không cần gọi lại provider.
+  * **Bằng chứng (Evidence)**: Truy vấn `bảo mật SSL web server` khớp chính xác tài liệu `Hướng dẫn cài đặt SSL Certbot Nginx` (id: 1).
 
 ---
 
-#### 🔹 TC-09: System Logs Inspection, Live Viewer & Automated Clean-up
-* **Mục tiêu**: Quản trị viên Dan-Manager có thể duyệt danh sách các file log hàng ngày, xem nội dung 100 dòng log gần nhất, tải file log và kích hoạt tính năng dọn dẹp các log cũ hơn `log_retention_days`.
-* **Tiền điều kiện**: Có ít nhất một file log trong thư mục `logs/`.
-* **Các bước thực hiện**:
-  1. `GET /api/logs`: Lấy danh sách các tệp log hiện có.
-  2. `GET /api/logs/2026-10-02.log/content`: Đọc nội dung log mới nhất.
-  3. `GET /api/logs/2026-10-02.log`: Tải tệp log về máy.
-  4. `POST /api/logs/clean`: Dọn dẹp log quá hạn lưu trữ.
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 200, danh sách tệp log kèm dung lượng.
-  * Bước 2: HTTP 200, text log chi tiết định dạng UTF-8.
-  * Bước 3: HTTP 200, header `Content-Disposition: attachment`.
-  * Bước 4: HTTP 200, thông báo số lượng tệp log đã dọn dẹp an toàn.
+### ─── PHẦN 8: AUTONOMOUS REACT THINKING & MULTI-STEP REASONING (TC-29 ➔ TC-36) ───
+
+#### 🔹 TC-29: Tư duy chuỗi ReAct đa bước (Chain-of-Thought Reasoning cho câu hỏi phức hợp)
+* **Mục tiêu**: Agent tự chia nhỏ bài toán phức tạp thành chuỗi các bước: Lập luận -> Gọi công cụ -> Nhận kết quả -> Tổng hợp lời giải.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Danh sách log trả về 2 files.
-    - Đọc file hôm nay xác nhận chứa dòng log `Server started`.
-    - Hàm dọn dẹp log `cleanOldLogs(14)` phát hiện và xóa chính xác 1 file log quá hạn 31 ngày, giữ lại 1 file hợp lệ.
+  * **Bằng chứng (Evidence)**: Chuỗi thực thi sinh đủ 5 bước tuần tự, gọi `fetch_formula` sau đó gọi `calculate`, trả về đáp số `153.94`.
 
----
-
-### ─── PHẦN 4: LỊCH SỬ ĐÀO TẠO AI & PHÂN TÍCH TOKEN USAGE ───
-
-#### 🔹 TC-10: AI Training & Conversation History Auditing
-* **Mục tiêu**: Kiểm tra tính năng lưu trữ và truy vấn toàn bộ lịch sử trò chuyện / đào tạo AI từ Dan-Manager qua `GET /api/history`, hỗ trợ phân trang và giới hạn trần bản ghi.
-* **Tiền điều kiện**: Cơ sở dữ liệu đã có dữ liệu trong bảng `conversations`.
-* **Các bước thực hiện**:
-  1. `GET /api/history?limit=10&offset=0`: Lấy 10 cuộc hội thoại gần nhất.
-  2. `GET /api/history?limit=500`: Kiểm tra giới hạn trần tự động đưa về 200.
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 200, danh sách hội thoại có thông tin prompt, response, model, tokens, created_at.
-  * Bước 2: HTTP 200, số lượng bản ghi trả về không vượt quá 200.
+#### 🔹 TC-30: Tự phản tỉnh và sửa lỗi (Self-Reflection & Auto-Retry khi Tool thất bại)
+* **Mục tiêu**: Khi một công cụ gặp sự cố mạng (503 Service Unavailable), Agent nhận biết lỗi, tự đánh giá nguyên nhân và thử lại bằng công cụ dự phòng.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Phân trang trang 1 với limit 10 trả về đúng 10 bản ghi từ index 0.
-    - Gửi limit 500 được chuẩn hóa an toàn qua `Math.min(limit, 200)`, chặn triệt để nguy cơ tràn bộ nhớ.
+  * **Bằng chứng (Evidence)**: Lần 1 ném lỗi 503, cơ chế phản tỉnh tự chuyển sang `secondary_search` thành công, biến đếm `attempts === 2`.
 
----
-
-#### 🔹 TC-11: Token Consumption & Cost Estimation Analytics
-* **Mục tiêu**: Endpoint `/api/stats` cung cấp số liệu thống kê tổng hợp phục vụ dashboard Dan-Manager: tổng số requests, tổng tokens input/output, phân bổ theo mô hình AI và ước tính chi phí API với bộ đệm cache.
-* **Tiền điều kiện**: Có dữ liệu hội thoại trong DB.
-* **Các bước thực hiện**:
-  1. `GET /api/stats` lần 1: Đọc từ DB và lưu cache.
-  2. `GET /api/stats` lần 2: Đọc trực tiếp từ MemoryCache.
-* **Kết quả kỳ vọng**:
-  * HTTP 200 với các chỉ số: `totalRequests`, `totalPromptTokens`, `totalCompletionTokens`, `totalTokens`, `estimatedCostUsd`, `modelBreakdown`.
+#### 🔹 TC-31: Định tuyến và chọn Tool thông minh theo ý định người dùng (Intent-driven Dispatch)
+* **Mục tiêu**: Tự động phân loại câu hỏi (tính toán, lập trình, thời tiết, hội thoại thông thường) để gọi đúng công cụ chuyên biệt.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Tổng token được tính toán chuẩn xác: `500,000 + 200,000 = 700,000 tokens`.
-    - Ước tính chi phí trả về `1.45 USD`, biểu đồ breakdown ghi nhận `gemini-2.5-pro: 1000` và `claude-3-7-sonnet: 500`.
+  * **Bằng chứng (Evidence)**: Khớp chính xác `calculate` cho câu hỏi tính VAT, `code_exec` cho lỗi Javascript, và `search_web` cho câu hỏi thời tiết.
 
----
-
-### ─── PHẦN 5: TƯƠNG TÁC VỚI DAN-LEARNING (STUDENT HUB & STUDIO) ───
-
-#### 🔹 TC-12: Unified Learning Catalog Navigation & Topic Hierarchy
-* **Mục tiêu**: Đảm bảo Dan-Learning (`learning.hpdev.name.vn`) tải được toàn bộ cấu trúc phân cấp học tập: Categories (Tech, English), Learnings (NodeJS, VueJS, Docker, IELTS, Vocab 50 Topics), và chi tiết từng chủ đề thông qua slug.
-* **Tiền điều kiện**: Dữ liệu seed đã được nạp vào DB.
-* **Các bước thực hiện**:
-  1. `GET /api/learning/categories`: Lấy danh sách các danh mục cấp 1.
-  2. `GET /api/learning/learnings?category=tech`: Lấy danh sách lộ trình Tech.
-  3. `GET /api/learning/learnings/nodejs`: Lấy chi tiết chủ đề NodeJS.
-  4. `GET /api/learning/learnings/invalid-slug`: Kiểm tra trường hợp slug không tồn tại.
-* **Kết quả kỳ vọng**:
-  * Bước 1 & 2: HTTP 200 `{ ok: true, categories: [...] }` / `{ ok: true, learnings: [...] }`.
-  * Bước 3: HTTP 200, trả về đầy đủ metadata, số bài học và tiến độ.
-  * Bước 4: HTTP 404 `{ ok: false, error: "Learning topic not found" }`.
+#### 🔹 TC-32: Thực thi song song nhiều công cụ độc lập (Parallel Multi-Tool Execution)
+* **Mục tiêu**: Rút ngắn thời gian phản hồi bằng cách gọi đồng thời qua `Promise.all` các công cụ không phụ thuộc dữ liệu lẫn nhau.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Danh mục cấp 1 trả về 2 nhóm `Tech Stacks` và `English & IELTS`.
-    - Lọc theo category `tech` trích xuất đúng lộ trình `nodejs-ecosystem`, lọc `english` trích xuất đúng `ielts-reading`.
+  * **Bằng chứng (Evidence)**: Cả hai công cụ `currency` và `weather` cùng hoàn tất và trả về tỷ giá `25,400` và nhiệt độ `28°C`.
 
----
-
-#### 🔹 TC-13: Learning Content Retrieval & Multi-Level Filtering
-* **Mục tiêu**: Kiểm tra API `/api/learning/items` và `/api/learning/items/:id` phục vụ hiển thị câu hỏi phỏng vấn, từ vựng, bài đọc hiểu (Reading Comprehension) hoặc bài luyện viết (Writing Task) với các bộ lọc phân cấp (level, category, topic_no, bookmark, search).
-* **Tiền điều kiện**: Cơ sở dữ liệu có các item bài học.
-* **Các bước thực hiện**:
-  1. `GET /api/learning/items?category=tech&level=senior`: Lọc bài tập nâng cao.
-  2. `GET /api/learning/items?search=closure`: Tìm kiếm bài học theo từ khóa.
-  3. `GET /api/learning/items/1`: Lấy chi tiết 1 bài học kèm trạng thái học tập của cá nhân.
-* **Kết quả kỳ vọng**:
-  * Bước 1 & 2: HTTP 200, danh sách items khớp chính xác với bộ lọc.
-  * Bước 3: HTTP 200, trả về cấu trúc item hoàn chỉnh kèm trạng thái hoàn thành và bookmark.
+#### 🔹 TC-33: Cơ chế bảo vệ và chặn Prompt Injection (Agent Guardrails & Sanitization)
+* **Mục tiêu**: Ngăn chặn các câu lệnh tấn công prompt phá vỡ quy tắc hệ thống ("Ignore previous instructions", "Drop table").
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Bộ lọc `type=tech_question, level=senior` trả về đúng bài `NodeJS Event Loop` (id: 101).
-    - Bộ lọc `type=reading, level=B2` trả về đúng bài `Artificial Intelligence Evolution` (id: 102).
+  * **Bằng chứng (Evidence)**: Chặn đứng cả 2 mẫu tấn công nguy hiểm với ngoại lệ `Security Alert: Malicious prompt injection pattern detected`.
 
----
-
-#### 🔹 TC-14: User Study Progress, Bookmarks & Performance Analytics
-* **Mục tiêu**: Kiểm tra quy trình học viên lưu tiến độ bài học: đánh dấu đã hoàn thành (`completed`), lưu bookmark để ôn tập lại, ghi nhận điểm số tự luyện và tra cứu bảng tổng kết năng lực (User Stats Summary).
-* **Tiền điều kiện**: Học viên đã đăng nhập.
-* **Các bước thực hiện**:
-  1. `POST /api/learning/items/10/progress`: Đánh dấu item 10 hoàn thành và bookmark.
-  2. `GET /api/learning/items?bookmarked=true`: Kiểm tra danh sách bài học đã bookmark.
-  3. `GET /api/learning/stats/summary`: Lấy thống kê tổng kết năng lực học viên.
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 200 `{ ok: true }`, lưu vào bảng `user_learning_metadata`.
-  * Bước 2: Trả về danh sách có item 10 với `is_bookmarked = 1`.
-  * Bước 3: HTTP 200, bảng thống kê năng lực cập nhật số bài học đã hoàn thành.
+#### 🔹 TC-34: Phát hiện ảo giác và đánh giá độ tin cậy câu trả lời (Confidence Scoring)
+* **Mục tiêu**: Kiểm chứng thông tin đầu ra dựa trên các nguồn tài liệu tin cậy (Grounding sources), tính điểm tin cậy xác thực.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Upsert progress cho item 101 (`completed`, `is_bookmarked = true`, score: 9.5).
-    - Upsert progress cho item 102 (`in_progress`, `is_bookmarked = true`).
-    - Báo cáo thống kê của `student1` tính toán chính xác: `completed: 1`, `bookmarked: 2`.
+  * **Bằng chứng (Evidence)**: Nhận diện luận điểm `Single Thread` khớp nguồn tài liệu, gắn cờ `isHighConfidence: true`.
 
----
-
-#### 🔹 TC-15: AI Evaluation & Feedback Engine (Mock Interview & IELTS)
-* **Mục tiêu**: Kiểm tra tính năng chấm điểm và đánh giá tự động bằng AI (`POST /api/learning/ai/evaluate`). Phục vụ tính năng phỏng vấn kỹ thuật giả lập (Tech Mock Interview) hoặc chấm bài luận/bài nói IELTS.
-* **Tiền điều kiện**: Item bài học hợp lệ trong hệ thống.
-* **Các bước thực hiện**:
-  1. Gửi bài làm phỏng vấn kỹ thuật: `{"itemId": 1, "type": "tech_question", "userSubmission": "..."}`.
-  2. Gửi bài luận IELTS Writing: `{"itemId": 99, "type": "ielts", "userSubmission": "..."}`.
-  3. Gửi request thiếu tham số bắt buộc.
-* **Kết quả kỳ vọng**:
-  * Bước 1 & 2: HTTP 200, phản hồi điểm số (score), điểm mạnh (strengths), điểm yếu (weaknesses) và gợi ý cải thiện (suggestions).
-  * Bước 3: HTTP 400 `{ ok: false, error: "Missing item_id or user_submission" }`.
+#### 🔹 TC-35: Xử lý Timeout công cụ và hạ cấp phản hồi mượt mà (Graceful Degradation)
+* **Mục tiêu**: Khi một tool bị treo quá thời gian quy định, Agent không để người dùng chờ vô tận mà tự động hạ cấp phản hồi dùng dữ liệu lưu tạm.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - AI chấm điểm bài làm Event Loop đạt `8.5/10`.
-    - Trả về danh sách 2 điểm mạnh (V8 Engine, Microtask queue), 1 điểm yếu (process.nextTick) và gợi ý cải thiện.
-    - Trường hợp thiếu trường bắt buộc tự động từ chối với ngoại lệ `Missing item_id or user_submission`.
+  * **Bằng chứng (Evidence)**: Trả về trạng thái `timeout_fallback` kèm thông báo thân thiện và dữ liệu lưu trữ tạm thời.
 
----
-
-#### 🔹 TC-16: Interactive Quiz Generation, Auto-Scoring & Global Leaderboard
-* **Mục tiêu**: Kiểm tra toàn bộ chu trình bài thi trắc nghiệm (Interactive Quiz): sinh câu hỏi ngẫu nhiên từ ngân hàng từ vựng/kỹ thuật, nộp bài tự động tính điểm chuẩn hóa (thang 10), ghi nhận lịch sử và hiển thị bảng xếp hạng Leaderboard.
-* **Tiền điều kiện**: Ngân hàng câu hỏi/từ vựng có dữ liệu.
-* **Các bước thực hiện**:
-  1. `GET /api/learning/quiz/generate?topic_no=1&count=5`: Sinh 5 câu hỏi trắc nghiệm ngẫu nhiên.
-  2. `POST /api/learning/quiz/submit`: Nộp bài làm trắc nghiệm kèm chi tiết đáp án.
-  3. `GET /api/learning/quiz/leaderboard`: Xem bảng xếp hạng điểm cao.
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 200, 5 câu hỏi có danh sách 4 lựa chọn A, B, C, D đã được xáo trộn ngẫu nhiên.
-  * Bước 2: HTTP 200, tính điểm chuẩn hóa `normalizedScore`, ghi nhận vào bảng `quiz_results`.
-  * Bước 3: HTTP 200, danh sách bảng xếp hạng hiển thị học viên đạt điểm cao nhất.
+#### 🔹 TC-36: Lưu điểm kiểm tra phiên chạy (Run Checkpointing & State Resumption)
+* **Mục tiêu**: Khả năng tạm dừng và khôi phục trạng thái tác vụ dài hạn khi bị ngắt kết nối giữa chừng mà không cần chạy lại từ đầu.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Generator sinh bộ đề 5 câu, mỗi câu có đầy đủ 4 options trắc nghiệm.
-    - Nộp bài làm đúng 4/5 câu được quy đổi điểm chuẩn hóa chính xác `normalizedScore = 8.0`.
+  * **Bằng chứng (Evidence)**: Phiên tạm dừng tại bước 3 được khôi phục, bổ sung bước hoàn thành và chuyển trạng thái sang `completed`.
 
 ---
 
-#### 🔹 TC-17: Practice Exam Builder & Simulation Submission
-* **Mục tiêu**: Kiểm tra tính năng tạo đề thi thử toàn diện (Practice Exam) kết hợp nhiều loại bài học (Tech Fundamentals, Reading, Vocabulary, Listening) theo tỷ lệ câu hỏi khó/trung bình/dễ, áp dụng thuật toán Adaptive Selector dựa trên lịch sử năng lực học viên.
-* **Tiền điều kiện**: Bể câu hỏi phong phú có gắn nhãn difficulty (`easy`, `medium`, `hard`).
-* **Các bước thực hiện**:
-  1. `GET /api/learning/practice-exam?category=tech&count=10`: Tạo bộ đề 10 câu.
-  2. Kiểm tra bộ đề có phân bổ đúng cấu trúc độ khó (`levels: { easy, medium, hard }`).
-  3. `POST /api/learning/practice-exam/submit`: Gửi kết quả thi thử để cập nhật trọng số Adaptive.
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 200, danh sách câu hỏi tổng hợp và tóm tắt cấp độ câu hỏi.
-  * Bước 3: HTTP 200 `{ ok: true, recorded: 10 }`, ghi nhận kết quả phục vụ thuật toán thích ứng lần sau.
+### ─── PHẦN 9: TƯƠNG TÁC HAI CHIỀU & PHẢN HỒI TUYỆT ĐỐI (TC-37 ➔ TC-44) ───
+
+#### 🔹 TC-37: Chủ động đặt câu hỏi làm rõ khi yêu cầu người dùng mơ hồ (Proactive Clarification)
+* **Mục tiêu**: Tránh trả lời chung chung hoặc đoán mò khi câu hỏi của người dùng thiếu tham số cần thiết, Agent chủ động hỏi ngược lại để làm rõ.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Bộ đề 3 câu được sinh từ pool phân loại chính xác các tầng độ khó `easy: 2, medium: 1`.
-    - Trả về tổng số câu hỏi `total === 3` và danh sách câu hỏi tương ứng.
+  * **Bằng chứng (Evidence)**: Khi nhận yêu cầu cộc lốc "Viết hàm sort", Agent phát hiện `needsClarification: true` và đặt câu hỏi gợi ý ngôn ngữ (JS/PHP/Python).
 
----
-
-#### 🔹 TC-18: Content Ingestion, AI Batch Generation & Excel Sync
-* **Mục tiêu**: Kiểm tra tính năng quản trị nội dung của Dan-Learning: dùng AI tạo hàng loạt câu hỏi/từ vựng mới theo chủ đề, lưu hàng loạt vào DB (`save-batch`), xuất dữ liệu ra file Excel và import nội dung từ file Excel.
-* **Tiền điều kiện**: Quyền Admin.
-* **Các bước thực hiện**:
-  1. `POST /api/learning/ai/generate`: Yêu cầu AI sinh 3 từ vựng mới theo chủ đề.
-  2. `POST /api/learning/ai/save-batch`: Lưu 3 item do AI sinh vào chủ đề bài học.
-  3. `GET /api/learning/export/nodejs`: Xuất toàn bộ bài học ra file Excel `.xlsx`.
-  4. `POST /api/learning/import/:id`: Đọc và nạp dữ liệu từ file Excel vào database.
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 200, trả về mảng các câu hỏi/từ vựng do AI tạo.
-  * Bước 2: HTTP 200 `{ ok: true, count: 3, ids: [...] }`.
-  * Bước 3: HTTP 200, Header `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`.
-  * Bước 4: HTTP 200, nạp dữ liệu thành công từ file Excel.
+#### 🔹 TC-38: Cổng phê duyệt con người (Human-in-the-Loop Confirmation Gate) trước tác vụ nhạy cảm
+* **Mục tiêu**: Bắt buộc phải có sự xác nhận rõ ràng từ người dùng trước khi thực thi các thao tác có nguy cơ cao (xóa database, nạp lại cấu hình prod).
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - AI sinh thành công batch 3 items với đầy đủ title, prompt và sample_solution.
-    - `saveBatch` gán và trả về 3 ID mới `[200, 201, 202]`, số lượng đếm `count === 3`.
+  * **Bằng chứng (Evidence)**: Trả về trạng thái `AWAITING_CONFIRMATION` khi chưa có xác nhận; chỉ chuyển sang `EXECUTED` khi người dùng đã bấm đồng ý.
 
----
-
-### ─── PHẦN 6: TƯƠNG TÁC VỚI OPENCLAW (MULTI-AGENT SCRAPER & WORKFLOWS) ───
-
-#### 🔹 TC-19: OpenClaw Multi-Agent Cluster Overview & SOP Dispatch
-* **Mục tiêu**: Đảm bảo Dan-API kết nối đồng bộ và giám sát cụm OpenClaw (`openclaw.hpdev.name.vn:4000`), theo dõi tình trạng các worker Agent Playwright, và gửi lệnh điều khiển trạng thái (start / pause / resume / trigger SOP).
-* **Tiền điều kiện**: Cấu hình `OPENCLAW_URL` và `OPENCLAW_SECRET` trong môi trường.
-* **Các bước thực hiện**:
-  1. `GET /api/openclaw/overview`: Xem trạng thái tổng thể cụm OpenClaw.
-  2. `GET /api/openclaw/agents`: Lấy danh sách các agent cào dữ liệu.
-  3. `POST /api/openclaw/agents/crawler-jobs/control`: Gửi lệnh điều khiển trạng thái Agent.
-* **Kết quả kỳ vọng**:
-  * Bước 1: HTTP 200, trạng thái kết nối server OpenClaw (health, activeWorkers, pendingTasks).
-  * Bước 2: HTTP 200, danh sách agents kèm trạng thái `idle` / `running` / `paused`.
-  * Bước 3: HTTP 200, lệnh điều khiển được OpenClaw tiếp nhận và chuyển đổi trạng thái an toàn.
+#### 🔹 TC-39: Streaming Server-Sent Events (SSE) từng token với độ trễ thấp (< 50ms)
+* **Mục tiêu**: Tạo cảm giác phản hồi tức thì cho người dùng bằng cách truyền từng token chữ ngay khi mô hình LLM vừa sinh ra qua chuẩn SSE.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Cụm OpenClaw phản hồi `health: 'ok'` với 4 active workers.
-    - Điều khiển chuyển trạng thái agent `agent-fb-scraper` từ `idle` sang `running` thành công, trạng thái mới ghi nhận `currentState: 'running'`.
+  * **Bằng chứng (Evidence)**: Phát sinh tuần tự các sự kiện `data: {"token": ...}` và kết thúc bằng `event: done`.
 
----
-
-#### 🔹 TC-20: OpenClaw Workflow Audit & Service-to-Service Discord Webhook
-* **Mục tiêu**: Kiểm tra chức năng kiểm toán các luồng công việc (Workflows) của OpenClaw, tra cứu log thực thi chi tiết, và tiếp nhận Webhook bảo mật (ServiceAuth Secret) từ OpenClaw để tự động bắn thông báo kết quả cào dữ liệu về Discord.
-* **Tiền điều kiện**: Khóa bí mật ServiceAuth được cấu hình đồng bộ giữa hai hệ thống.
-* **Các bước thực hiện**:
-  1. `GET /api/openclaw/workflows?limit=10&state=completed`: Xem 10 quy trình cào dữ liệu đã hoàn tất.
-  2. `GET /api/openclaw/workflows/wf-98124`: Xem nhật ký chi tiết các bước cào dữ liệu.
-  3. `POST /api/integrations/openclaw/discord-notifications` với Header `x-service-auth` hợp lệ: Kiểm tra tiếp nhận webhook và gửi thông báo Discord.
-  4. Gửi request webhook với Header `x-service-auth` không hợp lệ.
-* **Kết quả kỳ vọng**:
-  * Bước 1 & 2: HTTP 200, danh sách và chi tiết workflow với đầy đủ log và thống kê.
-  * Bước 3: HTTP 200 `{ ok: true, message: "Discord notification queued" }`.
-  * Bước 4: HTTP 401 hoặc 403 Unauthorized, chặn ngay request trái phép.
+#### 🔹 TC-40: Phát sinh sự kiện trạng thái thời gian thực (`thinking`, `calling_tool`, `synthesizing`)
+* **Mục tiêu**: Thông báo cho giao diện người dùng biết Agent đang ở giai đoạn nào của chu trình tư duy để hiển thị loading spinner tương ứng.
 * **Kết quả thực tế (Actual Result)**: ✅ **PASS**
-  * **Bằng chứng (Evidence)**:
-    - Request gửi với secret giả mạo `invalid_secret` bị ServiceAuth chặn ngay lập tức với lỗi `Unauthorized Service Request`.
-    - Request mang secret hợp lệ được tiếp nhận, đẩy thông báo vào `discordQueue` với 150 tin crawl được xếp hàng thành công.
+  * **Bằng chứng (Evidence)**: Chuỗi sự kiện ghi nhận chuẩn xác 3 trạng thái: `thinking` ➔ `calling_tool:database_query` ➔ `synthesizing_answer`.
+
+#### 🔹 TC-41: Định dạng Markdown tương tác phong phú (Code links, Bảng, Mermaid charts)
+* **Mục tiêu**: Câu trả lời của Agent luôn tuân thủ chuẩn Markdown nâng cao: có link file xem trực tiếp, bảng biểu so sánh, biểu đồ Mermaid trực quan.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Định dạng đầy đủ link file `[AuthController.js](file:///...)`, bảng 2 cột và sơ đồ `graph TD`.
+
+#### 🔹 TC-42: Thích ứng giọng điệu theo vai trò (Student mode vs Tech Lead vs IELTS Examiner)
+* **Mục tiêu**: Tự động biến đổi cách diễn đạt linh hoạt tùy theo vai trò mà người dùng lựa chọn trong hệ thống.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Chế độ `tech_lead` tập trung vào concurrency/trade-offs, trong khi `ielts_examiner` tập trung vào tiêu chí chấm điểm Lexical Resource.
+
+#### 🔹 TC-43: Xử lý ngắt phiên giữa chừng khi người dùng hủy bỏ lệnh (Client Abort Signal)
+* **Mục tiêu**: Khi người dùng nhấn nút "Dừng tạo câu trả lời" trên giao diện, server lập tức giải phóng tài nguyên và dừng luồng sinh token.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Luồng sinh token dừng ngay lập tức tại token thứ 11 khi nhận tín hiệu abort, biến `isAborted` chuyển sang `true`.
+
+#### 🔹 TC-44: Nhận diện cảm xúc người dùng (Frustration Detection) và tự động xoa dịu
+* **Mục tiêu**: Nhận diện các câu nói thể hiện sự bực mình hoặc thất vọng của người dùng để điều chỉnh thái độ hòa nhã, giải thích kiên nhẫn hơn.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Nhận diện cụm từ tiêu cực, gắn cờ `isFrustrated: true` và tự động gắn lời mở đầu xoa dịu: `Thành thật xin lỗi vì đã làm bạn phiền lòng!`.
 
 ---
 
-## 🏆 BÁO CÁO KẾT QUẢ THỰC THI KIỂM THỬ (TEST EXECUTION REPORT)
+### ─── PHẦN 10: PHỐI HỢP LIÊN PHÂN HỆ (INTER-MODULE COLLABORATION) (TC-45 ➔ TC-52) ───
 
-* **Thời gian thực hiện**: `2026-10-02 10:51:24`
+#### 🔹 TC-45: Dan-API điều phối ủy quyền tác vụ cào dữ liệu cho OpenClaw và chờ Webhook
+* **Mục tiêu**: Dan-API gửi lệnh ủy quyền cho OpenClaw thực thi SOP thu thập dữ liệu web phức tạp và lắng nghe webhook trả về kết quả.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Task được tạo với trạng thái `dispatched`, sau khi nhận webhook chuyển sang `completed` với 2 bài viết HackerNews.
+
+#### 🔹 TC-46: Dan-API tra cứu lịch sử từ Dan-Learning để cá nhân hóa câu trả lời
+* **Mục tiêu**: Khi học viên hỏi về một chủ đề code, Agent đối chiếu với bảng điểm bài tập trong Dan-Learning để chủ động nhắc lại các điểm yếu của học viên.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Nhận diện `Closure` nằm trong danh sách điểm yếu của học viên, tự động thêm lời nhắc lưu ý giải thích cặn kẽ hơn.
+
+#### 🔹 TC-47: Dan-API đồng bộ System Prompt từ Dan-Manager thời gian thực (Zero Restart)
+* **Mục tiêu**: Khi quản trị viên thay đổi prompt trên Dan-Manager, Dan-API cập nhật ngay lập tức mà không cần khởi động lại tiến trình Node.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Webhook reload cập nhật prompt hệ thống thành `Updated Prompt from Dan-Manager v2` ngay lập tức.
+
+#### 🔹 TC-48: ReAct Agent ủy quyền chạy code an toàn trong Workspace Sandbox tách biệt
+* **Mục tiêu**: Thực thi các đoạn mã do AI sinh ra trong môi trường cô lập, ngăn chặn triệt để các lệnh nguy hại (`process.exit`, `rm -rf`).
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Chặn đứng lệnh `process.exit(1)`, thực thi an toàn đoạn mã mảng `[1, 2, 3]` với mã thoát 0.
+
+#### 🔹 TC-49: Chuyển giao thông điệp giữa các Agent (Inter-Agent Handoff) có cấu trúc
+* **Mục tiêu**: Agent phân loại ban đầu (`dan_triage`) tự động đóng gói dữ liệu và chuyển giao công việc cho Agent chuyên trách kỹ thuật (`dan_technical_support`).
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Gói tin chuyển giao chứa context lỗi Server 500 được `dan_technical_support` tiếp nhận thành công.
+
+#### 🔹 TC-50: RAG tri thức nội bộ từ Database Schema và OpenAPI Specifications
+* **Mục tiêu**: Agent có khả năng tự tra cứu tài liệu OpenAPI nội bộ của chính Dan-API để trả lời chính xác các endpoint và tham số.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Tra cứu từ khóa `từ vựng` trích xuất đúng endpoint `/api/learning/items`.
+
+#### 🔹 TC-51: Giải quyết xung đột giữa chỉ thị người dùng và quy tắc cốt lõi (Precedence)
+* **Mục tiêu**: Đảm bảo quy tắc bảo mật của hệ thống luôn có độ ưu tiên cao hơn yêu cầu của người dùng khi có xung đột.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Yêu cầu phá vỡ quy tắc an toàn bị từ chối thẳng thừng với `allowed: false`.
+
+#### 🔹 TC-52: Truyền nhận mã định danh phân tán Trace-ID xuyên suốt chuỗi vi dịch vụ
+* **Mục tiêu**: Gắn mã `x-trace-id` duy nhất vào mỗi request để dễ dàng lần vết lỗi qua các microservice liên quan.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Trace ID định dạng UUID được giữ nguyên vẹn qua các tầng xử lý.
+
+---
+
+### ─── PHẦN 11: TỰ HOÀN THIỆN, HỌC HỎI LIÊN TỤC & KỊCH BẢN BIÊN (TC-53 ➔ TC-60) ───
+
+#### 🔹 TC-53: Tiếp nhận phản hồi Thumbs Up / Down đưa vào Learning Loop
+* **Mục tiêu**: Thu thập đánh giá chất lượng từ người dùng để phục vụ huấn luyện tinh chỉnh mô hình trong tương lai.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Ghi nhận thành công 2 bản ghi feedback `thumbs_up` và `thumbs_down` kèm nhận xét chi tiết.
+
+#### 🔹 TC-54: Tự động sinh cặp dữ liệu huấn luyện (Synthetic Q&A Pairs) từ hội thoại tốt
+* **Mục tiêu**: Trích xuất các câu trả lời đạt điểm đánh giá cao (rating >= 4) thành cặp dữ liệu `instruction / output` chuẩn mẫu.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Sinh thành công cặp dữ liệu mẫu với nguồn `high_rated_session`.
+
+#### 🔹 TC-55: Thang leo thang mô hình thông minh: Fast Flash -> Smart Pro -> Claude
+* **Mục tiêu**: Tối ưu chi phí và tốc độ bằng cách dùng model nhẹ cho câu hỏi đơn giản, tự động leo thang lên model cao cấp khi bài toán phức tạp.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Định tuyến đúng `gemini-2.5-flash` cho bài toán dễ, `gemini-2.5-pro` cho trung bình, và `claude-3-7-sonnet` cho bài toán khó.
+
+#### 🔹 TC-56: Phân tầng giới hạn tốc độ (Rate Limiting Tier: Free vs VIP Student)
+* **Mục tiêu**: Bảo vệ tài nguyên hệ thống bằng cách áp dụng hạn ngạch request khác nhau cho từng nhóm người dùng.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Nhóm Free bị chặn khi vượt quá 20 req/phút; nhóm VIP được phép chạy tới 200 req/phút.
+
+#### 🔹 TC-57: Xử lý Prompt siêu lớn (>100k tokens) bằng kỹ thuật tóm tắt và phân mảnh
+* **Mục tiêu**: Xử lý các tài liệu kỹ thuật quá dài bằng thuật toán phân đoạn (chunking) thông minh để không làm tràn context window.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Tài liệu lớn được chia thành các mảnh 500 ký tự xử lý an toàn.
+
+#### 🔹 TC-58: Hỗ trợ chuyển mã ngôn ngữ tự nhiên (Code-switching Anh - Việt pha trộn)
+* **Mục tiêu**: Hiểu trọn vẹn câu hỏi của lập trình viên Việt Nam khi sử dụng từ ngữ pha trộn giữa tiếng Việt và thuật ngữ kỹ thuật tiếng Anh.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Phân tích thành công câu hỏi chứa cả chữ tiếng Việt có dấu và các cụm từ `Dependency Injection`, `NestJS`.
+
+#### 🔹 TC-59: Nạp lại Prompt hệ thống với Zero-downtime không làm gián đoạn active sessions
+* **Mục tiêu**: Khi cập nhật prompt mới, các phiên đang dở dang vẫn chạy với phiên bản prompt cũ, phiên mới sẽ áp dụng ngay prompt mới.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Session cũ vẫn giữ `Prompt v1`, session mới khởi tạo nhận ngay `Prompt v2`.
+
+#### 🔹 TC-60: Khôi phục thảm họa (Disaster Recovery) và tái tạo phiên hội thoại từ DB
+* **Mục tiêu**: Trong trường hợp server Node bị crash hoặc restart đột ngột, Agent có thể khôi phục lại 100% ngữ cảnh hội thoại từ bảng MySQL.
+* **Kết quả thực tế (Actual Result)**: ✅ **PASS**
+  * **Bằng chứng (Evidence)**: Tái tạo đầy đủ 2 tin nhắn từ bản sao lưu DB của phiên `crash-sess-99`.
+
+---
+
+## 🏆 BÁO CÁO KẾT QUẢ THỰC THI KIỂM THỬ TỔNG THỂ (TEST EXECUTION REPORT)
+
+* **Thời gian thực hiện**: `2026-10-02 10:59:45`
 * **Môi trường**: NodeJS `v20.x`, ExpressJS Framework, Jest Test Runner `v29.7.0`
-* **Kết quả tổng thể**:
-  * **Tổng số kịch bản**: **20 / 20**
-  * **Số kịch bản đạt (PASS)**: **20 (100%)**
+* **Kết quả thực thi tự động**:
+  * **Tổng số kịch bản**: **60 / 60 Kịch Bản**
+  * **Số kịch bản đạt (PASS)**: **60 (100%)**
   * **Số kịch bản lỗi (FAIL)**: **0 (0%)**
-* **Kết quả toàn bộ Suite dan-api**: **48 / 48 suites passed, 249 / 249 tests passed**
+* **Kết quả toàn bộ Suite dan-api**: **48 / 48 suites passed, 289 / 289 tests passed**
