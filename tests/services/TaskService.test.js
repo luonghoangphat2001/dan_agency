@@ -4,10 +4,10 @@ const mockAgentChat = jest.fn();
 const mockCreate    = jest.fn().mockResolvedValue(42);
 const mockUpdate    = jest.fn().mockResolvedValue();
 
-jest.mock('../../src/models/TaskRepository', () =>
+jest.mock('@models/TaskRepository', () =>
   jest.fn().mockImplementation(() => ({ create: mockCreate, updateStatus: mockUpdate }))
 );
-jest.mock('../../src/models/Database', () => ({
+jest.mock('@database', () => ({
   getInstance: jest.fn().mockResolvedValue({}),
 }));
 

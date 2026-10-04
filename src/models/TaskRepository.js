@@ -1,5 +1,7 @@
 'use strict';
 
+const TaskStatus = require('@enums/task-status.enum');
+
 class TaskRepository {
   #db;
 
@@ -11,14 +13,14 @@ class TaskRepository {
   async create({ userId, username, platform, channelId, description }) {
     const result = await this.#db.query(
       `INSERT INTO agent_tasks (user_id, username, platform, channel_id, description, status)
-       VALUES (?, ?, ?, ?, ?, 'pending')`,
+       VALUES (?, ?, ?, ?, ?, '${TaskStatus.PENDING}')`,
       [userId, username, platform, channelId, description]
     );
     return result.insertId;
   }
 
   async updateStatus(id, status, result = undefined) {
-    const done = status === 'done' || status === 'failed';
+    const done = status === TaskStatus.DONE || status === TaskStatus.COMPLETED || status === TaskStatus.FAILED;
     await this.#db.query(
       `UPDATE agent_tasks
        SET status = ?, result = ?, completed_at = ${done ? 'NOW()' : 'NULL'}

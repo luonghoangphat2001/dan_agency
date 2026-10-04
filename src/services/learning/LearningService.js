@@ -4,6 +4,7 @@ const XLSX = require('xlsx');
 const { parseJson, unpackItems, normalizeItem } = require('@services/learning/ContentNormalizer');
 const { performanceMap, weightedShuffle } = require('@services/learning/AdaptiveSelector');
 const SkillService = require('@services/agent/skills/SkillService');
+const LearningType = require('@enums/learning-type.enum');
 const localization = require('@lang');
 
 /**
@@ -178,7 +179,7 @@ class LearningService {
     // Larger presets are assembled from several short, valid JSON batches.
     const batchSize = Math.min(targetCount, 3);
     const targetLevel = level || 'junior';
-    const targetType = category === 'tech' ? 'tech_question' : (type || 'vocabulary');
+    const targetType = category === 'tech' ? LearningType.TECH_QUESTION : (type || LearningType.VOCABULARY);
     this.#log('generate_start', {
       category: category || null,
       type: targetType,
@@ -724,9 +725,9 @@ class LearningService {
 
     const items = targetLearning
       ? await this.#learningRepo.findItems({ learningId: targetLearning.id, limit: 1000 })
-      : await this.#learningRepo.findItems({ type: 'vocabulary', limit: 2000 });
+      : await this.#learningRepo.findItems({ type: LearningType.VOCABULARY, limit: 2000 });
 
-    const isTech = items.some((i) => i.type === 'tech_question') || targetLearning?.type === 'tech_question';
+    const isTech = items.some((i) => i.type === LearningType.TECH_QUESTION) || targetLearning?.type === LearningType.TECH_QUESTION;
     const rows = isTech
       ? [
         ['ID', 'Category', 'Stack', 'Title', 'Prompt', 'Level', 'Quick Answer', 'Detailed Answer', 'Code Example', 'Interview Tips', 'Practical Tips', 'Tags'],
@@ -769,7 +770,7 @@ class LearningService {
       const title = String(r[3] || r[2] || r[1] || '').trim();
       if (!title) continue;
 
-      const isTech = learning.type === 'tech_question';
+      const isTech = learning.type === LearningType.TECH_QUESTION;
       const content = isTech
         ? {
           quick_answer: String(r[6] || '').trim(),

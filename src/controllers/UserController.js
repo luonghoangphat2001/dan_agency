@@ -1,5 +1,7 @@
 'use strict';
 
+const UserRole = require('@enums/user-role.enum');
+
 /**
  * Handles user management (list/create/delete — admin only)
  * and self-service password change (any authenticated user).
@@ -28,7 +30,7 @@ class UserController {
       return res.status(400).json({ error: 'Username and password (min 6 chars) required' });
     }
     try {
-      await this.#userRepo.create(username, password, role === 'admin' ? 'admin' : 'user');
+      await this.#userRepo.create(username, password, role === UserRole.ADMIN ? UserRole.ADMIN : UserRole.USER);
       res.json({ ok: true });
     } catch {
       res.status(400).json({ error: 'Username already exists' });

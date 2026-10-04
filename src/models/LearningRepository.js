@@ -1,6 +1,7 @@
 'use strict';
 
 const { unpackItems } = require('@services/learning/ContentNormalizer');
+const LearningType = require('@enums/learning-type.enum');
 
 /**
  * Unified repository managing the 4-table Learning Hub architecture:
@@ -258,7 +259,7 @@ class LearningRepository {
     const learningSlugs = Array.isArray(filters.learningSlugs) ? filters.learningSlugs.filter(Boolean) : [];
     const types = Array.isArray(filters.types) && filters.types.length
       ? filters.types.filter(Boolean)
-      : ['tech_question', 'reading', 'writing', 'quiz', 'ielts'];
+      : [LearningType.TECH_QUESTION, LearningType.READING, LearningType.WRITING, LearningType.QUIZ, LearningType.IELTS];
 
     if (filters.categorySlug) {
       where.push('c.slug = ?');

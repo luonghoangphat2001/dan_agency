@@ -19,7 +19,7 @@ function resolveProjectRoot() {
     dir = parent;
   }
   // Absolute worst-case fallback: two levels up from src/utils/ is the project root
-  return path.resolve(__dirname, '../..');
+  return process.cwd();
 }
 
 const PROJECT_ROOT = resolveProjectRoot();

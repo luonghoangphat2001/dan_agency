@@ -1,7 +1,7 @@
 'use strict';
 
 const mockQuery = jest.fn();
-jest.mock('../../src/models/Database', () => ({
+jest.mock('@database', () => ({
   getInstance: jest.fn().mockResolvedValue({ query: mockQuery }),
 }));
 

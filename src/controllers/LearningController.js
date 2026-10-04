@@ -2,6 +2,7 @@
 
 const { buildPracticeExam } = require('@services/learning/PracticeExamBuilder');
 const { performanceMap } = require('@services/learning/AdaptiveSelector');
+const LearningType = require('@enums/learning-type.enum');
 const localization = require('@lang');
 
 /**
@@ -216,7 +217,7 @@ class LearningController {
     try {
       const itemId = req.body.itemId || req.body.item_id;
       const userSubmission = req.body.userSubmission || req.body.user_submission || req.body.submission;
-      const type = req.body.type || 'tech_question';
+      const type = req.body.type || LearningType.TECH_QUESTION;
       const model = req.body.model;
       const username = req.session?.username || 'guest';
 

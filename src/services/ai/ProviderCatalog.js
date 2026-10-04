@@ -1,30 +1,42 @@
 'use strict';
 
-const PROVIDER_ORDER = ['claude', 'chatgpt', 'gemini', 'deepseek', 'vllm', 'kimi', 'ollama', 'nvidia', 'cloudflare'];
+const AiProvider = require('@enums/ai-provider.enum');
+
+const PROVIDER_ORDER = [
+  AiProvider.CLAUDE,
+  AiProvider.CHATGPT,
+  AiProvider.GEMINI,
+  AiProvider.DEEPSEEK,
+  AiProvider.VLLM,
+  AiProvider.KIMI,
+  AiProvider.OLLAMA,
+  AiProvider.NVIDIA,
+  AiProvider.CLOUDFLARE,
+];
 
 const PROVIDER_META = {
-  claude:   { key: 'claude',   label: 'Claude 🧠',   shortLabel: 'Claude',   icon: '✳️' },
-  chatgpt:  { key: 'chatgpt',  label: 'ChatGPT 🤖', shortLabel: 'ChatGPT',  icon: '🤖' },
-  gemini:   { key: 'gemini',   label: 'Gemini ✨',   shortLabel: 'Gemini',   icon: '🌟' },
-  deepseek: { key: 'deepseek', label: 'DeepSeek 🌊', shortLabel: 'DeepSeek', icon: '🌊' },
-  vllm:     { key: 'vllm',     label: 'vLLM ⚡',     shortLabel: 'vLLM',     icon: '⚡' },
-  kimi:     { key: 'kimi',     label: 'Kimi',       shortLabel: 'Kimi',     icon: '🧠' },
-  ollama:   { key: 'ollama',   label: 'Ollama',     shortLabel: 'Ollama',   icon: '🦙' },
-  nvidia:   { key: 'nvidia',   label: 'NVIDIA NIM 🟢', shortLabel: 'NVIDIA', icon: '🟢' },
-  cloudflare: { key: 'cloudflare', label: 'Cloudflare AI ☁️', shortLabel: 'Cloudflare', icon: '☁️' },
-  'web-search': { key: 'web-search', label: 'Web Search 🌐', shortLabel: 'Web Search', icon: '🌐' },
+  [AiProvider.CLAUDE]:     { key: AiProvider.CLAUDE,     label: 'Claude 🧠',   shortLabel: 'Claude',   icon: '✳️' },
+  [AiProvider.CHATGPT]:    { key: AiProvider.CHATGPT,    label: 'ChatGPT 🤖', shortLabel: 'ChatGPT',  icon: '🤖' },
+  [AiProvider.GEMINI]:     { key: AiProvider.GEMINI,     label: 'Gemini ✨',   shortLabel: 'Gemini',   icon: '🌟' },
+  [AiProvider.DEEPSEEK]:   { key: AiProvider.DEEPSEEK,   label: 'DeepSeek 🌊', shortLabel: 'DeepSeek', icon: '🌊' },
+  [AiProvider.VLLM]:       { key: AiProvider.VLLM,       label: 'vLLM ⚡',     shortLabel: 'vLLM',     icon: '⚡' },
+  [AiProvider.KIMI]:       { key: AiProvider.KIMI,       label: 'Kimi',       shortLabel: 'Kimi',     icon: '🧠' },
+  [AiProvider.OLLAMA]:     { key: AiProvider.OLLAMA,     label: 'Ollama',     shortLabel: 'Ollama',   icon: '🦙' },
+  [AiProvider.NVIDIA]:     { key: AiProvider.NVIDIA,     label: 'NVIDIA NIM 🟢', shortLabel: 'NVIDIA', icon: '🟢' },
+  [AiProvider.CLOUDFLARE]: { key: AiProvider.CLOUDFLARE, label: 'Cloudflare AI ☁️', shortLabel: 'Cloudflare', icon: '☁️' },
+  [AiProvider.WEB_SEARCH]: { key: AiProvider.WEB_SEARCH, label: 'Web Search 🌐', shortLabel: 'Web Search', icon: '🌐' },
 };
 
 const MODEL_SWITCH_ALIASES = {
-  claude:   ['claude'],
-  chatgpt:  ['chatgpt', 'gpt', 'openai'],
-  gemini:   ['gemini'],
-  deepseek: ['deepseek'],
-  vllm:     ['vllm'],
-  kimi:     ['kimi'],
-  ollama:   ['ollama'],
-  nvidia:   ['nvidia', 'nim'],
-  cloudflare: ['cloudflare', 'cf', 'workers-ai'],
+  [AiProvider.CLAUDE]:     [AiProvider.CLAUDE],
+  [AiProvider.CHATGPT]:    [AiProvider.CHATGPT, 'gpt', AiProvider.OPENAI],
+  [AiProvider.GEMINI]:     [AiProvider.GEMINI],
+  [AiProvider.DEEPSEEK]:   [AiProvider.DEEPSEEK],
+  [AiProvider.VLLM]:       [AiProvider.VLLM],
+  [AiProvider.KIMI]:       [AiProvider.KIMI],
+  [AiProvider.OLLAMA]:     [AiProvider.OLLAMA],
+  [AiProvider.NVIDIA]:     [AiProvider.NVIDIA, 'nim'],
+  [AiProvider.CLOUDFLARE]: [AiProvider.CLOUDFLARE, 'cf', 'workers-ai'],
 };
 
 function getProviderMeta(providerKey) {
@@ -41,23 +53,24 @@ function getProviderLabels() {
 
 function getFallbackVersion(providerKey, configRepo, env = process.env) {
   switch (providerKey) {
-    case 'gemini':
+    case AiProvider.GEMINI:
       return configRepo.get('gemini_model') || 'models/gemini-2.5-flash';
-    case 'claude':
+    case AiProvider.CLAUDE:
       return configRepo.get('claude_model') || 'claude-sonnet-4-6';
-    case 'chatgpt':
+    case AiProvider.CHATGPT:
+    case AiProvider.OPENAI:
       return configRepo.get('chatgpt_model') || 'gpt-4o';
-    case 'deepseek':
+    case AiProvider.DEEPSEEK:
       return env.DEEPSEEK_MODEL || 'deepseek-v4-flash';
-    case 'vllm':
+    case AiProvider.VLLM:
       return env.VLLM_MODEL || 'llama3.1';
-    case 'kimi':
+    case AiProvider.KIMI:
       return env.KIMI_MODEL || 'kimi-k2.6';
-    case 'ollama':
+    case AiProvider.OLLAMA:
       return env.OLLAMA_MODEL || 'llama3.1';
-    case 'nvidia':
+    case AiProvider.NVIDIA:
       return env.NVIDIA_MODEL || 'meta/llama-3.2-11b-vision-instruct';
-    case 'cloudflare':
+    case AiProvider.CLOUDFLARE:
       return env.CLOUDFLARE_MODEL || '@cf/meta/llama-3.1-8b-instruct';
     default:
       return providerKey;

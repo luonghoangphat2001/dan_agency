@@ -2,6 +2,7 @@
 
 const TokenService = require('@services/auth/TokenService');
 const ApiResponse = require('@utils/ApiResponse');
+const UserRole = require('@enums/user-role.enum');
 
 /**
  * Authentication and authorization middleware for Dan AI API.
@@ -74,10 +75,10 @@ class AuthMiddleware {
    * @returns {boolean}
    */
   static #hasAdminRole(user, req) {
-    if (user && user.role === 'admin') {
+    if (user && user.role === UserRole.ADMIN) {
       return true;
     }
-    if (req.session && req.session.role === 'admin') {
+    if (req.session && req.session.role === UserRole.ADMIN) {
       return true;
     }
     return false;

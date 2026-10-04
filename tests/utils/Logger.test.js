@@ -5,7 +5,7 @@ const path = require('path');
 const Logger = require('@utils/Logger');
 
 describe('Logger utility', () => {
-  const logDir = path.join(__dirname, '../../logs');
+  const logDir = path.resolve(process.cwd(), 'logs');
 
   beforeAll(() => {
     if (!fs.existsSync(logDir)) {

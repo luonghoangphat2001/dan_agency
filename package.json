@@ -52,10 +52,13 @@
     "@bots": "src/bots",
     "@docs": "src/docs",
     "@server": "src/server.js",
-    "@lang": "src/lang"
+    "@lang": "src/lang",
+    "@enums": "src/enums"
   },
   "jest": {
     "moduleNameMapper": {
+      "^@enums$": "<rootDir>/src/enums",
+      "^@enums/(.*)$": "<rootDir>/src/enums/$1",
       "^@lang$": "<rootDir>/src/lang/index.js",
       "^@lang/(.*)$": "<rootDir>/src/lang/$1",
       "^@config$": "<rootDir>/src/config/index.js",

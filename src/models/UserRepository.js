@@ -1,6 +1,7 @@
 'use strict';
 
 const bcrypt = require('bcryptjs');
+const UserRole = require('@enums/user-role.enum');
 
 /**
  * Repository for the users table.
@@ -27,7 +28,7 @@ class UserRepository {
     const existing = await this.findByUsername(username);
     if (!existing) {
       await this.#db.query(
-        "INSERT INTO users (username, password_hash, role) VALUES (?, ?, 'admin')",
+        `INSERT INTO users (username, password_hash, role) VALUES (?, ?, '${UserRole.ADMIN}')`,
         [username, passwordHash]
       );
     }
@@ -45,7 +46,7 @@ class UserRepository {
     if (!existing) {
       const hash = bcrypt.hashSync(password, 10);
       await this.#db.query(
-        "INSERT INTO users (username, password_hash, role) VALUES (?, ?, 'admin')",
+        `INSERT INTO users (username, password_hash, role) VALUES (?, ?, '${UserRole.ADMIN}')`,
         [username, hash]
       );
       console.log(`[UserRepository] Seeded default admin account (${username})`);
@@ -80,7 +81,7 @@ class UserRepository {
    * @param {string} password  plain-text
    * @param {'admin'|'user'} [role]
    */
-  async create(username, password, role = 'user') {
+  async create(username, password, role = UserRole.USER) {
     const hash = bcrypt.hashSync(password, 10);
     await this.#db.query(
       'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
