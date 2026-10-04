@@ -1,0 +1,22 @@
+{
+  "priceRecommendations": {
+    "competitorCheaper": "Competitor is pricing lower. Consider launching combo offers or emphasizing premium quality.",
+    "weAreCompetitive": "Our pricing is highly competitive. Accelerate promotions targeting price-sensitive segments."
+  },
+  "negativeSentimentOpportunityTemplate": "Market penetration opportunity: Competitor customers dissatisfied with \"{topic}\"",
+  "strategicTakeaways": {
+    "disruptionAlert": "Detected surge in new demand exceeding 100%! Recommend R&D test pilot launch within 7 days.",
+    "stableMarket": "Market trend is stable; focus on optimizing existing product lines."
+  },
+  "threatEvidenceTemplates": {
+    "priceWar": "Competitor slashed price by {discountPct}% below market average",
+    "newLaunch": "Competitor launched new product line with viral buzz score of {buzzScore}/100"
+  },
+  "pricingResponseRecommendation": "Do not engage in direct price war (protect EBITDA margin). Pivot to upsell combos or loyalty reward vouchers.",
+  "rndTaskTemplate": "Develop counter-formula targeting \"{targetProduct}\" from competitor {competitor}",
+  "rndDeliverables": [
+    "Competitor ingredient analysis report",
+    "2 prototype formula variants",
+    "Raw material COGS cost sheet < 28%"
+  ]
+}

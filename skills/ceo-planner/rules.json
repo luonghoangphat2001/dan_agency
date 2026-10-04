@@ -1,0 +1,46 @@
+{
+  "departmentMappings": {
+    "dan_rnd": ["R&D", "Product Innovation", "Menu Optimization", "SOP Quality"],
+    "dan_logistics": ["Supply Chain", "Raw Material Cost", "Inventory Turnover", "Supplier SLA"],
+    "dan_cfo": ["Cash Flow Safety", "Gross Margin", "Payment Audit", "Tax Optimization"],
+    "dan_ops": ["Store SLA", "Fulfillment Speed", "Order Accuracy", "Labor Efficiency"],
+    "dan_cskh": ["Customer Retention", "CSAT / NPS", "Refund Rate", "Complaint Resolution"]
+  },
+  "defaultStrategicFocus": ["Revenue Growth", "Cost Optimization", "Market Expansion"],
+  "monteCarloRecommendations": {
+    "highConfidence": "Financial plan has high confidence (>70% probability of reaching targets).",
+    "lowConfidence": "Additional contingency buffer or fixed expense reduction required to boost success probability."
+  },
+  "monthLabelTemplate": "Month {month}",
+  "bcgDirectives": {
+    "STARS": "Focus aggressive investment to maintain market leadership position",
+    "CASH_COWS": "Maximize cash flow harvest and optimize operational costs",
+    "QUESTION_MARKS": "Invest selectively or reposition product formula",
+    "DOGS": "Consider divestment or inventory liquidation to recover capital"
+  },
+  "executiveBriefing": {
+    "statusTargetAchieved": "🟢 TARGET ACHIEVED",
+    "statusShortfall": "🔴 TARGET SHORTFALL",
+    "headlineTemplate": "CEO EXECUTIVE FLASH BRIEF - {status} ({sign}{gapMb}m VND)",
+    "cashRunwayTemplate": "{days} days safety runway",
+    "readingTime": "45 seconds",
+    "defaultNoRedAlerts": "No critical risk alerts identified",
+    "defaultPriorities": [
+      "1. Approve passion fruit procurement proposal for new menu line (Logistics -> CFO)",
+      "2. Audit progress of 60s beverage prep SOP completion across 3 bottleneck stores",
+      "3. Conduct 15m rapid sync to address District 7 store revenue decline root cause"
+    ],
+    "defaultWhys": [
+      { "step": "Why 1 (Symptom)", "observation": "Branch revenue dropped by 35%" },
+      { "step": "Why 2 (Direct Trigger)", "observation": "Average order wait time increased from 3 mins to 9 mins" },
+      { "step": "Why 3 (Operational Bottleneck)", "observation": "Primary blender broke down and backup unit was missing replacement parts" },
+      { "step": "Why 4 (Process Failure)", "observation": "Weekly routine maintenance schedule was skipped due to technician staffing shortage" },
+      { "step": "Why 5 (Root Cause)", "observation": "No 2-hour emergency response SLA contract executed with equipment vendor" }
+    ],
+    "defaultCorrectiveActions": [
+      { "action": "Emergency dispatch backup blender from central warehouse within 2 hours", "owner": "dan_ops", "deadline": "Today" },
+      { "action": "Execute 2-hour repair response SLA addendum with equipment distributor", "owner": "dan_logistics", "deadline": "Within 48h" },
+      { "action": "Auto-lock POS sales shift if morning maintenance checklist is incomplete", "owner": "dan_rnd", "deadline": "This week" }
+    ]
+  }
+}

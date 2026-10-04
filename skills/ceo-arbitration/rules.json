@@ -1,0 +1,117 @@
+{
+  "ceoPolicies": {
+    "CASH_FIRST": {
+      "winnerTarget": "cfo",
+      "decision": "Prioritize financial safety and cash conservation margin",
+      "adjustment": "Reduce promotional voucher budget by 50% and delay non-urgent PO"
+    },
+    "GROWTH_FIRST": {
+      "winnerTarget": "rnd_or_cskh",
+      "decision": "Prioritize customer retention and new product launch velocity",
+      "adjustment": "Approve voucher budget with cap and expedite sample procurement"
+    },
+    "BALANCED": {
+      "winner": "COOPERATIVE_CONSENSUS",
+      "decision": "Compromise solution satisfying minimum threshold of both departments",
+      "adjustment": "Allow targeted voucher for VIP segment only while preserving gross margin > 65%"
+    }
+  },
+  "conflictEvaluations": {
+    "CSKH_DISCOUNT_VS_CFO_MARGIN": {
+      "CASH_FIRST": {
+        "winningPosture": "CFO_FAVORED",
+        "summary": "Prioritize cash flow and net profit margin under CEO CASH_FIRST directive",
+        "paretoScore": 88,
+        "directives": {
+          "dan_cfo": "Approve maximum voucher limit of 10% for customers with filed complaints",
+          "dan_cskh": "Do not issue mass 25% vouchers. Compensate customers with sincere apology letters and complimentary merchandise"
+        },
+        "financialImpact": "Preserve 100% of target 30% gross profit margin",
+        "customerImpact": "Expected retention rate decreases slightly by 2%, but avoids treasury deficit",
+        "rationale": "During cash conservation periods, all direct discount incentives are strictly capped."
+      },
+      "GROWTH_FIRST": {
+        "winningPosture": "CSKH_FAVORED",
+        "summary": "Prioritize customer retention and market share under CEO GROWTH_FIRST directive",
+        "paretoScore": 85,
+        "directives": {
+          "dan_cskh": "Approve 20% conditional voucher valid within 7 days",
+          "dan_cfo": "Temporarily draw from marketing contingency fund to offset margin shortfall"
+        },
+        "financialImpact": "Gross profit margin decreases by 4% in short term",
+        "customerImpact": "Customer retention rate exceeds >92%, NPS recovers to 80 points",
+        "rationale": "Customer retention cost is 5x cheaper than new customer acquisition cost (CAC)."
+      },
+      "BALANCED": {
+        "winningPosture": "BALANCED_PARETO",
+        "summary": "Pareto balanced solution: 15% voucher with minimum purchase order of 100,000 VND",
+        "paretoScore": 94,
+        "directives": {
+          "dan_cskh": "Apply 15% discount code valid for next order starting from 100,000 VND",
+          "dan_cfo": "Record voucher cost in sales promotion budget; gross margin still achieves 28% (above 25% floor threshold)"
+        },
+        "financialImpact": "Gross profit margin is protected at a safe 28% level",
+        "customerImpact": "Customers satisfied receiving tangible discount value",
+        "rationale": "Minimum order value requirement increases average order value (AOV), offsetting the discount subtraction."
+      }
+    },
+    "OPS_STOCK_VS_CFO_CASH": {
+      "CASH_FIRST": {
+        "winningPosture": "CFO_FAVORED",
+        "summary": "Implement Just-in-Time (JIT) model, reducing safety stock from 14 days to 5 days",
+        "paretoScore": 90,
+        "directives": {
+          "dan_ops": "Adjust reorder point to 48-hour cycle, reducing capital tied up in storage",
+          "dan_cfo": "Release 35% of working capital locked in raw materials"
+        },
+        "financialImpact": "Increase available cash flow by 450,000,000 VND",
+        "customerImpact": "No impact if suppliers deliver according to SLA",
+        "rationale": "Working capital requires maximum liquidity priority."
+      },
+      "DEFAULT": {
+        "winningPosture": "BALANCED_PARETO",
+        "summary": "Maintain 7-day safety stock for core materials, 3-day for auxiliary materials",
+        "paretoScore": 92,
+        "directives": {
+          "dan_ops": "Classify inventory by ABC analysis: Group A stores 7 days, Group B-C stores 3 days",
+          "dan_cfo": "Maintain 100,000,000 VND overdraft reserve for raw material price volatility"
+        },
+        "financialImpact": "Optimal balance between holding costs and stockout risk",
+        "customerImpact": "Ensure menu in-stock availability rate > 99%",
+        "rationale": "ABC classification optimization reduces tied-up capital without causing recipe fulfillment failure."
+      }
+    },
+    "DEFAULT": {
+      "winningPosture": "CONSENSUS_COMPROMISE",
+      "summary": "Automated arbitration ruling for {conflictType} based on global resource optimization",
+      "paretoScore": 85,
+      "directives": {},
+      "financialImpact": "Cost variance within 5% ceiling tolerance",
+      "customerImpact": "Service quality remains uncompromised",
+      "rationale": "Synchronize operational cadence across all departments."
+    }
+  },
+  "contingencyOptions": [
+    {
+      "optionId": "OPT_FAST_RECOVERY",
+      "title": "Option 1: Fast-Track & Resource Injection",
+      "strategy": "Maintain deadline, allocate additional 15% contingency budget for external outsourcing",
+      "impact": { "timeline": "0 days delay", "budgetChange": "+15%", "risk": "Low" },
+      "recommendedFor": "When market launch timing is mission-critical"
+    },
+    {
+      "optionId": "OPT_TIMELINE_EXTEND",
+      "title": "Option 2: Timeline Extension by 14 Days & Budget Lock",
+      "strategy": "Adjust launch schedule by 2 weeks, defer minor secondary tasks to Phase 2",
+      "impact": { "timeline": "+14 days", "budgetChange": "0%", "risk": "Medium" },
+      "recommendedFor": "When budget is restricted and cannot be expanded"
+    },
+    {
+      "optionId": "OPT_SCOPE_REDUCTION",
+      "title": "Option 3: Core Feature Descoping (MVP Release)",
+      "strategy": "Launch stripped-down version (2 core offerings instead of 5), optimizing cash flow",
+      "impact": { "timeline": "0 days delay", "budgetChange": "-10%", "risk": "Low" },
+      "recommendedFor": "When market conditions fluctuate unfavorably, requiring defensive posture"
+    }
+  ]
+}

@@ -8,6 +8,7 @@
 
 'use strict';
 
+require('module-alias/register');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 
@@ -946,9 +947,13 @@ const scenarios = [
   },
 ];
 
+// Nạp thêm 120 kịch bản kiểm thử Autonomous AI Agent & CEO Planning (TC-61 -> TC-180)
+const scenarios61to180 = require('./scenarios_61_to_180');
+scenarios.push(...scenarios61to180);
+
 // --- HỖ TRỢ JEST TEST RUNNER ---
 if (typeof describe !== 'undefined' && typeof it !== 'undefined') {
-  describe('🦞 Dan-OpenClaw: 60 Workflow Test Cases (Real Autonomous OpenClaw)', () => {
+  describe('🦞 Dan-OpenClaw: 180 Workflow Test Cases (Real Autonomous OpenClaw & CEO Planning)', () => {
     scenarios.forEach((sc) => {
       it(`[${sc.id}] ${sc.title}`, async () => {
         await sc.fn();
@@ -972,8 +977,8 @@ if (require.main === module) {
   async function runStandalone() {
     const startTime = Date.now();
     console.log(`\n${colors.bold}${colors.cyan}========================================================================`);
-    console.log(` 🦞 RUNNING 60 WORKFLOW TEST CASES FOR DAN-OPENCLAW ORCHESTRATOR`);
-    console.log(`    Testing Multi-Agent, Dan-Manager, Dan-Learning, Dan-Api & Web Tools`);
+    console.log(` 🦞 RUNNING 180 WORKFLOW TEST CASES FOR DAN-OPENCLAW ORCHESTRATOR`);
+    console.log(`    Testing Multi-Agent, CEO Planning, Market Radar, Re-Planning & Memory`);
     console.log(`========================================================================${colors.reset}\n`);
 
     let passed = 0;
@@ -999,7 +1004,7 @@ if (require.main === module) {
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     console.log(`\n${colors.bold}${colors.cyan}========================================================================`);
-    console.log(` 📊 BÁO CÁO KẾT QUẢ KIỂM THỬ: DAN-OPENCLAW (60 TEST CASES)`);
+    console.log(` 📊 BÁO CÁO KẾT QUẢ KIỂM THỬ: DAN-OPENCLAW (180 TEST CASES)`);
     console.log(`========================================================================${colors.reset}`);
     console.log(` Tổng số kịch bản kiểm thử: ${scenarios.length}`);
     console.log(` Trạng thái: ${colors.green}${colors.bold}✔ THÀNH CÔNG: ${passed}${colors.reset} | ${failed > 0 ? colors.red : colors.gray}✖ THẤT BẠI: ${failed}${colors.reset}`);
@@ -1014,3 +1019,5 @@ if (require.main === module) {
     process.exit(1);
   });
 }
+
+module.exports = scenarios;

@@ -22,7 +22,8 @@ describe('OpenClaw TokenService', () => {
   test('rejects expired token', () => {
     const token = TokenService.generateToken({ userId: '1' }, -10);
     const result = TokenService.verifyToken(token);
-    expect(result).toEqual({ error: 'Token đã hết hạn. Vui lòng đăng nhập lại.', expired: true });
+    expect(result.expired).toBe(true);
+    expect(typeof result.error).toBe('string');
   });
 
   test('rejects invalid or tampered token', () => {

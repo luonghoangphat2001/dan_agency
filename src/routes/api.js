@@ -171,6 +171,46 @@ function createApiRouter(controllers = {}) {
     orchestratorRouter.use('/workspace', workspaceRouter);
   }
 
+  // CEO Strategic Planner & Autonomous Cockpit Router Group
+  const plannerController = resolveController(controllers, ['ceoPlanner']);
+  if (plannerController) {
+    const plannerRouter = Router();
+    // Solution 1: Master Plan & OKRs & Simulation & P&L
+    plannerRouter.post('/plans', plannerController.createPlan.bind(plannerController));
+    plannerRouter.get('/plans/:planId', plannerController.getPlan.bind(plannerController));
+    plannerRouter.post('/plans/:planId/simulate-monte-carlo', plannerController.simulateMonteCarlo.bind(plannerController));
+    plannerRouter.get('/plans/:planId/projections', plannerController.getProjections.bind(plannerController));
+    plannerRouter.post('/plans/:planId/bcg-matrix', plannerController.classifyBcg.bind(plannerController));
+
+    // Solution 2: Deviation Sentinel & Re-planning
+    plannerRouter.post('/plans/:planId/deviations', plannerController.checkDeviations.bind(plannerController));
+    plannerRouter.post('/plans/:planId/contingency-options', plannerController.requestContingencyOptions.bind(plannerController));
+    plannerRouter.post('/plans/:planId/apply-replan', plannerController.applyReplan.bind(plannerController));
+
+    // Solution 3: Actionable Market Intel & Threat Radar
+    plannerRouter.post('/market-intel/threat-radar', plannerController.analyzeMarketIntel.bind(plannerController));
+
+    // Solution 4: Goal Arbitration
+    plannerRouter.post('/conflicts/arbitrate', plannerController.arbitrateConflict.bind(plannerController));
+
+    // Solution 5: Governance & Multi-Sig & Emergency Veto
+    plannerRouter.post('/governance/evaluate', plannerController.evaluateAutonomy.bind(plannerController));
+    plannerRouter.post('/governance/multisig/create', plannerController.createMultiSig.bind(plannerController));
+    plannerRouter.post('/governance/multisig/sign', plannerController.signMultiSig.bind(plannerController));
+    plannerRouter.post('/governance/veto', plannerController.triggerEmergencyVeto.bind(plannerController));
+    plannerRouter.post('/governance/lift-veto', plannerController.liftEmergencyVeto.bind(plannerController));
+
+    // Solution 6: Episodic Learning & Caution Multiplier
+    plannerRouter.post('/learning/post-mortem', plannerController.recordPostMortem.bind(plannerController));
+    plannerRouter.post('/learning/caution-multiplier', plannerController.calculateCaution.bind(plannerController));
+
+    // Executive Briefings & RCA
+    plannerRouter.post('/briefing/morning', plannerController.getMorningBrief.bind(plannerController));
+    plannerRouter.post('/briefing/rca', plannerController.performRca.bind(plannerController));
+
+    orchestratorRouter.use('/ceo/planner', plannerRouter);
+  }
+
   router.use('/orchestrator/v1', orchestratorRouter);
 
   return router;

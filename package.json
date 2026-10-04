@@ -46,13 +46,18 @@
     "@app": "src/app.js",
     "@server": "src/server.js",
     "@lang": "src/lang",
-    "@mcp": "src/mcp"
+    "@mcp": "src/mcp",
+    "@enums": "src/enums",
+    "@skills": "skills"
   },
   "jest": {
     "setupFiles": [
       "dotenv/config"
     ],
     "moduleNameMapper": {
+      "^@skills/(.*)$": "<rootDir>/skills/$1",
+      "^@enums$": "<rootDir>/src/enums",
+      "^@enums/(.*)$": "<rootDir>/src/enums/$1",
       "^@lang$": "<rootDir>/src/lang/index.js",
       "^@lang/(.*)$": "<rootDir>/src/lang/$1",
       "^@config$": "<rootDir>/src/config/index.js",

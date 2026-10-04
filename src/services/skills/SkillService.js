@@ -19,7 +19,7 @@ function resolveProjectRoot() {
     if (parent === dir) break;
     dir = parent;
   }
-  return path.resolve(__dirname, '../../..');
+  return process.cwd();
 }
 
 /**
@@ -171,6 +171,16 @@ class SkillService {
         const rawContent = fs.readFileSync(skillPath, 'utf8');
         const { metadata, body } = this.parseFrontmatter(rawContent);
 
+        const rulesJsonPath = path.join(this.#skillsDirectory, item.name, 'rules.json');
+        let rules = null;
+        if (fs.existsSync(rulesJsonPath)) {
+          try {
+            rules = JSON.parse(fs.readFileSync(rulesJsonPath, 'utf8'));
+          } catch (jsonErr) {
+            console.warn(`[SkillService] Failed to load rules.json at ${rulesJsonPath}:`, jsonErr.message);
+          }
+        }
+
         const skillName = metadata.name || item.name;
         const skillRecord = {
           name: skillName,
@@ -183,7 +193,8 @@ class SkillService {
           raw: rawContent,
           filePath: skillPath,
           metadata,
-          sections: this.parseSections(body)
+          sections: this.parseSections(body),
+          rules
         };
 
         this.#skillsCache.set(skillName, skillRecord);

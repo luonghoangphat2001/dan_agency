@@ -20,7 +20,7 @@ function resolveProjectRoot() {
     if (parent === dir) break;
     dir = parent;
   }
-  return path.resolve(__dirname, '../../..');
+  return process.cwd();
 }
 
 const DEFAULT_LOG_FILE = process.env.OPENCLAW_LOG_FILE

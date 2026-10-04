@@ -1,0 +1,21 @@
+{
+  "departmentMappings": {
+    "dan_rnd": ["R&D", "Product Innovation", "Menu Optimization", "SOP Quality"],
+    "dan_logistics": ["Supply Chain", "Raw Material Cost", "Inventory Turnover", "Supplier SLA"],
+    "dan_cfo": ["Cash Flow Safety", "Gross Margin", "Payment Audit", "Tax Optimization"],
+    "dan_ops": ["Store SLA", "Fulfillment Speed", "Order Accuracy", "Labor Efficiency"],
+    "dan_cskh": ["Customer Retention", "CSAT / NPS", "Refund Rate", "Complaint Resolution"]
+  },
+  "defaultStrategicFocus": ["Revenue Growth", "Cost Optimization", "Market Expansion"],
+  "monteCarloRecommendations": {
+    "highConfidence": "Kế hoạch tài chính có độ vững chắc cao (>70% xác suất đạt mục tiêu).",
+    "lowConfidence": "Cần bổ sung nguồn lực dự phòng hoặc giảm bớt chi tiêu cố định để nâng cao xác suất thành công."
+  },
+  "monthLabelTemplate": "Tháng {month}",
+  "bcgDirectives": {
+    "STARS": "Tập trung đầu tư mạnh duy trì vị thế dẫn đầu",
+    "CASH_COWS": "Khai thác tối đa dòng tiền, tối ưu chi phí vận hành",
+    "QUESTION_MARKS": "Đầu tư có chọn lọc hoặc tái định vị công thức",
+    "DOGS": "Cân nhắc cắt bỏ hoặc xả kho thu hồi vốn"
+  }
+}

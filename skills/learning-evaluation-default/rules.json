@@ -1,0 +1,19 @@
+{
+  "strategicAdviceTemplates": {
+    "cautionWarning": "HISTORICAL RISK WARNING: This plan shares {similarityHits} risk factors with past campaign failures. Caution multiplier auto-scaled to x{cautionMultiplier}, requiring an extra contingency buffer of {adjustedBudgetBuffer} VND.",
+    "cautionSafe": "Plan is clear: no significant historical risk pattern matches detected."
+  },
+  "promptEnhancements": {
+    "dan_rnd": [
+      "MANDATORY: When proposing new recipes, raw material COGS must not exceed 28% of expected retail price.",
+      "CROSS-CHECK: Always consult Logistics on imported raw material lead times before finalizing official SOPs."
+    ],
+    "dan_cfo": [
+      "CASH FLOW CONTROL: Maintain minimum cash reserve securing 90 days of fixed expenses (Opex runway).",
+      "EARLY WARNING: Trigger alert if chain-wide gross margin drops below 26% for 2 consecutive days."
+    ],
+    "default": [
+      "SYNCHRONIZATION: Any action altering cross-departmental targets must broadcast notice 24 hours in advance."
+    ]
+  }
+}

@@ -39,7 +39,19 @@ const CeoController = require('@controllers/CeoController');
 const OperatorController = require('@controllers/OperatorController');
 const DashboardController = require('@controllers/DashboardController');
 const WorkspaceController = require('@controllers/WorkspaceController');
+const CeoPlannerController = require('@controllers/CeoPlannerController');
 const WorkspaceService = require('@services/sandbox/WorkspaceService');
+const {
+  CeoStrategicPlannerService,
+  AutonomousPlanExecutorService,
+  DynamicRePlannerService,
+  MarketIntelligenceSynthesizerService,
+  ExecutiveBriefingService,
+  GoalArbitrationService,
+  AutonomyGovernanceService,
+  EpisodicLearningService,
+} = require('@services/ceo/planner');
+
 
 /**
  * Creates and wires all OOP Controllers with their dependencies (SOLID DI).
@@ -120,6 +132,16 @@ function createControllers({
   const operatorController = new OperatorController(eventIntakeService, operatorControlService, eventReplayService);
   const dashboardController = new DashboardController(dashboardReadModelService, metricsRegistry, capabilityRegistry);
   const workspaceController = new WorkspaceController(new WorkspaceService());
+  const ceoPlannerController = new CeoPlannerController({
+    plannerService: new CeoStrategicPlannerService(),
+    executorService: new AutonomousPlanExecutorService(),
+    replannerService: new DynamicRePlannerService(),
+    marketIntelService: new MarketIntelligenceSynthesizerService(),
+    briefingService: new ExecutiveBriefingService(),
+    arbitrationService: new GoalArbitrationService(),
+    governanceService: new AutonomyGovernanceService(),
+    learningService: new EpisodicLearningService(),
+  });
 
   return {
     web: webController,
@@ -134,6 +156,7 @@ function createControllers({
     ceo: ceoController,
     ceoCommand: ceoController,
     ceoException: ceoController,
+    ceoPlanner: ceoPlannerController,
     dashboard: dashboardController,
     metrics: dashboardController,
     capability: dashboardController,

@@ -1,0 +1,18 @@
+{
+  "reasons": {
+    "SYSTEM_FROZEN": "SYSTEM FROZEN BY CEO VETO: {vetoReason}",
+    "L1_ASSISTED": "Autonomy Level L1 (Assisted): All modification actions require manual human approval",
+    "L2_RECOMMEND": "Autonomy Level L2 (Recommend): Proposal created, awaiting CEO/Manager click approval",
+    "L3_MULTI_SIG": "Expense of {amount} VND exceeds Multi-Sig threshold (>50m VND). Mandatory minimum 2 leadership signatures required.",
+    "L3_AUTO_APPROVED": "Expense of {amount} VND is within L3 autonomous limit (<= 20m VND). Automatically executed.",
+    "L3_SINGLE_APPROVAL": "Expense of {amount} VND exceeds L3 limit (20m VND) but below Multi-Sig threshold. Requires 1 CEO/CFO signature.",
+    "L4_MULTI_SIG": "Even under L4, major financial decisions (>50m VND) trigger Multi-Sig Gate for security.",
+    "L4_FULLY_AUTONOMOUS": "Action operates fully within high-level L4 autonomous framework"
+  },
+  "messages": {
+    "VETO_TRIGGERED": "All agent command execution streams and expenditures immediately suspended",
+    "VETO_LIFTED": "System emergency freeze lifted, normal operations restored",
+    "DEFAULT_VETO_REASON": "Critical risk detected or urgent CEO override request",
+    "DEFAULT_LIFT_NOTE": "Resolution and mitigation completed"
+  }
+}

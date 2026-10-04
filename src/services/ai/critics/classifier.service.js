@@ -19,14 +19,14 @@ class ClassifierService {
     let category = 'INFERENCE';
     if (
       text.startsWith('FACT:') ||
-      normalizedText.includes('dữ liệu từ ssot') ||
       normalizedText.includes('data from ssot') ||
+      normalizedText.includes('ssot data') ||
       normalizedText.includes('from ssot')
     ) {
       category = 'FACT';
     } else if (
       text.startsWith('RECOMMENDATION:') ||
-      normalizedText.includes('đề xuất') ||
+      normalizedText.includes('proposal') ||
       normalizedText.includes('propose') ||
       normalizedText.includes('recommend')
     ) {
