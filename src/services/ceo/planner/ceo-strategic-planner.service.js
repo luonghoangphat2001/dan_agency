@@ -36,7 +36,7 @@ class CeoStrategicPlannerService {
       departmentMappings: {},
       defaultStrategicFocus: [],
       monteCarloRecommendations: {},
-      monthLabelTemplate: 'Tháng {month}',
+      monthLabelTemplate: 'Month {month}',
       bcgDirectives: {},
     };
   }
