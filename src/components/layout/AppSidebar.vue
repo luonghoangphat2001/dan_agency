@@ -71,6 +71,11 @@
                     <span v-if="!collapsed" class="sidebar-label">{{ $translate('manager.nav.openclaw') }}</span>
                 </router-link>
 
+                <router-link to="/ceo-cockpit" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5" :class="$route.path === '/ceo-cockpit' ? 'bg-indigo-600 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/80 hover:text-gray-900 dark:hover:text-white'">
+                    <i class="fa-solid fa-crown w-4 text-center text-sm text-amber-400"></i>
+                    <span v-if="!collapsed" class="sidebar-label">CEO Cockpit</span>
+                </router-link>
+
                 <router-link to="/logs" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5" :class="$route.path === '/logs' ? 'bg-indigo-600 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/80 hover:text-gray-900 dark:hover:text-white'">
                     <i class="fa-solid fa-list-check w-4 text-center text-sm"></i>
                     <span v-if="!collapsed" class="sidebar-label">{{ $translate('manager.nav.logs') }}</span>

@@ -81,6 +81,12 @@ const routes = [
     meta: { requiresAuth: true, requiresAdmin: true },
   },
   {
+    path: '/ceo-cockpit',
+    name: 'ceo-cockpit',
+    component: () => import('../views/CeoCockpitView.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/chat',
   },
