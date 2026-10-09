@@ -1,0 +1,81 @@
+{
+  "rnd": {
+    "agent_title": "Agent Dan R&D",
+    "department": "R&D",
+    "status": "success",
+    "findings": "Nghiên cứu & Định mức SP: Định mức BOM (Bill of Materials) tối ưu theo chuẩn kế toán chi phí NVL trực tiếp (TK 621), bảo đảm biên lợi nhuận gộp Gross Margin >= 25%. Uptime hệ thống công nghệ 99.9%.",
+    "metrics": {
+      "code_quality_score": 9.5,
+      "pending_pull_requests": 2,
+      "target_gross_margin_percent": 28.5,
+      "bom_compliance_rate": 100.0
+    }
+  },
+  "cfo": {
+    "agent_title": "Agent Dan CFO",
+    "department": "CFO",
+    "status": "success",
+    "findings": "Kế toán Tài chính & Dòng tiền: Hạch toán chuẩn mực (TK 111, 112, 156, 511, 632, 641, 642, 911). Doanh thu tăng 12% MoM, đối soát VNPAY/MoMo khớp 100%, Runway an toàn đạt 3.8 tháng (> 45 ngày).",
+    "metrics": {
+      "revenue_vnd": 1250000000,
+      "gross_profit_vnd": 350000000,
+      "net_profit_vnd": 185000000,
+      "operating_cashflow_vnd": 240000000,
+      "cash_runway_days": 114,
+      "payroll_to_revenue_percent": 21.6
+    }
+  },
+  "ops": {
+    "agent_title": "Agent Dan Ops",
+    "department": "Ops",
+    "status": "success",
+    "findings": "Vận hành Kho & Xử lý Đơn: Quản trị kho theo nguyên tắc FIFO/Cross-docking, độ chính xác kiểm kê đạt 99.4%. Tỷ lệ xử lý sự cố trong SLA (< 4h) đạt 96.2%, không có đơn treo quá 24h.",
+    "metrics": {
+      "total_orders_today": 248,
+      "order_fulfillment_rate_percent": 98.8,
+      "inventory_accuracy_percent": 99.4,
+      "open_incidents_count": 2,
+      "avg_incident_resolve_hours": 2.4
+    }
+  },
+  "logistics": {
+    "agent_title": "Agent Dan Logistics",
+    "department": "Logistics",
+    "status": "success",
+    "findings": "Chuỗi Cung ứng & Thu mua: Áp dụng mô hình EOQ & ROP chuẩn Logistics căn bản, kiểm soát PO nhà cung ứng đạt OTIF 94.6%. Bảo đảm 7 Rights của dịch vụ khách hàng và tối ưu Total Logistics Cost.",
+    "metrics": {
+      "active_po_count": 5,
+      "otif_delivery_rate_percent": 94.6,
+      "stockout_risk_skus": 0,
+      "avg_inbound_lead_time_days": 3.8,
+      "seven_rights_compliance_score": 98.2
+    }
+  },
+  "cskh": {
+    "agent_title": "Agent Dan CSKH",
+    "department": "CSKH",
+    "status": "success",
+    "findings": "Trải nghiệm Khách hàng & Dịch vụ: Chỉ số CSAT đạt 4.88/5.0, NPS đạt +42. Thời gian phản hồi đầu tiên (FRT) trung bình 38 giây (< 60s), tỷ lệ giải quyết khiếu nại lần đầu (FCR) đạt 86.5%.",
+    "metrics": {
+      "csat_score": 4.88,
+      "nps_score": 42,
+      "first_response_time_seconds": 38,
+      "first_contact_resolution_percent": 86.5,
+      "churn_risk_accounts": 3
+    }
+  },
+  "hr": {
+    "agent_title": "Agent Dan HR",
+    "department": "HR",
+    "status": "success",
+    "findings": "Quản trị Nhân sự & Đãi ngộ: Hoạch định định biên nhân sự 100% đạt chuẩn, hợp đồng lao động điện tử và chính sách lương 3P tuân thủ nghiêm ngặt Luật Lao động (BHXH, BHYT, BHTN). Tỷ lệ biến động nhân sự (Turnover) 3.8%.",
+    "metrics": {
+      "total_employees": 48,
+      "active_contracts": 48,
+      "probation_pass_rate_percent": 92.0,
+      "training_completion_rate_percent": 96.5,
+      "turnover_rate_percent": 3.8,
+      "statutory_insurance_compliance_percent": 100.0
+    }
+  }
+}
