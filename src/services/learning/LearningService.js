@@ -1,6 +1,7 @@
 'use strict';
 
-const XLSX = require('xlsx');
+const ImportService = require('@services/import/ImportService');
+const ExportService = require('@services/export/ExportService');
 const { parseJson, unpackItems, normalizeItem } = require('@services/learning/ContentNormalizer');
 const { performanceMap, weightedShuffle } = require('@services/learning/AdaptiveSelector');
 const SkillService = require('@services/agent/skills/SkillService');
@@ -746,20 +747,16 @@ class LearningService {
         ]),
       ];
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Vocabulary Bank');
-    return XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const exportService = new ExportService();
+    return exportService.exportExcel(rows, { sheetName: 'Vocabulary Bank', isAoa: true });
   }
 
   async importFromExcel(learningId, buffer) {
     const learning = await this.#learningRepo.findLearningById(learningId);
     if (!learning) throw new Error(localization.t('learning.validation.learning_not_found', { learningId }));
 
-    const wb = XLSX.read(buffer, { type: 'buffer' });
-    const sheetName = wb.SheetNames[0];
-    if (!sheetName) throw new Error(localization.t('learning.validation.excel_empty'));
-
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1 });
+    const importService = new ImportService();
+    const rows = importService.importExcel(buffer, { headerAsArray: true });
     if (!rows.length) throw new Error(localization.t('learning.validation.excel_no_data'));
 
     let created = 0;

@@ -69,7 +69,7 @@ function createApiRouter(controllers) {
   userRouter.post('/password', authUser, controllers.user.changePassword);
   router.use('/', userRouter);
 
-  // ─── Autonomous ReAct Agent ───────────────────────────────────────────────
+  // ─── Autonomous ReAct Agent & CEO ESR ──────────────────────────────────────
   if (controllers.agent) {
     const agentRouter = Router();
     agentRouter.post('/chat', authUser, controllers.agent.chat);
@@ -81,6 +81,15 @@ function createApiRouter(controllers) {
     publicRouter.post('/agent/chat', controllers.agent.chat);
     publicRouter.get('/agent/tools', controllers.agent.listTools);
     publicRouter.get('/agent/runs/:id', controllers.agent.getRun);
+  }
+
+  if (controllers.ceo) {
+    const ceoRouter = Router();
+    ceoRouter.get('/daily-brief', authUser, (request, response, nextFunction) => controllers.ceo.getDailyBrief(request, response, nextFunction));
+    ceoRouter.post('/orchestrate', authUser, (request, response, nextFunction) => controllers.ceo.orchestrate(request, response, nextFunction));
+    ceoRouter.get('/exception-inbox', authUser, (request, response, nextFunction) => controllers.ceo.getExceptionInbox(request, response, nextFunction));
+    ceoRouter.post('/approval', authUser, (request, response, nextFunction) => controllers.ceo.processApproval(request, response, nextFunction));
+    router.use('/ceo', ceoRouter);
   }
 
   // ─── Admin: configuration, models and analytics ───────────────────────────

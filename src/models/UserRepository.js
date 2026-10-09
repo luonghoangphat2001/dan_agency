@@ -1,5 +1,6 @@
 'use strict';
 
+const BaseRepository = require('@models/BaseRepository');
 const bcrypt = require('bcryptjs');
 const UserRole = require('@enums/user-role.enum');
 
@@ -7,13 +8,9 @@ const UserRole = require('@enums/user-role.enum');
  * Repository for the users table.
  * Owns all password hashing so callers never touch bcrypt directly.
  */
-class UserRepository {
-  /** @type {import('./Database')} */
-  #db;
-
-  /** @param {import('./Database')} db */
+class UserRepository extends BaseRepository {
   constructor(db) {
-    this.#db = db;
+    super(db, 'users');
   }
 
   /**
@@ -27,7 +24,7 @@ class UserRepository {
     if (!passwordHash) return;
     const existing = await this.findByUsername(username);
     if (!existing) {
-      await this.#db.query(
+      await this._db.query(
         `INSERT INTO users (username, password_hash, role) VALUES (?, ?, '${UserRole.ADMIN}')`,
         [username, passwordHash]
       );
@@ -45,7 +42,7 @@ class UserRepository {
     const existing = await this.findByUsername(username);
     if (!existing) {
       const hash = bcrypt.hashSync(password, 10);
-      await this.#db.query(
+      await this._db.query(
         `INSERT INTO users (username, password_hash, role) VALUES (?, ?, '${UserRole.ADMIN}')`,
         [username, hash]
       );
@@ -53,27 +50,26 @@ class UserRepository {
     }
   }
 
-
   /**
    * @param {string} username
    * @returns {Promise<any|null>}
    */
   async findByUsername(username) {
-    return this.#db.queryOne('SELECT * FROM users WHERE username = ?', [username]);
+    return this._db.queryOne('SELECT * FROM users WHERE username = ?', [username]);
   }
 
   /**
    * @returns {Promise<any[]>}
    */
   async findAll() {
-    return this.#db.query(
+    return this._db.query(
       'SELECT id, username, role, created_at, last_active FROM users ORDER BY created_at ASC'
     );
   }
 
   /** @param {string} username */
   async updateLastActive(username) {
-    await this.#db.query('UPDATE users SET last_active = NOW() WHERE username = ?', [username]);
+    await this._db.query('UPDATE users SET last_active = NOW() WHERE username = ?', [username]);
   }
 
   /**
@@ -83,7 +79,7 @@ class UserRepository {
    */
   async create(username, password, role = UserRole.USER) {
     const hash = bcrypt.hashSync(password, 10);
-    await this.#db.query(
+    await this._db.query(
       'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
       [username, hash, role]
     );
@@ -95,7 +91,7 @@ class UserRepository {
    */
   async updatePassword(username, password) {
     const hash = bcrypt.hashSync(password, 10);
-    await this.#db.query(
+    await this._db.query(
       'UPDATE users SET password_hash = ? WHERE username = ?',
       [hash, username]
     );
@@ -103,7 +99,7 @@ class UserRepository {
 
   /** @param {string} username */
   async delete(username) {
-    await this.#db.query('DELETE FROM users WHERE username = ?', [username]);
+    await this._db.query('DELETE FROM users WHERE username = ?', [username]);
   }
 
   /**

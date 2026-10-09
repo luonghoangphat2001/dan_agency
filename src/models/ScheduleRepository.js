@@ -1,22 +1,21 @@
 'use strict';
 
+const BaseRepository = require('@models/BaseRepository');
+
 /**
  * Repository for user schedules / reminders.
  */
-class ScheduleRepository {
-  /** @type {import('./Database')} */
-  #db;
-
+class ScheduleRepository extends BaseRepository {
   /** @param {import('./Database')} db */
   constructor(db) {
-    this.#db = db;
+    super(db, 'schedules');
   }
 
   /**
    * @param {{ userId: string, username: string, platform: string, channelId: string, title: string, remindAt: string, repeatType: string }} opts
    */
   async create({ userId, username, platform, channelId, title, remindAt, repeatType }) {
-    const result = await this.#db.query(
+    const result = await this._db.query(
       `INSERT INTO schedules (user_id, username, platform, channel_id, title, remind_at, repeat_type)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [userId, username, platform || 'discord', channelId, title, remindAt, repeatType || 'none']
@@ -30,7 +29,7 @@ class ScheduleRepository {
    * @param {string} platform
    */
   async findByUser(userId, platform) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT * FROM schedules WHERE user_id = ? AND platform = ? AND is_active = 1 ORDER BY remind_at ASC`,
       [userId, platform]
     );
@@ -43,7 +42,7 @@ class ScheduleRepository {
   async findAll(opts = {}) {
     const limit = Math.min(Math.max(Number(opts.limit || 200), 1), 500);
     const where = opts.includeInactive ? '' : 'WHERE is_active = 1';
-    return this.#db.query(
+    return this._db.query(
       `SELECT * FROM schedules ${where} ORDER BY remind_at ASC LIMIT ?`,
       [limit]
     );
@@ -56,7 +55,7 @@ class ScheduleRepository {
    * @param {string} dateStr  e.g. "2026-03-15"
    */
   async findByDate(userId, platform, dateStr) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT * FROM schedules
        WHERE user_id = ? AND platform = ? AND is_active = 1
          AND DATE(remind_at) = ?
@@ -72,7 +71,7 @@ class ScheduleRepository {
    * @param {string} nowStr  current local time as "YYYY-MM-DD HH:MM:SS"
    */
   async findUpcoming(nowStr) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT * FROM schedules WHERE remind_at <= ? AND is_active = 1`,
       [nowStr]
     );
@@ -88,7 +87,7 @@ class ScheduleRepository {
    * @param {string} notifyCol    column name: 'notified_1h' | 'notified_30m'
    */
   async findAdvance(nowStr, thresholdStr, notifyCol) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT * FROM schedules
        WHERE remind_at > ? AND remind_at <= ? AND is_active = 1 AND \`${notifyCol}\` = 0`,
       [nowStr, thresholdStr]
@@ -101,7 +100,7 @@ class ScheduleRepository {
    * @param {string} notifyCol  'notified_1h' | 'notified_30m'
    */
   async markNotified(id, notifyCol) {
-    await this.#db.query(
+    await this._db.query(
       `UPDATE schedules SET \`${notifyCol}\` = 1 WHERE id = ?`,
       [id]
     );
@@ -115,12 +114,12 @@ class ScheduleRepository {
    */
   async markFired(id, nextRemindAt = null) {
     if (nextRemindAt) {
-      await this.#db.query(
+      await this._db.query(
         `UPDATE schedules SET remind_at = ?, notified_1h = 0, notified_30m = 0 WHERE id = ?`,
         [nextRemindAt, id]
       );
     } else {
-      await this.#db.query(
+      await this._db.query(
         `UPDATE schedules SET is_active = 0 WHERE id = ?`,
         [id]
       );
@@ -147,7 +146,7 @@ class ScheduleRepository {
       sets.push('notified_1h = 0', 'notified_30m = 0', 'is_active = 1');
     }
     params.push(id, userId);
-    const result = await this.#db.query(
+    const result = await this._db.query(
       `UPDATE schedules SET ${sets.join(', ')} WHERE id = ? AND user_id = ?`,
       params
     );
@@ -183,7 +182,7 @@ class ScheduleRepository {
     }
     if (!sets.length) return false;
     params.push(id);
-    const result = await this.#db.query(
+    const result = await this._db.query(
       `UPDATE schedules SET ${sets.join(', ')} WHERE id = ?`,
       params
     );
@@ -197,7 +196,7 @@ class ScheduleRepository {
    * @param {string} keyword
    */
   async findByKeyword(userId, platform, keyword) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT * FROM schedules
        WHERE user_id = ? AND platform = ? AND is_active = 1
          AND title LIKE ?
@@ -212,11 +211,11 @@ class ScheduleRepository {
    * @param {string} userId
    * @param {string} platform
    * @param {string} keyword
-   * @param {{ remindAtTimePart?: string }} changes  remindAtTimePart = "HH:MM:SS" (keeps each row's date)
+   * @param {string} newTimePart  remindAtTimePart = "HH:MM:SS" (keeps each row's date)
    * @returns {Promise<number>} affected rows
    */
   async updateTimeByKeyword(userId, platform, keyword, newTimePart) {
-    const result = await this.#db.query(
+    const result = await this._db.query(
       `UPDATE schedules
        SET remind_at = CONCAT(DATE(remind_at), ' ', ?)
        WHERE user_id = ? AND platform = ? AND is_active = 1 AND title LIKE ?`,
@@ -231,24 +230,19 @@ class ScheduleRepository {
    * @param {string} userId
    */
   async delete(id, userId) {
-    const result = await this.#db.query(
+    const result = await this._db.query(
       `DELETE FROM schedules WHERE id = ? AND user_id = ?`,
       [id, userId]
     );
     return result.affectedRows > 0;
   }
 
-  /** @param {number} id */
-  async deleteAdmin(id) {
-    const result = await this.#db.query('DELETE FROM schedules WHERE id = ?', [id]);
-    return result.affectedRows > 0;
-  }
-
   /**
+   * Delete a schedule by id (admin). Delegates to BaseRepository.deleteById.
    * @param {number} id
    */
-  async findById(id) {
-    return this.#db.queryOne(`SELECT * FROM schedules WHERE id = ?`, [id]);
+  async deleteAdmin(id) {
+    return this.deleteById(id);
   }
 }
 

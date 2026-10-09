@@ -1,6 +1,8 @@
 'use strict';
 
-const XLSX = require('xlsx');
+const ImportService = require('@services/import/ImportService');
+const ExportService = require('@services/export/ExportService');
+const ImportFormat = require('@enums/import-format.enum');
 
 /**
  * Admin dashboard controller for daily vocabulary notifications.
@@ -287,13 +289,8 @@ class VocabularyController {
 
   #parseExcelFile(buffer) {
     try {
-      const workbook = XLSX.read(buffer, { type: 'buffer' });
-      const sheetName = workbook.SheetNames[0];
-      if (!sheetName) {
-        return { error: 'Excel file has no worksheet' };
-      }
-      const sheet = workbook.Sheets[sheetName];
-      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+      const importService = new ImportService();
+      const rows = importService.importExcel(buffer, { headerAsArray: true });
       if (rows.length < 2) {
         return { error: 'Excel file must include a header row and at least one data row' };
       }
@@ -309,7 +306,7 @@ class VocabularyController {
         .map((row, index) => ({ rowNo: index + 2, values: row.slice(0, 6) }))
         .filter((row) => row.values.some((cell) => String(cell || '').trim()));
 
-      return { format: 'excel', rows: dataRows };
+      return { format: ImportFormat.EXCEL, rows: dataRows };
     } catch (err) {
       return { error: `Cannot read Excel file: ${err.message}` };
     }
@@ -334,12 +331,9 @@ class VocabularyController {
         'Đã gửi Discord': Number(w.is_sent) === 1 ? 'Đã gửi' : 'Chưa gửi',
       }));
 
-      const worksheet = XLSX.utils.json_to_sheet(data);
-      const workbook = XLSX.utils.book_new();
+      const exportService = new ExportService();
       const sheetName = topicNo ? `Topic ${topicNo}` : 'All Vocabulary';
-      XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-
-      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      const buffer = exportService.exportExcel(data, { sheetName });
       const filename = topicNo ? `vocabulary_topic_${topicNo}.xlsx` : 'vocabulary_all_topics.xlsx';
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

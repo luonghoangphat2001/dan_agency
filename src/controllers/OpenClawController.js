@@ -51,8 +51,8 @@ class OpenClawController {
   }
 
   async list(req, res) {
-    const limit  = Math.min(parseInt(req.query.limit  || '50',  10), 200);
-    const offset = Math.max(parseInt(req.query.offset || '0',   10), 0);
+    const PaginationUtils = require('@utils/PaginationUtils');
+    const { limit, offset } = PaginationUtils.parse(req.query, { defaultLimit: 50, maxLimit: 200 });
     res.json(await this.#service.listInteractions(limit, offset));
   }
 }

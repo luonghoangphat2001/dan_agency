@@ -14,6 +14,11 @@ const WorkspaceFileTool = require('@services/agent/tools/WorkspaceFileTool');
 const WorkspaceCommandTool = require('@services/agent/tools/WorkspaceCommandTool');
 const SkillService = require('@services/agent/skills/SkillService');
 const SkillLoaderTool = require('@services/agent/tools/SkillLoaderTool');
+const SaveMemoryTool = require('@services/agent/tools/SaveMemoryTool');
+const RecallMemoryTool = require('@services/agent/tools/RecallMemoryTool');
+const OpenClawScraperTool = require('@services/agent/tools/OpenClawScraperTool');
+const ExecutiveReportTool = require('@services/agent/tools/ExecutiveReportTool');
+const SystemHealthTool = require('@services/agent/tools/SystemHealthTool');
 const localization = require('@lang');
 
 /**
@@ -91,10 +96,17 @@ class AgentService {
   #registerDefaultTools(database) {
     if (database) {
       this.#toolRegistry.register(new MySQLQueryTool(database));
+      this.#toolRegistry.register(new SaveMemoryTool(database));
+      this.#toolRegistry.register(new RecallMemoryTool(database));
+    } else {
+      this.#toolRegistry.register(new SaveMemoryTool());
+      this.#toolRegistry.register(new RecallMemoryTool());
     }
     this.#toolRegistry.register(new ExcelReaderTool());
     this.#toolRegistry.register(new DiscordNotifyTool(this.#discordNotifyService));
     this.#toolRegistry.register(new TelegramNotifyTool());
+    this.#toolRegistry.register(new ExecutiveReportTool());
+    this.#toolRegistry.register(new SystemHealthTool());
 
     // Register Workspace Sandbox Tools
     this.#toolRegistry.register(new WorkspaceFileTool(this.#workspaceSandboxService));
@@ -102,6 +114,8 @@ class AgentService {
 
     // Register Dynamic Skill Loader Tool
     this.#toolRegistry.register(new SkillLoaderTool(this.#skillService));
+
+    this.#toolRegistry.register(new OpenClawScraperTool());
 
     if (this.#openClawService) {
       this.#toolRegistry.register(new WebSearchTool(this.#openClawService));
@@ -174,8 +188,8 @@ class AgentService {
       historyLimit: 6
     });
 
-    // 2. Resolve Active AI Provider
-    const provider = this.#aiService.getProvider(model);
+    // 2. Resolve Active AI Provider via Dynamic Model Routing
+    const provider = this.resolveProviderForTask(prompt, model);
     const skillsContext = this.#skillService.formatSkillsForPrompt();
     const systemPrompt = [
       localization.t('agent.system.default_prompt'),
@@ -228,6 +242,25 @@ class AgentService {
     });
 
     return result;
+  }
+
+  /**
+   * Dynamically routes prompt to optimal model provider based on task complexity.
+   * Fast/low-cost model for simple queries vs high-reasoning model for strategic executive tasks.
+   * @param {string} prompt
+   * @param {string|null} [requestedModel]
+   * @returns {import('@services/ai/AIProvider')}
+   */
+  resolveProviderForTask(prompt, requestedModel = null) {
+    if (requestedModel) {
+      return this.#aiService.getProvider(requestedModel);
+    }
+    const lowerPrompt = String(prompt || '').toLowerCase();
+    const isExecutiveTask = /báo cáo|chiến lược|phân tích|esr|cfo|r&d|logistics|doanh thu|kpi|okr/.test(lowerPrompt);
+    if (isExecutiveTask) {
+      return this.#aiService.getProvider('claude') || this.#aiService.getProvider('chatgpt') || this.#aiService.getProvider();
+    }
+    return this.#aiService.getProvider();
   }
 
   /**

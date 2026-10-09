@@ -1,17 +1,13 @@
 'use strict';
 
+const BaseRepository = require('@models/BaseRepository');
+
 /**
  * Repository for managing agent execution state: agent_runs and agent_steps.
  */
-class AgentStateRepository {
-  /** @type {import('@models/Database')} */
-  #database;
-
-  /**
-   * @param {import('@models/Database')} database
-   */
+class AgentStateRepository extends BaseRepository {
   constructor(database) {
-    this.#database = database;
+    super(database, 'agent_runs');
   }
 
   /**
@@ -19,7 +15,7 @@ class AgentStateRepository {
    * @param {{ id: string, userId: string, platform?: string, channelId?: string, prompt: string }} runData
    */
   async createRun({ id, userId, platform = 'web', channelId = null, prompt }) {
-    await this.#database.query(
+    await this._db.query(
       `INSERT INTO agent_runs (id, user_id, platform, channel_id, prompt, status)
        VALUES (?, ?, ?, ?, ?, 'running')`,
       [id, userId, platform, channelId, prompt]
@@ -35,7 +31,7 @@ class AgentStateRepository {
     const inputJson = toolInput ? JSON.stringify(toolInput) : null;
     const outputText = typeof toolOutput === 'object' ? JSON.stringify(toolOutput) : (toolOutput ? String(toolOutput) : null);
 
-    await this.#database.query(
+    await this._db.query(
       `INSERT INTO agent_steps (run_id, step_index, thought, tool_name, tool_input, tool_output, duration_ms)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [runId, stepIndex, thought, toolName, inputJson, outputText, durationMs]
@@ -48,7 +44,7 @@ class AgentStateRepository {
    * @param {{ status: 'success'|'failed'|'timeout', finalAnswer?: string, totalSteps?: number, totalTokensIn?: number, totalTokensOut?: number }} updateData
    */
   async completeRun(id, { status = 'success', finalAnswer = null, totalSteps = 0, totalTokensIn = 0, totalTokensOut = 0 }) {
-    await this.#database.query(
+    await this._db.query(
       `UPDATE agent_runs
        SET status = ?, final_answer = ?, total_steps = ?, total_tokens_in = ?, total_tokens_out = ?, updated_at = NOW()
        WHERE id = ?`,
@@ -62,10 +58,10 @@ class AgentStateRepository {
    * @returns {Promise<{ run: any, steps: any[] }|null>}
    */
   async getRunDetails(runId) {
-    const run = await this.#database.queryOne('SELECT * FROM agent_runs WHERE id = ?', [runId]);
+    const run = await this.findById(runId);
     if (!run) return null;
 
-    const steps = await this.#database.query(
+    const steps = await this._db.query(
       'SELECT * FROM agent_steps WHERE run_id = ? ORDER BY step_index ASC',
       [runId]
     );
@@ -79,7 +75,7 @@ class AgentStateRepository {
    * @param {number} limit
    */
   async getRecentRuns(userId, limit = 10) {
-    return await this.#database.query(
+    return await this._db.query(
       'SELECT * FROM agent_runs WHERE user_id = ? ORDER BY created_at DESC LIMIT ?',
       [userId, limit]
     );

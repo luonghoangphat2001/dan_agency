@@ -39,11 +39,22 @@ class Database {
     console.log('[Database] Ready');
   }
 
+  #ensurePool() {
+    if (!this.#pool) {
+      throw new Error('[Database] Connection pool is not initialized. Please call init() first.');
+    }
+  }
+
+  /** @returns {import('mysql2/promise').Pool|null} */
+  get pool() {
+    return this.#pool;
+  }
+
   async query(sql, params = []) {
+    this.#ensurePool();
     const [rows] = await this.#pool.query(sql, params);
     return rows;
   }
-
 
   /**
    * Execute a query and return the first row or null.
@@ -54,6 +65,39 @@ class Database {
   async queryOne(sql, params = []) {
     const rows = await this.query(sql, params);
     return rows[0] ?? null;
+  }
+
+  /**
+   * Executes a callback within a managed database transaction.
+   * Automatically commits on success and rolls back on error.
+   * @template T
+   * @param {(connection: import('mysql2/promise').PoolConnection) => Promise<T>} callback
+   * @returns {Promise<T>}
+   */
+  async transaction(callback) {
+    this.#ensurePool();
+    const connection = await this.#pool.getConnection();
+    await connection.beginTransaction();
+    try {
+      const result = await callback(connection);
+      await connection.commit();
+      return result;
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
+
+  /**
+   * Gracefully close the database connection pool.
+   */
+  async close() {
+    if (this.#pool) {
+      await this.#pool.end();
+      this.#pool = null;
+    }
   }
 }
 

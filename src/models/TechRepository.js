@@ -1,15 +1,14 @@
 'use strict';
 
+const BaseRepository = require('@models/BaseRepository');
+
 /**
  * Repository for Tech Learning stacks, topics, questions, and user progress.
  */
-class TechRepository {
-  /** @type {import('./Database')} */
-  #db;
-
+class TechRepository extends BaseRepository {
   /** @param {import('./Database')} db */
   constructor(db) {
-    this.#db = db;
+    super(db, 'tech_questions');
   }
 
   /**
@@ -18,7 +17,7 @@ class TechRepository {
    */
   async findStacks(userId = null) {
     if (userId) {
-      return this.#db.query(
+      return this._db.query(
         `SELECT s.*,
           COUNT(DISTINCT q.id) AS total_questions,
           SUM(CASE WHEN p.status = 'mastered' THEN 1 ELSE 0 END) AS mastered_count,
@@ -35,7 +34,7 @@ class TechRepository {
       );
     }
 
-    return this.#db.query(
+    return this._db.query(
       `SELECT s.*,
         COUNT(DISTINCT q.id) AS total_questions
        FROM tech_stacks s
@@ -48,12 +47,12 @@ class TechRepository {
 
   /** @param {string} slug */
   async findStackBySlug(slug) {
-    return this.#db.queryOne('SELECT * FROM tech_stacks WHERE slug = ? LIMIT 1', [slug.toLowerCase().trim()]);
+    return this._db.queryOne('SELECT * FROM tech_stacks WHERE slug = ? LIMIT 1', [slug.toLowerCase().trim()]);
   }
 
   /** @param {number} stackId */
   async findTopics(stackId) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT t.*, COUNT(q.id) AS question_count
        FROM tech_topics t
        LEFT JOIN tech_questions q ON q.topic_id = t.id AND q.is_active = 1
@@ -71,13 +70,13 @@ class TechRepository {
    */
   async findOrCreateTopic(stackId, topicName, sortOrder = 0) {
     const trimmed = topicName.trim();
-    const existing = await this.#db.queryOne(
+    const existing = await this._db.queryOne(
       'SELECT * FROM tech_topics WHERE stack_id = ? AND LOWER(TRIM(topic_name)) = LOWER(?) LIMIT 1',
       [stackId, trimmed]
     );
     if (existing) return existing;
 
-    const result = await this.#db.query(
+    const result = await this._db.query(
       'INSERT INTO tech_topics (stack_id, topic_name, sort_order) VALUES (?, ?, ?)',
       [stackId, trimmed, sortOrder]
     );
@@ -149,7 +148,7 @@ class TechRepository {
 
     const queryParams = [userId, ...params, limit, offset];
 
-    return this.#db.query(
+    return this._db.query(
       `SELECT q.*,
               s.slug AS stack_slug, s.name AS stack_name, s.icon AS stack_icon,
               t.topic_name,
@@ -217,7 +216,7 @@ class TechRepository {
     }
 
     const sqlWhere = where.length ? `WHERE ${where.join(' AND ')}` : '';
-    const row = await this.#db.queryOne(
+    const row = await this._db.queryOne(
       `SELECT COUNT(q.id) AS total
        FROM tech_questions q
        JOIN tech_stacks s ON s.id = q.stack_id
@@ -236,7 +235,7 @@ class TechRepository {
    * @param {number|null} [userId]
    */
   async findQuestionById(id, userId = null) {
-    return this.#db.queryOne(
+    return this._db.queryOne(
       `SELECT q.*,
               s.slug AS stack_slug, s.name AS stack_name, s.icon AS stack_icon,
               t.topic_name,
@@ -259,7 +258,7 @@ class TechRepository {
    * @param {number} stackId
    */
   async findExistingTitlesByStack(stackId) {
-    const rows = await this.#db.query(
+    const rows = await this._db.query(
       'SELECT id, title, level, tags FROM tech_questions WHERE stack_id = ? AND is_active = 1',
       [stackId]
     );
@@ -284,7 +283,7 @@ class TechRepository {
    * }} data
    */
   async createQuestion(data) {
-    const result = await this.#db.query(
+    const result = await this._db.query(
       `INSERT INTO tech_questions
         (stack_id, topic_id, title, question, quick_answer, detailed_answer, code_example, interview_tips, practical_tips, level, tags, created_by, sort_order)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -345,7 +344,7 @@ class TechRepository {
     if (!sets.length) return false;
     params.push(id);
 
-    const result = await this.#db.query(
+    const result = await this._db.query(
       `UPDATE tech_questions SET ${sets.join(', ')} WHERE id = ?`,
       params
     );
@@ -354,7 +353,7 @@ class TechRepository {
 
   /** @param {number} id */
   async deleteQuestion(id) {
-    const result = await this.#db.query('DELETE FROM tech_questions WHERE id = ?', [id]);
+    const result = await this._db.query('DELETE FROM tech_questions WHERE id = ?', [id]);
     return result.affectedRows > 0;
   }
 
@@ -365,7 +364,7 @@ class TechRepository {
    * @param {{ status?: string, isBookmarked?: boolean|number, personalNotes?: string }} data
    */
   async upsertUserProgress(userId, questionId, data) {
-    const existing = await this.#db.queryOne(
+    const existing = await this._db.queryOne(
       'SELECT id, status, is_bookmarked, personal_notes FROM tech_user_progress WHERE user_id = ? AND question_id = ?',
       [userId, questionId]
     );
@@ -373,7 +372,7 @@ class TechRepository {
     const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
     if (!existing) {
-      await this.#db.query(
+      await this._db.query(
         `INSERT INTO tech_user_progress (user_id, question_id, status, is_bookmarked, personal_notes, last_practiced_at)
          VALUES (?, ?, ?, ?, ?, ?)`,
         [
@@ -405,7 +404,7 @@ class TechRepository {
     }
 
     params.push(userId, questionId);
-    const result = await this.#db.query(
+    const result = await this._db.query(
       `UPDATE tech_user_progress SET ${sets.join(', ')} WHERE user_id = ? AND question_id = ?`,
       params
     );
@@ -418,7 +417,7 @@ class TechRepository {
    * @param {string} title
    */
   async findQuestionsByStackAndTitle(stackId, title) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT q.*
        FROM tech_questions q
        WHERE q.stack_id = ? AND LOWER(TRIM(q.title)) = LOWER(TRIM(?))`,

@@ -1,15 +1,14 @@
 'use strict';
 
+const BaseRepository = require('@models/BaseRepository');
+
 /**
  * Repository for Learning Hub quiz results, user scores, streaks, and leaderboards.
  */
-class QuizRepository {
-  /** @type {import('./Database')} */
-  #db;
-
+class QuizRepository extends BaseRepository {
   /** @param {import('./Database')} db */
   constructor(db) {
-    this.#db = db;
+    super(db, 'learning_quiz_result');
   }
 
   /**
@@ -20,7 +19,7 @@ class QuizRepository {
     const today = new Date().toISOString().slice(0, 10);
     const correctVal = isCorrect ? 1 : 0;
 
-    await this.#db.query(
+    await this._db.query(
       `INSERT INTO learning_quiz_result
        (item_id, user_id, username, quiz_type, is_correct, score_delta)
        VALUES (?, ?, ?, ?, ?, ?)`,
@@ -40,7 +39,7 @@ class QuizRepository {
       }
     }
 
-    await this.#db.query(
+    await this._db.query(
       `INSERT INTO user_quiz_stats (user_id, username, total_score, correct_count, wrong_count, streak_days, last_active_date)
        VALUES (?, ?, ?, ?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE
@@ -65,7 +64,7 @@ class QuizRepository {
     // Update individual item learning progress
     if (username) {
       if (isCorrect) {
-        await this.#db.query(
+        await this._db.query(
           `INSERT INTO learning_meta_data (item_id, username, meta_key, status, score, last_activity_at)
            VALUES (?, ?, 'progress', 'mastered', 10, NOW())
            ON DUPLICATE KEY UPDATE
@@ -75,7 +74,7 @@ class QuizRepository {
           [wordId, username]
         );
       } else {
-        await this.#db.query(
+        await this._db.query(
           `INSERT INTO learning_meta_data (item_id, username, meta_key, status, score, last_activity_at)
            VALUES (?, ?, 'progress', 'studying', 0, NOW())
            ON DUPLICATE KEY UPDATE
@@ -101,7 +100,7 @@ class QuizRepository {
   async checkTopicCompletionByItem(itemId, username) {
     if (!itemId || !username) return false;
     try {
-      const item = await this.#db.queryOne('SELECT learning_id FROM learning_item WHERE id = ?', [itemId]);
+      const item = await this._db.queryOne('SELECT learning_id FROM learning_item WHERE id = ?', [itemId]);
       if (!item || !item.learning_id) return false;
       return this.checkTopicCompletion(item.learning_id, username);
     } catch {
@@ -117,14 +116,14 @@ class QuizRepository {
   async checkTopicCompletion(learningId, username) {
     if (!learningId || !username) return false;
     try {
-      const totalRow = await this.#db.queryOne(
+      const totalRow = await this._db.queryOne(
         'SELECT COUNT(*) AS total FROM learning_item WHERE learning_id = ? AND is_active = 1',
         [learningId]
       );
       const totalActive = totalRow ? Number(totalRow.total) : 0;
       if (totalActive <= 0) return false;
 
-      const masteredRow = await this.#db.queryOne(
+      const masteredRow = await this._db.queryOne(
         `SELECT COUNT(DISTINCT i.id) AS mastered_count
          FROM learning_item i
          JOIN learning_meta_data m ON m.item_id = i.id AND m.username = ? AND m.meta_key = 'progress' AND m.status = 'mastered'
@@ -134,7 +133,7 @@ class QuizRepository {
       const masteredCount = masteredRow ? Number(masteredRow.mastered_count) : 0;
 
       if (masteredCount >= totalActive) {
-        await this.#db.query(
+        await this._db.query(
           `INSERT INTO learning_meta_data (item_id, username, meta_key, status, score, last_activity_at)
            VALUES (?, ?, 'topic_progress', 'completed', 100, NOW())
            ON DUPLICATE KEY UPDATE
@@ -152,13 +151,13 @@ class QuizRepository {
 
   /** @param {string} userId */
   async getUserStats(userId) {
-    return this.#db.queryOne('SELECT * FROM user_quiz_stats WHERE user_id = ?', [userId]);
+    return this._db.queryOne('SELECT * FROM user_quiz_stats WHERE user_id = ?', [userId]);
   }
 
   /** @param {number} [limit=10] */
   async getLeaderboard(limit = 10) {
     const l = Math.min(Math.max(Number(limit) || 10, 1), 50);
-    return this.#db.query(
+    return this._db.query(
       `SELECT user_id, username, total_score, correct_count, wrong_count, streak_days, last_active_date
        FROM user_quiz_stats
        ORDER BY total_score DESC, correct_count DESC
@@ -173,7 +172,7 @@ class QuizRepository {
    * @param {number} wordId
    */
   async getWordHistory(userId, wordId) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT * FROM learning_quiz_result
        WHERE user_id = ? AND item_id = ?
        ORDER BY id DESC LIMIT 5`,
@@ -190,7 +189,7 @@ class QuizRepository {
     const limit = Math.min(Math.max(Number(opts.limit || 20), 1), 100);
     const offset = Math.max(Number(opts.offset || 0), 0);
 
-    const rows = await this.#db.query(
+    const rows = await this._db.query(
       `SELECT r.id, r.item_id, r.user_id, r.username, r.quiz_type, r.is_correct, r.score_delta, r.created_at,
               i.title AS word, i.level,
               JSON_UNQUOTE(JSON_EXTRACT(i.content, '$.meaning')) AS meaning,
@@ -204,7 +203,7 @@ class QuizRepository {
       [String(userId), limit, offset]
     );
 
-    const countRow = await this.#db.queryOne(
+    const countRow = await this._db.queryOne(
       'SELECT COUNT(*) AS total FROM learning_quiz_result WHERE user_id = ?',
       [String(userId)]
     );
@@ -221,7 +220,7 @@ class QuizRepository {
   async getItemPerformance(userId, itemIds = []) {
     const ids = [...new Set((itemIds || []).map(Number).filter(Number.isInteger))];
     if (!ids.length) return [];
-    return this.#db.query(
+    return this._db.query(
       `SELECT item_id,
               SUM(is_correct = 1) AS correct_count,
               SUM(is_correct = 0) AS wrong_count,

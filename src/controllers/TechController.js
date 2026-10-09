@@ -1,5 +1,7 @@
 'use strict';
 
+const PaginationUtils = require('@utils/PaginationUtils');
+
 /**
  * Controller for Tech Learning endpoints.
  */
@@ -65,6 +67,7 @@ class TechController {
   async getQuestions(req, res) {
     try {
       const userId = req.session?.userId || null;
+      const pagination = PaginationUtils.parse(req.query, { defaultLimit: 50, maxLimit: 200 });
       const opts = {
         stackSlug: req.query.stack || 'php',
         topicId: req.query.topic_id ? Number(req.query.topic_id) : undefined,
@@ -72,8 +75,8 @@ class TechController {
         status: req.query.status || 'all',
         isBookmarked: req.query.bookmarked === '1',
         search: req.query.search ? String(req.query.search) : undefined,
-        limit: req.query.limit ? Number(req.query.limit) : 50,
-        offset: req.query.offset ? Number(req.query.offset) : 0,
+        limit: pagination.limit,
+        offset: pagination.offset,
         userId,
         includeInactive: req.query.include_inactive === '1',
       };

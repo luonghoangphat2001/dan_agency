@@ -1,17 +1,17 @@
 'use strict';
 
+const BaseRepository = require('@models/BaseRepository');
+
 /**
  * Durable boundary between the dashboard HTTP process and the Discord bot.
  */
-class DiscordNotificationRepository {
-  #db;
-
+class DiscordNotificationRepository extends BaseRepository {
   constructor(db) {
-    this.#db = db;
+    super(db, 'discord_notification_outbox');
   }
 
   async enqueue(notification) {
-    const result = await this.#db.query(
+    const result = await this._db.query(
       `INSERT INTO discord_notification_outbox
          (idempotency_key, source, severity, title, message, channel_id)
        VALUES (?, ?, ?, ?, ?, ?)
@@ -33,7 +33,7 @@ class DiscordNotificationRepository {
   }
 
   async findPending(limit = 20) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT * FROM discord_notification_outbox
        WHERE status = 'pending' AND attempt_count < 5
        ORDER BY created_at ASC
@@ -43,7 +43,7 @@ class DiscordNotificationRepository {
   }
 
   async markSent(id) {
-    await this.#db.query(
+    await this._db.query(
       `UPDATE discord_notification_outbox
        SET status = 'sent', sent_at = NOW(), attempt_count = attempt_count + 1, last_error = NULL
        WHERE id = ? AND status = 'pending'`,
@@ -52,7 +52,7 @@ class DiscordNotificationRepository {
   }
 
   async markFailed(id, error) {
-    await this.#db.query(
+    await this._db.query(
       `UPDATE discord_notification_outbox
        SET status = IF(attempt_count + 1 >= 5, 'failed', 'pending'),
            attempt_count = attempt_count + 1,

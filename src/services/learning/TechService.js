@@ -1,6 +1,7 @@
 'use strict';
 
-const XLSX = require('xlsx');
+const ImportService = require('@services/import/ImportService');
+const ExportService = require('@services/export/ExportService');
 const { parseJson } = require('@services/learning/ContentNormalizer');
 const SkillService = require('@services/agent/skills/SkillService');
 const localization = require('@lang');
@@ -218,13 +219,11 @@ class TechService {
    * @param {string} defaultStackSlug
    */
   async importQuestionsFromExcel(buffer, defaultStackSlug = 'php') {
-    const workbook = XLSX.read(buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    const importService = new ImportService();
+    const rows = importService.importExcel(buffer, { headerAsArray: true });
 
     if (rows.length < 2) {
-      throw new Error('File Excel rỗng hoặc không đúng định dạng');
+      throw new Error(localization.t('learning.validation.excel_invalid'));
     }
 
     let created = 0;
@@ -317,10 +316,8 @@ class TechService {
       [localization.t('learning.excel_export.tags')]: q.tags || '',
     }));
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Tech Questions');
-    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    const exportService = new ExportService();
+    return exportService.exportExcel(data, { sheetName: 'Tech Questions' });
   }
 
   /**

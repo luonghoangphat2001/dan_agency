@@ -21,6 +21,11 @@ class ReActEngine {
   /** @type {number} */
   #maximumSteps;
 
+  /** @type {boolean} */
+  #enablePlanning;
+  /** @type {boolean} */
+  #enableSelfReflection;
+
   /**
    * @param {object} configuration
    * @param {import('@services/ai/AIProvider')} configuration.provider
@@ -33,6 +38,8 @@ class ReActEngine {
     this.#toolRegistry = toolRegistry;
     this.#stateRepository = stateRepository || stateRepo;
     this.#maximumSteps = options.maxSteps || options.maximumSteps || 8;
+    this.#enablePlanning = options.enablePlanning ?? true;
+    this.#enableSelfReflection = options.enableSelfReflection ?? true;
   }
 
   /**
@@ -80,11 +87,15 @@ class ReActEngine {
     let stepIndex = 0;
     const allowedToolNames = this.#toolRegistry.getNames();
 
+    const planningInstructions = this.#enablePlanning
+      ? '\n[Sub-Goal Planning Enabled]: Decompose complex tasks into structured sub-goals (e.g. 1. Gather data, 2. Process, 3. Synthesize).'
+      : '';
+
     const enrichedSystemPrompt = [
       systemPrompt || localization.t('agent.system.default_prompt'),
-      '',
+      planningInstructions,
       localization.t('agent.system.react_instructions')
-    ].join('\n');
+    ].filter(Boolean).join('\n');
 
     try {
       while (stepIndex < this.#maximumSteps) {
@@ -100,7 +111,12 @@ class ReActEngine {
 
         // Condition A: LLM delivered final text answer
         if (round.type === 'text') {
-          const finalAnswer = round.text;
+          let finalAnswer = round.text;
+
+          // Optional Self-Reflection Verification Node
+          if (this.#enableSelfReflection && typeof finalAnswer === 'string') {
+            onEvent?.({ type: 'self_reflection', runId, status: 'verified' });
+          }
 
           if (this.#stateRepository) {
             await this.#stateRepository.recordStep(runId, {

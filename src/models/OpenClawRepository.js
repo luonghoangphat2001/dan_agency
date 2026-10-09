@@ -1,15 +1,13 @@
 'use strict';
 
+const BaseRepository = require('@models/BaseRepository');
+
 /**
  * Persists OpenClaw interaction logs for admin monitoring.
  */
-class OpenClawRepository {
-  /** @type {import('./Database')} */
-  #db;
-
-  /** @param {import('./Database')} db */
+class OpenClawRepository extends BaseRepository {
   constructor(db) {
-    this.#db = db;
+    super(db, 'openclaw_logs');
   }
 
   /**
@@ -21,7 +19,7 @@ class OpenClawRepository {
    * }} opts
    */
   async save({ userId, username, platform, channelId, queryType, query, resultPreview, aiSummary }) {
-    await this.#db.query(
+    await this._db.query(
       `INSERT INTO openclaw_logs
          (user_id, username, platform, channel_id, query_type, query, result_preview, ai_summary)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -37,16 +35,10 @@ class OpenClawRepository {
    * @returns {Promise<any[]>}
    */
   async findRecent(limit = 50, offset = 0) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT * FROM openclaw_logs ORDER BY created_at DESC LIMIT ? OFFSET ?`,
       [limit, offset]
     );
-  }
-
-  /** @returns {Promise<number>} */
-  async count() {
-    const row = await this.#db.queryOne('SELECT COUNT(*) AS n FROM openclaw_logs');
-    return row?.n ?? 0;
   }
 }
 

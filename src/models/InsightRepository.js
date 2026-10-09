@@ -1,14 +1,14 @@
 'use strict';
 
-class InsightRepository {
-  #db;
+const BaseRepository = require('@models/BaseRepository');
 
+class InsightRepository extends BaseRepository {
   constructor(db) {
-    this.#db = db;
+    super(db, 'ai_memories');
   }
 
   async upsert(userId, platform, channelId, key, value, source = null) {
-    await this.#db.query(
+    await this._db.query(
       `INSERT INTO ai_memories (user_id, platform, channel_id, mem_key, mem_value, source)
        VALUES (?, ?, ?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE
@@ -21,7 +21,7 @@ class InsightRepository {
 
   /** Returns last 20 memories, newest first */
   async findByUser(userId, platform) {
-    return this.#db.query(
+    return this._db.query(
       `SELECT mem_key, mem_value, source, updated_at
        FROM ai_memories
        WHERE user_id = ? AND platform = ?
@@ -32,7 +32,7 @@ class InsightRepository {
   }
 
   async remove(userId, platform, key) {
-    await this.#db.query(
+    await this._db.query(
       `DELETE FROM ai_memories WHERE user_id = ? AND platform = ? AND mem_key = ?`,
       [userId, platform, key]
     );

@@ -17,6 +17,7 @@ const QuizController = require('@controllers/QuizController');
 const TechController = require('@controllers/TechController');
 const DiscordNotificationController = require('@controllers/DiscordNotificationController');
 const AgentController = require('@controllers/AgentController');
+const CeoController = require('@controllers/CeoController');
 const OpenClawMonitorService = require('@services/openclaw/OpenClawMonitorService');
 const TokenService = require('@services/auth/TokenService');
 
@@ -46,6 +47,7 @@ function buildControllers(dependencies) {
     auth: new AuthController(userRepo, TokenService),
     chat: new ChatController(aiService),
     agent: agentService ? new AgentController(agentService) : null,
+    ceo: CeoController,
     config: new ConfigController(configRepo),
     history: new HistoryController(conversationRepo),
     log: new LogController(),
@@ -68,3 +70,4 @@ function buildControllers(dependencies) {
 }
 
 module.exports = buildControllers;
+

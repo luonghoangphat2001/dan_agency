@@ -1,5 +1,7 @@
 'use strict';
 
+const PaginationUtils = require('@utils/PaginationUtils');
+
 /**
  * Returns paginated conversation history (admin only).
  */
@@ -14,8 +16,7 @@ class HistoryController {
   }
 
   async get(req, res) {
-    const limit  = Math.min(parseInt(req.query.limit)  || 50, 200);
-    const offset = parseInt(req.query.offset) || 0;
+    const { limit, offset } = PaginationUtils.parse(req.query, { defaultLimit: 50, maxLimit: 200 });
     res.json(await this.#conversationRepo.findAll(limit, offset));
   }
 }

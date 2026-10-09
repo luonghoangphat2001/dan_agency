@@ -135,6 +135,22 @@ class ApiResponse {
   static notFound(res, message = 'Resource not found', code = '') {
     return this.error(res, message, 404, code);
   }
+
+  /**
+   * Sends a standardized paginated JSON response.
+   * @param {import('express').Response} res
+   * @param {Array<any>} items
+   * @param {number} total
+   * @param {number} page
+   * @param {number} limit
+   * @param {string} [message='']
+   * @returns {import('express').Response}
+   */
+  static paginate(res, items, total, page, limit, message = '') {
+    const PaginationUtils = require('./PaginationUtils');
+    const payload = PaginationUtils.format(items, total, page, limit);
+    return this.success(res, payload, 200, message);
+  }
 }
 
 module.exports = ApiResponse;
