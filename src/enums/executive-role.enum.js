@@ -10,6 +10,7 @@ const ExecutiveRole = Object.freeze({
   OPS: 'ops',
   LOGISTICS: 'logistics',
   CSKH: 'cskh',
+  HR: 'hr',
 });
 
 module.exports = ExecutiveRole;

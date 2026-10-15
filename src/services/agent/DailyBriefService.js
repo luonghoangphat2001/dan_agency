@@ -5,7 +5,7 @@ const ExecutiveRole = require('@enums/executive-role.enum');
 class DailyBriefService {
   /**
    * Generates and dispatches the Executive Daily Briefing (08:00 AM) for CEO.
-   * Aggregates intelligence across 5 Sub-Agents (R&D, CFO, Ops, Logistics, CSKH).
+   * Aggregates intelligence across 6 Sub-Agents (R&D, CFO, Ops, Logistics, CSKH, HR).
    * @param {Object} options
    * @param {string} [options.userId='ceo']
    * @param {boolean} [options.sendNotification=true]

@@ -1527,9 +1527,13 @@ const allTestCases = [
 const scenarios61to180 = require('./scenarios_61_to_180');
 allTestCases.push(...scenarios61to180);
 
+// Nạp thêm 200 kịch bản kiểm thử Real Local Apps MySQL & Dan ESR Executive Governance (TC-181 -> TC-380)
+const scenarios181to380 = require('./scenarios_181_to_380');
+allTestCases.push(...scenarios181to380);
+
 // Execution adapter: Jest vs Standalone Node.js Runner
 if (isJest) {
-  describe('Dan API Core - 180 Comprehensive Workflow Test Cases (CEO Assistant & Autonomous Agent)', () => {
+  describe('Dan API Core - 380 Comprehensive Workflow Test Cases (CEO Assistant & Real Local Apps ESR)', () => {
     for (const tc of allTestCases) {
       it(`[${tc.id}] ${tc.title}`, tc.fn);
     }
@@ -1538,7 +1542,7 @@ if (isJest) {
   // Standalone Node.js runner
   (async () => {
     console.log(`\n${colors.bold}${colors.cyan}=======================================================`);
-    console.log(` 🚀 RUNNING 180 WORKFLOW TEST CASES FOR DAN-API CORE`);
+    console.log(` 🚀 RUNNING 380 WORKFLOW TEST CASES FOR DAN-API CORE`);
     console.log(`=======================================================${colors.reset}\n`);
 
     let currentSection = '';
@@ -1563,7 +1567,7 @@ if (isJest) {
     }
 
     console.log(`\n${colors.bold}${colors.cyan}=======================================================`);
-    console.log(` 📊 KẾT QUẢ KIỂM THỬ TOÀN BỘ 180 WORKFLOWS DAN-API`);
+    console.log(` 📊 KẾT QUẢ KIỂM THỬ TOÀN BỘ 380 WORKFLOWS DAN-API`);
     console.log(`=======================================================${colors.reset}`);
     console.log(`  Tổng số kịch bản : ${colors.bold}${allTestCases.length}${colors.reset}`);
     console.log(`  Thành công (PASS): ${colors.green}${colors.bold}${passed}${colors.reset}`);
