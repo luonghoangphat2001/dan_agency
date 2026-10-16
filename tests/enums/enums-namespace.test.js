@@ -76,14 +76,15 @@ describe('Enums Namespace System', () => {
       expect(Ceo.Policy.CASH_FIRST).toBe('CASH_FIRST');
       expect(Ceo.ExceptionStatus.OPEN).toBe('open');
       expect(Ceo.RePlanSeverity.CRITICAL).toBe('CRITICAL');
-      expect(Ceo.BcgQuadrant.STAR).toBe('STAR');
+      expect(Ceo.BcgQuadrant.STARS).toBe('STARS');
     });
   });
 
   describe('Governance Namespace', () => {
     it('provides AuditEvent, Role, and SystemStatus', () => {
-      expect(Governance.Role.SECURITY_OFFICER).toBe('SECURITY_OFFICER');
-      expect(Governance.SystemStatus.OPERATIONAL).toBe('OPERATIONAL');
+      expect(Governance.Role.CEO).toBe('ceo');
+      expect(Governance.Role.CFO).toBe('cfo');
+      expect(Governance.SystemStatus.SYSTEM_FROZEN).toBe('SYSTEM_FROZEN');
     });
   });
 
