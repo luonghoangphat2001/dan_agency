@@ -207,6 +207,12 @@ class WorkspaceService {
       /\bshutdown\b/i,
       /\breboot\b/i,
       /\bchmod\s+-[a-zA-Z]*R\s+777\s+\//i,
+      /\bcurl\b.*\|\s*(bash|sh)\b/i, // pipe to shell
+      /\bwget\b.*\|\s*(bash|sh)\b/i, // pipe to shell
+      /\b(sudo|su)\b/i, // privilege escalation
+      /\b(nc|ncat|netcat)\s+-[a-zA-Z]*[le]/i, // reverse shell
+      /\bcat\s+\/etc\/(passwd|shadow)\b/i, // sensitive system files
+      />\s*\/dev\/(sda|nvme|hda)/i, // direct disk overwrite
     ];
 
     for (const pattern of dangerousPatterns) {
