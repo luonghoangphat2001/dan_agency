@@ -1,5 +1,7 @@
 'use strict';
 
+const PaginationUtils = require('@utils/PaginationUtils');
+
 class OpenClawController {
   #service;
 
@@ -51,7 +53,6 @@ class OpenClawController {
   }
 
   async list(req, res) {
-    const PaginationUtils = require('@utils/PaginationUtils');
     const { limit, offset } = PaginationUtils.parse(req.query, { defaultLimit: 50, maxLimit: 200 });
     res.json(await this.#service.listInteractions(limit, offset));
   }

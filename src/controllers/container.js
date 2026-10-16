@@ -47,7 +47,11 @@ function buildControllers(dependencies) {
     auth: new AuthController(userRepo, TokenService),
     chat: new ChatController(aiService),
     agent: agentService ? new AgentController(agentService) : null,
-    ceo: CeoController,
+    ceo: new CeoController({
+      dailyBriefService: dependencies.dailyBriefService,
+      aiEngineClient: dependencies.aiEngineClient,
+      openClawService: openClaw,
+    }),
     config: new ConfigController(configRepo),
     history: new HistoryController(conversationRepo),
     log: new LogController(),

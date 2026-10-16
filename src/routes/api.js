@@ -85,10 +85,10 @@ function createApiRouter(controllers) {
 
   if (controllers.ceo) {
     const ceoRouter = Router();
-    ceoRouter.get('/daily-brief', authUser, (request, response, nextFunction) => controllers.ceo.getDailyBrief(request, response, nextFunction));
-    ceoRouter.post('/orchestrate', authUser, (request, response, nextFunction) => controllers.ceo.orchestrate(request, response, nextFunction));
-    ceoRouter.get('/exception-inbox', authUser, (request, response, nextFunction) => controllers.ceo.getExceptionInbox(request, response, nextFunction));
-    ceoRouter.post('/approval', authUser, (request, response, nextFunction) => controllers.ceo.processApproval(request, response, nextFunction));
+    ceoRouter.get('/daily-brief', authUser, controllers.ceo.getDailyBrief);
+    ceoRouter.post('/orchestrate', authUser, controllers.ceo.orchestrate);
+    ceoRouter.get('/exception-inbox', authUser, controllers.ceo.getExceptionInbox);
+    ceoRouter.post('/approval', authUser, controllers.ceo.processApproval);
     router.use('/ceo', ceoRouter);
   }
 

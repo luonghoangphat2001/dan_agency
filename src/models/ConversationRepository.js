@@ -1,6 +1,5 @@
-'use strict';
-
 const BaseRepository = require('@models/BaseRepository');
+const MessageRole = require('@enums/message-role.enum');
 
 /**
  * Repository for the conversations table.
@@ -52,14 +51,14 @@ class ConversationRepository extends BaseRepository {
   async getStats() {
     const totalRow = await this._db.queryOne('SELECT COUNT(*) AS c FROM conversations');
     const todayRow = await this._db.queryOne(
-      'SELECT COUNT(*) AS c FROM conversations WHERE DATE(created_at) = CURDATE()'
+      'SELECT COUNT(*) AS c FROM conversations WHERE created_at >= CURDATE()'
     );
     // Count only user messages (one per Q&A exchange) to avoid double-counting
     const byModel = await this._db.query(
-      'SELECT model, COUNT(*) AS count FROM conversations WHERE role = "user" GROUP BY model ORDER BY count DESC'
+      `SELECT model, COUNT(*) AS count FROM conversations WHERE role = '${MessageRole.USER}' GROUP BY model ORDER BY count DESC`
     );
     const tokensByModel = await this._db.query(
-      'SELECT model, SUM(tokens_in) AS tokens_in, SUM(tokens_out) AS tokens_out FROM conversations WHERE role = "assistant" GROUP BY model ORDER BY (SUM(tokens_in) + SUM(tokens_out)) DESC'
+      `SELECT model, SUM(tokens_in) AS tokens_in, SUM(tokens_out) AS tokens_out FROM conversations WHERE role = '${MessageRole.ASSISTANT}' GROUP BY model ORDER BY (SUM(tokens_in) + SUM(tokens_out)) DESC`
     );
     // Today's usage per model (for rate-limit awareness)
     const todayByModel = await this._db.query(
@@ -68,7 +67,7 @@ class ConversationRepository extends BaseRepository {
               SUM(tokens_in)   AS tokens_in,
               SUM(tokens_out)  AS tokens_out
        FROM conversations
-       WHERE role = 'assistant' AND DATE(created_at) = CURDATE()
+       WHERE role = '${MessageRole.ASSISTANT}' AND created_at >= CURDATE()
        GROUP BY model
        ORDER BY (SUM(tokens_in) + SUM(tokens_out)) DESC`
     );

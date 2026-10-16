@@ -13,6 +13,7 @@ const schemaMigrations = [
   require('@database/migrations/learning'),
   require('@database/migrations/tech'),
   require('@database/migrations/timestamps'),
+  require('@database/migrations/performance-indexes'),
 ];
 
 const seeders = [

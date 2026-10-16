@@ -67,6 +67,13 @@ describe('BaseRepository', () => {
     expect(results).toHaveLength(2);
   });
 
+  test('findAll sanitizes unsafe orderBy input to prevent SQL injection', async () => {
+    mockDb.query.mockResolvedValue([]);
+    await repo.findAll({ orderBy: 'id; DROP TABLE users;--' });
+
+    expect(mockDb.query).toHaveBeenCalledWith('SELECT * FROM test_table ORDER BY id ASC LIMIT ? OFFSET ?', [100, 0]);
+  });
+
   test('paginateQuery executes SQL with limit and offset', async () => {
     mockDb.query.mockResolvedValue([{ id: 1 }, { id: 2 }]);
     const result = await repo.paginateQuery('SELECT * FROM test_table', [], { page: 2, limit: 10 });

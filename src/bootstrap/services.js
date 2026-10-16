@@ -51,6 +51,12 @@ async function createServices(repositories) {
     discordNotifyService: discordNotificationService,
   });
 
+  const DailyBriefServiceClass = require('@services/agent/DailyBriefService').DailyBriefService || require('@services/agent/DailyBriefService');
+  const dailyBriefService = new DailyBriefServiceClass({
+    aiEngineClient: require('@services/ai/AIEngineClient'),
+    discordNotificationService,
+  });
+
   return {
     aiService,
     openClaw,
@@ -60,6 +66,7 @@ async function createServices(repositories) {
     techService,
     discordNotificationService,
     agentService,
+    dailyBriefService,
   };
 }
 

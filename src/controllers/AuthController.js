@@ -48,7 +48,7 @@ class AuthController {
       return ApiResponse.unauthorized(res, 'Invalid username or password', 'INVALID_CREDENTIALS');
     }
 
-    const isPasswordValid = this.#userRepo.verifyPassword(password, user.password_hash);
+    const isPasswordValid = await this.#userRepo.verifyPassword(password, user.password_hash);
     if (!isPasswordValid) {
       return ApiResponse.unauthorized(res, 'Invalid username or password', 'INVALID_CREDENTIALS');
     }

@@ -15,12 +15,15 @@ class ApiResponse {
    * @returns {import('express').Response}
    */
   static success(res, data = null, statusCode = 200, message = '') {
+    let code = typeof statusCode === 'number' ? statusCode : 200;
+    let msg = typeof statusCode === 'string' ? statusCode : message;
+
     const payload = {
       success: true,
       ok: true,
     };
-    if (message) {
-      payload.message = message;
+    if (msg) {
+      payload.message = msg;
     }
     if (data !== null && data !== undefined) {
       if (typeof data === 'object' && !Array.isArray(data)) {
@@ -30,7 +33,7 @@ class ApiResponse {
       }
     }
     if (typeof res.status === 'function') {
-      return res.status(statusCode).json(payload);
+      return res.status(code).json(payload);
     }
     return res.json(payload);
   }

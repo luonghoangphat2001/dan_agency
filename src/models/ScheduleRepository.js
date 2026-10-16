@@ -1,6 +1,8 @@
 'use strict';
 
 const BaseRepository = require('@models/BaseRepository');
+const PlatformType = require('@enums/platform-type.enum');
+const ScheduleRepeatType = require('@enums/schedule-repeat-type.enum');
 
 /**
  * Repository for user schedules / reminders.
@@ -18,7 +20,7 @@ class ScheduleRepository extends BaseRepository {
     const result = await this._db.query(
       `INSERT INTO schedules (user_id, username, platform, channel_id, title, remind_at, repeat_type)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [userId, username, platform || 'discord', channelId, title, remindAt, repeatType || 'none']
+      [userId, username, platform || PlatformType.DISCORD, channelId, title, remindAt, repeatType || ScheduleRepeatType.NONE]
     );
     return result.insertId;
   }
@@ -58,9 +60,9 @@ class ScheduleRepository extends BaseRepository {
     return this._db.query(
       `SELECT * FROM schedules
        WHERE user_id = ? AND platform = ? AND is_active = 1
-         AND DATE(remind_at) = ?
+         AND remind_at >= ? AND remind_at < DATE_ADD(?, INTERVAL 1 DAY)
        ORDER BY remind_at ASC`,
-      [userId, platform, dateStr]
+      [userId, platform, dateStr, dateStr]
     );
   }
 

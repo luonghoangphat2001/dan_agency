@@ -68,8 +68,11 @@ class BaseRepository {
    */
   async findAll({ limit = 100, offset = 0, orderBy = 'id ASC' } = {}) {
     if (!this._tableName) throw new Error('[BaseRepository] Table name not specified for findAll.');
+    const safeOrderBy = /^[a-zA-Z0-9_.]+(\s+(ASC|DESC))?(,\s*[a-zA-Z0-9_.]+(\s+(ASC|DESC))?)*$/i.test(String(orderBy).trim())
+      ? String(orderBy).trim()
+      : 'id ASC';
     return this._db.query(
-      `SELECT * FROM ${this._tableName} ORDER BY ${orderBy} LIMIT ? OFFSET ?`,
+      `SELECT * FROM ${this._tableName} ORDER BY ${safeOrderBy} LIMIT ? OFFSET ?`,
       [limit, offset]
     );
   }

@@ -34,14 +34,20 @@ class UserRepository extends BaseRepository {
   /**
    * Ensure default admin user exists on application boot.
    * Encapsulates password hashing and database insertion.
-   * @param {string} [username='admin']
-   * @param {string} [password='Luonghoangphat12001@']
+   * @param {string} [username]
+   * @param {string} [password]
    * @returns {Promise<void>}
    */
-  async ensureDefaultAdmin(username = 'admin', password = 'Luonghoangphat12001@') {
+  async ensureDefaultAdmin(
+    username = process.env.ADMIN_DEFAULT_USER || 'admin',
+    password = process.env.ADMIN_DEFAULT_PASSWORD || 'ChangeMeInEnv123!'
+  ) {
     const existing = await this.findByUsername(username);
     if (!existing) {
-      const hash = bcrypt.hashSync(password, 10);
+      if (!process.env.ADMIN_DEFAULT_PASSWORD && process.env.NODE_ENV === 'production') {
+        console.warn('[SECURITY WARNING] ADMIN_DEFAULT_PASSWORD is not set in production. Using fallback initial password.');
+      }
+      const hash = await bcrypt.hash(password, 10);
       await this._db.query(
         `INSERT INTO users (username, password_hash, role) VALUES (?, ?, '${UserRole.ADMIN}')`,
         [username, hash]
@@ -75,10 +81,10 @@ class UserRepository extends BaseRepository {
   /**
    * @param {string} username
    * @param {string} password  plain-text
-   * @param {'admin'|'user'} [role]
+   * @param {'admin'|'user'|'student'} [role]
    */
   async create(username, password, role = UserRole.USER) {
-    const hash = bcrypt.hashSync(password, 10);
+    const hash = await bcrypt.hash(password, 10);
     await this._db.query(
       'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
       [username, hash, role]
@@ -90,7 +96,7 @@ class UserRepository extends BaseRepository {
    * @param {string} password  plain-text
    */
   async updatePassword(username, password) {
-    const hash = bcrypt.hashSync(password, 10);
+    const hash = await bcrypt.hash(password, 10);
     await this._db.query(
       'UPDATE users SET password_hash = ? WHERE username = ?',
       [hash, username]
@@ -106,10 +112,10 @@ class UserRepository extends BaseRepository {
    * Constant-time password verification.
    * @param {string} plaintext
    * @param {string} hash
-   * @returns {boolean}
+   * @returns {Promise<boolean>}
    */
-  verifyPassword(plaintext, hash) {
-    return bcrypt.compareSync(plaintext, hash);
+  async verifyPassword(plaintext, hash) {
+    return bcrypt.compare(plaintext, hash);
   }
 }
 

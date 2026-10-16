@@ -1,5 +1,7 @@
 'use strict';
 
+const ApiResponse = require('@utils/ApiResponse');
+
 /**
  * Handles one-shot AI chat requests from the web dashboard.
  */
@@ -14,18 +16,20 @@ class ChatController {
   }
 
   async handle(req, res) {
-    const { message, model } = req.body;
-    if (!message) return res.status(400).json({ error: 'No message' });
+    const { message, model } = req.body || {};
+    if (!message) {
+      return ApiResponse.badRequest(res, 'No message', 'MISSING_MESSAGE');
+    }
 
     try {
       const response = await this.#aiService.chatOnce(
         [{ role: 'user', content: message }],
         model || null
       );
-      res.json({ response, model: model || 'default' });
+      return ApiResponse.success(res, { response, model: model || 'default' });
     } catch (err) {
       console.error('[ChatController] chat failed:', err);
-      res.status(500).json({ error: err.message });
+      return ApiResponse.serverError(res, err.message, 'CHAT_EXECUTION_ERROR');
     }
   }
 }

@@ -2,6 +2,8 @@
 
 const { unpackItems } = require('@services/learning/ContentNormalizer');
 const LearningType = require('@enums/learning-type.enum');
+const LearningProgressStatus = require('@enums/learning-progress-status.enum');
+const DifficultyLevel = require('@enums/difficulty-level.enum');
 
 /**
  * Unified repository managing the 4-table Learning Hub architecture:
@@ -341,9 +343,9 @@ class LearningRepository {
         if (attempt.isCorrect) {
           await this.#db.query(
             `INSERT INTO learning_meta_data (item_id, username, meta_key, status, score, last_activity_at)
-             VALUES (?, ?, 'progress', 'mastered', 10, NOW())
+             VALUES (?, ?, 'progress', '${LearningProgressStatus.MASTERED}', 10, NOW())
              ON DUPLICATE KEY UPDATE
-               status = 'mastered',
+               status = '${LearningProgressStatus.MASTERED}',
                score = COALESCE(score, 10),
                last_activity_at = NOW()`,
             [attempt.itemId, username]
@@ -351,9 +353,9 @@ class LearningRepository {
         } else {
           await this.#db.query(
             `INSERT INTO learning_meta_data (item_id, username, meta_key, status, score, last_activity_at)
-             VALUES (?, ?, 'progress', 'studying', 0, NOW())
+             VALUES (?, ?, 'progress', '${LearningProgressStatus.STUDYING}', 0, NOW())
              ON DUPLICATE KEY UPDATE
-               status = IF(status = 'mastered', 'mastered', 'studying'),
+               status = IF(status = '${LearningProgressStatus.MASTERED}', '${LearningProgressStatus.MASTERED}', '${LearningProgressStatus.STUDYING}'),
                last_activity_at = NOW()`,
             [attempt.itemId, username]
           );

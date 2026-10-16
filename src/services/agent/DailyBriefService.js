@@ -1,8 +1,32 @@
-const aiEngineClient = require('@services/ai/AIEngineClient');
-const discordNotificationService = require('@services/notification/DiscordNotificationService');
+'use strict';
+
+const defaultAiEngineClient = require('@services/ai/AIEngineClient');
 const ExecutiveRole = require('@enums/executive-role.enum');
+const NotificationSeverity = require('@enums/notification-severity.enum');
 
 class DailyBriefService {
+  #aiEngineClient;
+  #discordNotificationService;
+
+  /**
+   * @param {{ aiEngineClient?: any, discordNotificationService?: any }} [deps]
+   */
+  constructor({
+    aiEngineClient = defaultAiEngineClient,
+    discordNotificationService = null,
+  } = {}) {
+    this.#aiEngineClient = aiEngineClient;
+    this.#discordNotificationService = discordNotificationService;
+  }
+
+  /**
+   * Set or update discord notification service instance.
+   * @param {any} service
+   */
+  setDiscordNotificationService(service) {
+    this.#discordNotificationService = service;
+  }
+
   /**
    * Generates and dispatches the Executive Daily Briefing (08:00 AM) for CEO.
    * Aggregates intelligence across 6 Sub-Agents (R&D, CFO, Ops, Logistics, CSKH, HR).
@@ -15,7 +39,7 @@ class DailyBriefService {
     const prompt = 'Synthesize executive daily operational metrics for CEO 08:00 AM briefing.';
     
     // Call Python dan-ai-engine multi-agent orchestrator
-    const orchestrationResult = await aiEngineClient.orchestrateAgent({
+    const orchestrationResult = await this.#aiEngineClient.orchestrateAgent({
       prompt,
       userId,
       executiveRole: ExecutiveRole.CEO
@@ -24,12 +48,16 @@ class DailyBriefService {
     const synthesis = orchestrationResult.final_synthesis || 'Daily Briefing Generated.';
 
     let notificationSent = false;
-    if (sendNotification) {
+    if (sendNotification && this.#discordNotificationService) {
       try {
-        await discordNotificationService.sendNotification({
+        const todayStr = new Date().toISOString().slice(0, 10);
+        await this.#discordNotificationService.enqueue({
+          idempotencyKey: `daily-brief:${userId}:${todayStr}`,
+          source: 'daily_brief',
+          severity: NotificationSeverity.INFO,
           title: '👑 Dan AI CEO Executive Daily Briefing (08:00 AM)',
           message: synthesis,
-          type: 'EXECUTIVE_BRIEFING'
+          channelId: null,
         });
         notificationSent = true;
       } catch (error) {
@@ -51,7 +79,7 @@ class DailyBriefService {
    */
   async generateWeeklyReview({ userId = 'ceo' } = {}) {
     const prompt = 'Synthesize weekly executive review across R&D roadmap, CFO financial savings, Ops Uptime, and CSKH CSAT.';
-    const orchestrationResult = await aiEngineClient.orchestrateAgent({
+    const orchestrationResult = await this.#aiEngineClient.orchestrateAgent({
       prompt,
       userId,
       executiveRole: ExecutiveRole.CEO
@@ -66,4 +94,6 @@ class DailyBriefService {
   }
 }
 
-module.exports = new DailyBriefService();
+const defaultInstance = new DailyBriefService();
+defaultInstance.DailyBriefService = DailyBriefService;
+module.exports = defaultInstance;

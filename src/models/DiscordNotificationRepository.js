@@ -1,6 +1,8 @@
 'use strict';
 
 const BaseRepository = require('@models/BaseRepository');
+const NotificationStatus = require('@enums/notification-status.enum');
+const NotificationSeverity = require('@enums/notification-severity.enum');
 
 /**
  * Durable boundary between the dashboard HTTP process and the Discord bot.
@@ -11,6 +13,7 @@ class DiscordNotificationRepository extends BaseRepository {
   }
 
   async enqueue(notification) {
+    const severity = notification.severity || NotificationSeverity.INFO;
     const result = await this._db.query(
       `INSERT INTO discord_notification_outbox
          (idempotency_key, source, severity, title, message, channel_id)
@@ -19,7 +22,7 @@ class DiscordNotificationRepository extends BaseRepository {
       [
         notification.idempotencyKey,
         notification.source,
-        notification.severity,
+        severity,
         notification.title,
         notification.message,
         notification.channelId,
@@ -35,7 +38,7 @@ class DiscordNotificationRepository extends BaseRepository {
   async findPending(limit = 20) {
     return this._db.query(
       `SELECT * FROM discord_notification_outbox
-       WHERE status = 'pending' AND attempt_count < 5
+       WHERE status = '${NotificationStatus.PENDING}' AND attempt_count < 5
        ORDER BY created_at ASC
        LIMIT ?`,
       [Math.min(Math.max(Number(limit) || 20, 1), 100)]
@@ -45,8 +48,8 @@ class DiscordNotificationRepository extends BaseRepository {
   async markSent(id) {
     await this._db.query(
       `UPDATE discord_notification_outbox
-       SET status = 'sent', sent_at = NOW(), attempt_count = attempt_count + 1, last_error = NULL
-       WHERE id = ? AND status = 'pending'`,
+       SET status = '${NotificationStatus.SENT}', sent_at = NOW(), attempt_count = attempt_count + 1, last_error = NULL
+       WHERE id = ? AND status = '${NotificationStatus.PENDING}'`,
       [id]
     );
   }
@@ -54,10 +57,10 @@ class DiscordNotificationRepository extends BaseRepository {
   async markFailed(id, error) {
     await this._db.query(
       `UPDATE discord_notification_outbox
-       SET status = IF(attempt_count + 1 >= 5, 'failed', 'pending'),
+       SET status = IF(attempt_count + 1 >= 5, '${NotificationStatus.FAILED}', '${NotificationStatus.PENDING}'),
            attempt_count = attempt_count + 1,
            last_error = ?
-       WHERE id = ? AND status = 'pending'`,
+       WHERE id = ? AND status = '${NotificationStatus.PENDING}'`,
       [String(error || 'Unknown delivery error').slice(0, 500), id]
     );
   }

@@ -1,6 +1,7 @@
 'use strict';
 
 const BaseRepository = require('@models/BaseRepository');
+const AgentRunStatus = require('@enums/agent-run-status.enum');
 
 /**
  * Repository managing Multi-Agent Orchestration runs and step execution traces.
@@ -17,7 +18,7 @@ class AgentOrchestrationRepository extends BaseRepository {
   async createRun({ id, userId, executiveRole = 'ceo', prompt }) {
     await this._db.query(
       `INSERT INTO agent_orchestration_runs (id, user_id, executive_role, prompt, status)
-       VALUES (?, ?, ?, ?, 'running')`,
+       VALUES (?, ?, ?, ?, '${AgentRunStatus.RUNNING}')`,
       [id, userId, executiveRole, prompt]
     );
   }
@@ -40,7 +41,7 @@ class AgentOrchestrationRepository extends BaseRepository {
    * @param {string} runId
    * @param {{ status?: string, finalAnswer: string, totalSteps?: number }} result
    */
-  async completeRun(runId, { status = 'success', finalAnswer, totalSteps = 1 }) {
+  async completeRun(runId, { status = AgentRunStatus.SUCCESS, finalAnswer, totalSteps = 1 }) {
     await this._db.query(
       `UPDATE agent_orchestration_runs
        SET status = ?, final_answer = ?, total_steps = ?, updated_at = NOW()

@@ -1,0 +1,17 @@
+'use strict';
+
+/**
+ * Standard Application Error Codes for API responses.
+ */
+const ErrorCode = Object.freeze({
+  INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+  MISSING_CREDENTIALS: 'MISSING_CREDENTIALS',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  NOT_FOUND: 'NOT_FOUND',
+  BAD_REQUEST: 'BAD_REQUEST',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+});
+
+module.exports = ErrorCode;
