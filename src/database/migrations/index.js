@@ -21,4 +21,5 @@ module.exports = Object.freeze([
   require('@database/migrations/015-create-agent-autonomy-settings'),
   require('@database/migrations/016-create-sop-playbooks'),
   require('@database/migrations/017-create-agent-runtime-states'),
+  require('@database/migrations/018-add-missing-indexes'),
 ]);

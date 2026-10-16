@@ -34,12 +34,12 @@ class AgentRepository {
   }
 
   /**
-   * upsert - Asynchronously executes upsert.
+   * upsertAutonomySettings - Asynchronously executes upsert autonomy settings.
    * @param {*} settings - Input parameter.
    * @param {*} expectedVersion - Input parameter.
    * @returns {*} Promise resolving result.
    */
-  async upsert(settings, expectedVersion = null) {
+  async upsertAutonomySettings(settings, expectedVersion = null) {
     if (expectedVersion === null) {
       await this.executor.execute(
         `INSERT INTO agent_autonomy_settings (
@@ -136,11 +136,11 @@ class AgentRepository {
 
   // --- Memory Methods ---
   /**
-   * upsert - Asynchronously executes upsert.
+   * upsertMemory - Asynchronously executes upsert memory.
    * @param {*} memory - Input parameter.
    * @returns {*} Promise resolving result.
    */
-  async upsert(memory) {
+  async upsertMemory(memory) {
     await this.executor.execute(
       `INSERT INTO agent_memories (
          memory_id, agent_id, scope_type, scope_id, memory_key,
@@ -163,6 +163,19 @@ class AgentRepository {
       ],
     );
     return memory;
+  }
+
+  /**
+   * Backward-compatible dispatcher for legacy upsert calls.
+   * @param {*} entity
+   * @param {*} [version=null]
+   * @returns {Promise<*>}
+   */
+  async upsert(entity, version = null) {
+    if (entity && (entity.autonomyLevel !== undefined || entity.limits !== undefined)) {
+      return this.upsertAutonomySettings(entity, version);
+    }
+    return this.upsertMemory(entity);
   }
 
   /**

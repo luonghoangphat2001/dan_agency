@@ -21,11 +21,11 @@ class WorkflowRepository {
 
   // --- Workflow Core Methods ---
   /**
-   * create - Asynchronously executes create.
+   * createWorkflow - Asynchronously executes create workflow.
    * @param {*} workflow - Input parameter.
    * @returns {*} Promise resolving result.
    */
-  async create(workflow) {
+  async createWorkflow(workflow) {
     await this.executor.execute(
       `INSERT INTO workflows (
         workflow_id, event_id, correlation_id, workflow_type, state,
@@ -191,11 +191,11 @@ class WorkflowRepository {
 
   // --- Goal Methods ---
   /**
-   * create - Asynchronously executes create.
+   * createGoal - Asynchronously executes create goal.
    * @param {*} goal - Input parameter.
    * @returns {*} Promise resolving result.
    */
-  async create(goal) {
+  async createGoal(goal) {
     await this.executor.execute(
       `INSERT INTO goals (
          goal_id, parent_goal_id, horizon, title, description, owner_type,
@@ -243,11 +243,11 @@ class WorkflowRepository {
 
   // --- Dead Letter Methods ---
   /**
-   * create - Asynchronously executes create.
+   * createDeadLetter - Asynchronously executes create dead letter.
    * @param {*} item - Input parameter.
    * @returns {*} Promise resolving result.
    */
-  async create(item) {
+  async createDeadLetter(item) {
     await this.executor.execute(
       `INSERT INTO dead_letters (
         dead_letter_id, source_type, source_id, event_id, workflow_id,
@@ -280,6 +280,21 @@ class WorkflowRepository {
       ],
     );
     return item;
+  }
+
+  /**
+   * Backward-compatible dispatcher for legacy create calls.
+   * @param {*} entity
+   * @returns {Promise<*>}
+   */
+  async create(entity) {
+    if (entity && (entity.workflowId || entity.workflow_id)) {
+      return this.createWorkflow(entity);
+    }
+    if (entity && (entity.goalId || entity.goal_id)) {
+      return this.createGoal(entity);
+    }
+    return this.createDeadLetter(entity);
   }
 }
 

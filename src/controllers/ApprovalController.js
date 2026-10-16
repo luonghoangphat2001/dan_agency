@@ -15,9 +15,11 @@ class ApprovalController extends BaseController {
    * @param {*} service - Input parameter.
    * @returns {*} Result of operation.
    */
-  constructor(service) {
+  constructor(service, bulkService = null) {
     super();
     this.service = service;
+    this.approvalService = service;
+    this.bulkService = bulkService;
   }
 
   /**
@@ -27,11 +29,12 @@ class ApprovalController extends BaseController {
    * @returns {*} Promise resolving result.
    */
   async decide(req, res) {
+    const actorId = req.user?.id || req.user?.sub || req.body?.actorId;
     const approval = await this.service.decide({
       approvalId: req.params.approvalId,
       decision: req.body?.decision,
       decisionVersion: req.body?.decisionVersion,
-      actorId: req.body?.actorId,
+      actorId,
       reason: req.body?.reason,
     });
     return this.ok(res, { approval });

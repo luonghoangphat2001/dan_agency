@@ -59,10 +59,11 @@ class CeoController extends BaseController {
    */
   async execute(req, res) {
     const dispatcher = this.#resolveDispatcher();
+    const actorId = req.user?.id || req.user?.sub || req.body?.actorId;
     const receipt = await dispatcher.dispatch({
       commandName: req.params.commandName,
       payload: req.body?.payload,
-      actorId: req.body?.actorId,
+      actorId,
       idempotencyKey: req.body?.idempotencyKey,
     });
     if (receipt.status === 'queued') {
@@ -111,9 +112,10 @@ class CeoController extends BaseController {
    */
   async acknowledge(req, res) {
     const service = this.#resolveExceptionService();
+    const actorId = req.user?.id || req.user?.sub || req.body?.actorId;
     const result = await service.acknowledge(
       req.params.exceptionId,
-      req.body?.actorId,
+      actorId,
     );
     return this.ok(res, result);
   }

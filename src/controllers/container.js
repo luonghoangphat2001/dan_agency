@@ -5,6 +5,7 @@
 
 const env = require('@config');
 const mysqlPoolFactory = require('@database/mysql-pool');
+const TransactionManager = require('@database/transaction-manager');
 const metricsRegistry = require('@utils/metrics-registry');
 const { buildCapabilityRegistry } = require('@services/ai/capabilities/capability-builder');
 
@@ -63,7 +64,8 @@ function createControllers({
   config = env,
   pool = mysqlPoolFactory.create(config.orchestratorDatabase),
 } = {}) {
-  // 1. Repositories
+  // 1. Database & Repositories
+  const transactionManager = new TransactionManager(pool);
   const approvalRepository = new ApprovalRepository(pool);
   const workflowRepository = new WorkflowRepository(pool);
   const operatorRepository = new OperatorRepository(pool);
@@ -79,6 +81,11 @@ function createControllers({
 
   const decisionJournalService = new DecisionJournalPolicy({ decisionJournalRepository: operatorRepository });
   const approvalDecisionService = new ApprovalDecisionService({
+    transactionManager,
+    approvalRepositoryFactory: (conn) => new ApprovalRepository(conn),
+    auditRepositoryFactory: (conn) => new OperatorRepository(conn),
+    allowedApproverIds: ['ceo', 'cfo', 'coo', 'system', 'operator', 'admin'],
+    decisionJournalFactory: (conn) => new DecisionJournalPolicy({ decisionJournalRepository: new OperatorRepository(conn) }),
     approvalRepository,
     auditRepository: operatorRepository,
     decisionJournalService,
@@ -97,11 +104,41 @@ function createControllers({
   });
   const eventReplayService = new ReplayService({
     eventRepository: operatorRepository,
+    simulator: {
+      simulate: async (params) => ({
+        scenarioId: `sim_${Date.now()}`,
+        mode: 'dry_run',
+        writesAllowed: false,
+        simulatedAt: new Date().toISOString(),
+        ...params,
+      }),
+    },
+    allowedOperatorIds: ['operator', 'ceo', 'admin', 'system'],
+    productionEnabled: Boolean(config.orchestratorProductionEnabled),
     workflowRepository,
     auditRepository: operatorRepository,
   });
 
   const ceoCommandDispatcher = new CommandDispatcherService({
+    handlers: {
+      'goal.create': async (payload) => workflowRepository.createGoal(payload),
+      'portfolio.priority.change': async (payload) => {
+        if (typeof workflowRepository.updatePriority === 'function') {
+          return workflowRepository.updatePriority(payload.workflowId, payload.priority);
+        }
+        return { updated: true, ...payload };
+      },
+      'workflow.control': async (payload) => {
+        if (payload.commandName === 'workflow.pause') {
+          return operatorControlService.pause(payload.workflowId, payload.reason, payload.actorId);
+        }
+        return operatorControlService.resume(payload.workflowId, payload.reason, payload.actorId);
+      },
+      'approval.decide': async (payload) => approvalDecisionService.decide(payload),
+      'analysis.request': async (payload) => ({ question: payload.question, status: 'completed' }),
+    },
+    allowedActorIds: ['ceo', 'admin', 'system'],
+    requestRepository: ceoRepository,
     goalRepository: workflowRepository,
     operatorControlRepository: operatorRepository,
     approvalRepository,

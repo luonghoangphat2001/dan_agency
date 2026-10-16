@@ -3,6 +3,12 @@
  */
 'use strict';
 
+const {
+  WorkflowState,
+  ApprovalStatus,
+  DeadLetterStatus,
+} = require('@enums');
+
 /**
  * DashboardReadRepository
  * Manages dashboard read logic.
@@ -28,11 +34,11 @@ class DashboardReadRepository {
     const [rows] = await this.executor.execute(
       `SELECT
          (SELECT COUNT(*) FROM workflows
-          WHERE state NOT IN ('completed', 'failed', 'cancelled')) AS active_workflow_count,
+          WHERE state NOT IN ('${WorkflowState.COMPLETED}', '${WorkflowState.FAILED}', '${WorkflowState.CANCELLED}')) AS active_workflow_count,
          (SELECT COUNT(*) FROM approval_requests
-          WHERE status = 'pending') AS pending_approval_count,
+          WHERE status = '${ApprovalStatus.PENDING}') AS pending_approval_count,
          (SELECT COUNT(*) FROM dead_letters
-          WHERE status IN ('pending', 'retrying')) AS unresolved_dead_letter_count,
+          WHERE status = '${DeadLetterStatus.OPEN}') AS unresolved_dead_letter_count,
          (SELECT COUNT(*) FROM ceo_exceptions
           WHERE status = 'open') AS open_exception_count`,
     );
@@ -148,39 +154,41 @@ class DashboardReadRepository {
     );
     if (!workflowRows[0]) return null;
 
-    const [actionRows] = await this.executor.execute(
-      `SELECT action_id, sequence_no, action_name, permission_scope, status,
-              risk_level, retry_count, max_attempts, last_error_code,
-              last_error_message, scheduled_at, started_at, completed_at,
-              created_at, updated_at
-       FROM workflow_actions
-       WHERE workflow_id = ?
-       ORDER BY sequence_no ASC`,
-      [workflowId],
-    );
-    const [approvalRows] = await this.executor.execute(
-      `SELECT approval_id, action_id, status, risk_level, requested_by,
-              expires_at, decided_by, decided_at, decision_reason,
-              decision_version, created_at, updated_at
-       FROM approval_requests
-       WHERE workflow_id = ?
-       ORDER BY created_at ASC`,
-      [workflowId],
-    );
-    const [auditRows] = await this.executor.execute(
-      `SELECT audit_id, occurred_at, actor_type, actor_id, audit_type,
-              from_state, to_state, outcome, policy_version
-       FROM audit_events
-       WHERE workflow_id = ?
-       ORDER BY occurred_at ASC, id ASC`,
-      [workflowId],
-    );
+    const [actionResult, approvalResult, auditResult] = await Promise.all([
+      this.executor.execute(
+        `SELECT action_id, sequence_no, action_name, permission_scope, status,
+                risk_level, retry_count, max_attempts, last_error_code,
+                last_error_message, scheduled_at, started_at, completed_at,
+                created_at, updated_at
+         FROM workflow_actions
+         WHERE workflow_id = ?
+         ORDER BY sequence_no ASC`,
+        [workflowId],
+      ),
+      this.executor.execute(
+        `SELECT approval_id, action_id, status, risk_level, requested_by,
+                expires_at, decided_by, decided_at, decision_reason,
+                decision_version, created_at, updated_at
+         FROM approval_requests
+         WHERE workflow_id = ?
+         ORDER BY created_at ASC`,
+        [workflowId],
+      ),
+      this.executor.execute(
+        `SELECT audit_id, occurred_at, actor_type, actor_id, audit_type,
+                from_state, to_state, outcome, policy_version
+         FROM audit_events
+         WHERE workflow_id = ?
+         ORDER BY occurred_at ASC, id ASC`,
+        [workflowId],
+      ),
+    ]);
 
     return Object.freeze({
       workflow: workflowRows[0],
-      actions: actionRows,
-      approvals: approvalRows,
-      timeline: auditRows,
+      actions: actionResult[0],
+      approvals: approvalResult[0],
+      timeline: auditResult[0],
     });
   }
 }

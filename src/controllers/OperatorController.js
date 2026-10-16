@@ -112,7 +112,8 @@ class OperatorController extends BaseController {
    * @returns {*} Promise resolving result.
    */
   async setLevel(req, res) {
-    const { level, actorId } = req.body;
+    const actorId = req.user?.id || req.user?.sub || req.body?.actorId;
+    const { level } = req.body || {};
     const result = await this.controlService.setLevel(level, actorId);
     return this.ok(res, result);
   }
@@ -124,7 +125,8 @@ class OperatorController extends BaseController {
    * @returns {*} Promise resolving result.
    */
   async emergencyStop(req, res) {
-    const { reason, actorId } = req.body;
+    const actorId = req.user?.id || req.user?.sub || req.body?.actorId;
+    const { reason } = req.body || {};
     const result = await this.controlService.emergencyStop(reason, actorId);
     return this.ok(res, result);
   }
@@ -136,7 +138,7 @@ class OperatorController extends BaseController {
    * @returns {*} Promise resolving result.
    */
   async resume(req, res) {
-    const { actorId } = req.body;
+    const actorId = req.user?.id || req.user?.sub || req.body?.actorId;
     const result = await this.controlService.resume(actorId);
     return this.ok(res, result);
   }
@@ -148,7 +150,11 @@ class OperatorController extends BaseController {
    * @returns {*} Promise resolving result.
    */
   async replay(req, res) {
-    const result = await this.replayService.replay(req.body);
+    const actorId = req.user?.id || req.user?.sub || req.body?.actorId;
+    const result = await this.replayService.replay({
+      ...(req.body || {}),
+      actorId,
+    });
     return this.accepted(res, result);
   }
 }
