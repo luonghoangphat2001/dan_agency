@@ -3,6 +3,8 @@
  */
 "use strict";
 
+const { RiskLevel, ExceptionSourceType } = require('@enums');
+
 /**
  * CeoCommand
  * Manages ceo command logic.
@@ -19,7 +21,7 @@ class CeoCommand {
     this.commandName = data.commandName || data.command_name;
     this.commandVersion = data.commandVersion || data.command_version || "1.0.0";
     this.actorId = data.actorId || data.actor_id;
-    this.risk = data.risk || data.risk_level || "low";
+    this.risk = data.risk || data.risk_level || RiskLevel.LOW;
     this.payload = data.payload || {};
     this.status = data.status || "processing";
     this.result = data.result || null;
@@ -40,10 +42,10 @@ class CeoException {
    */
   constructor(data = {}) {
     this.exceptionId = data.exceptionId || data.exception_id;
-    this.sourceType = data.sourceType || data.source_type;
+    this.sourceType = data.sourceType || data.source_type || ExceptionSourceType.APPROVAL;
     this.sourceId = data.sourceId || data.source_id;
     this.workflowId = data.workflowId || data.workflow_id;
-    this.severity = data.severity || "medium";
+    this.severity = data.severity || RiskLevel.MEDIUM;
     this.title = data.title;
     this.context = data.context || {};
     this.status = data.status || "open";

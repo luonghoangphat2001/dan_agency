@@ -4,6 +4,8 @@
 'use strict';
 
 
+const { ApprovalStatus } = require('@enums');
+
 /**
  * ApprovalRepository
  * Manages approval logic.
@@ -42,13 +44,13 @@ class ApprovalRepository {
     reason,
     decidedAt,
   }) {
-    const consumed = status === 'consumed';
+    const consumed = status === ApprovalStatus.CONSUMED;
     const [result] = await this.executor.execute(
       `UPDATE approval_requests
        SET status = ?, decision_version = decision_version + 1,
            decided_by = ?, decision_reason = ?, decided_at = ?,
            consumed_at = ?, consumed_by = ?
-       WHERE approval_id = ? AND status = 'pending'
+       WHERE approval_id = ? AND status = '${ApprovalStatus.PENDING}'
          AND decision_version = ? AND expires_at > ?`,
       [
         status,
@@ -74,9 +76,9 @@ class ApprovalRepository {
   async markExpired(approvalId, decidedAt) {
     const [result] = await this.executor.execute(
       `UPDATE approval_requests
-       SET status = 'expired', decision_version = decision_version + 1,
+       SET status = '${ApprovalStatus.EXPIRED}', decision_version = decision_version + 1,
            decided_at = ?
-       WHERE approval_id = ? AND status = 'pending' AND expires_at <= ?`,
+       WHERE approval_id = ? AND status = '${ApprovalStatus.PENDING}' AND expires_at <= ?`,
       [decidedAt, approvalId, decidedAt],
     );
     return result.affectedRows === 1;

@@ -7,6 +7,7 @@ const {
   WorkflowState,
   ApprovalStatus,
   DeadLetterStatus,
+  CeoExceptionStatus,
 } = require('@enums');
 
 /**
@@ -40,7 +41,7 @@ class DashboardReadRepository {
          (SELECT COUNT(*) FROM dead_letters
           WHERE status = '${DeadLetterStatus.OPEN}') AS unresolved_dead_letter_count,
          (SELECT COUNT(*) FROM ceo_exceptions
-          WHERE status = 'open') AS open_exception_count`,
+          WHERE status = '${CeoExceptionStatus.OPEN}') AS open_exception_count`,
     );
 
     const row = rows[0] || {};
@@ -64,9 +65,9 @@ class DashboardReadRepository {
       `SELECT
          ars.agent_id AS agent_id,
          COUNT(w.id) AS workflow_count,
-         COALESCE(SUM(w.state NOT IN ('completed', 'failed', 'cancelled')), 0)
+         COALESCE(SUM(w.state NOT IN ('${WorkflowState.COMPLETED}', '${WorkflowState.FAILED}', '${WorkflowState.CANCELLED}')), 0)
            AS active_workflow_count,
-         COALESCE(SUM(w.state = 'failed'), 0) AS failed_workflow_count,
+         COALESCE(SUM(w.state = '${WorkflowState.FAILED}'), 0) AS failed_workflow_count,
          MAX(w.updated_at) AS last_activity_at,
          ars.lifecycle_state,
          ars.state_version,
@@ -118,6 +119,8 @@ class DashboardReadRepository {
       params.push(pattern, pattern, pattern);
     }
     const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+    const safeLimit = Math.max(1, parseInt(limit, 10) || 50);
+    const safeOffset = Math.max(0, parseInt(offset, 10) || 0);
     const [rows] = await this.executor.execute(
       `SELECT workflow_id, correlation_id, workflow_type, state, state_version,
               assigned_agent_id, risk_level, priority, failure_code,
@@ -126,7 +129,7 @@ class DashboardReadRepository {
        ${where}
        ORDER BY updated_at DESC
        LIMIT ? OFFSET ?`,
-      [...params, limit, offset],
+      [...params, safeLimit, safeOffset],
     );
     const [countRows] = await this.executor.execute(
       `SELECT COUNT(*) AS total FROM workflows ${where}`,

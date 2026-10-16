@@ -3,6 +3,15 @@
  */
 "use strict";
 
+const {
+  ApprovalStatus,
+  DeadLetterStatus,
+  WorkflowActionStatus,
+  RiskLevel,
+  ExceptionSourceType,
+  CeoExceptionStatus,
+} = require('@enums');
+
 /**
  * CeoRepository
  * Manages ceo logic.
@@ -174,14 +183,14 @@ class CeoRepository {
    */
   async collectApprovals() {
     return this.#insert(`
-      SELECT CONCAT('exc_approval_', approval_id), 'approval', approval_id,
+      SELECT CONCAT('exc_approval_', approval_id), '${ExceptionSourceType.APPROVAL}', approval_id,
              workflow_id,
-             IF(risk_level = 'critical', 'critical', 'high'),
+             IF(risk_level = '${RiskLevel.CRITICAL}', '${RiskLevel.CRITICAL}', '${RiskLevel.HIGH}'),
              CONCAT('Approval waiting: ', action_id),
              JSON_OBJECT('actionId', action_id, 'expiresAt', expires_at),
              requested_at
       FROM approval_requests
-      WHERE status = 'pending' AND expires_at > NOW(3)
+      WHERE status = '${ApprovalStatus.PENDING}' AND expires_at > NOW(3)
     `);
   }
 
@@ -191,12 +200,12 @@ class CeoRepository {
    */
   async collectDeadLetters() {
     return this.#insert(`
-      SELECT CONCAT('exc_dead_', dead_letter_id), 'dead_letter', dead_letter_id,
-             workflow_id, 'critical',
+      SELECT CONCAT('exc_dead_', dead_letter_id), '${ExceptionSourceType.DEAD_LETTER}', dead_letter_id,
+             workflow_id, '${RiskLevel.CRITICAL}',
              CONCAT('Dead letter: ', error_code),
              JSON_OBJECT('errorCode', error_code, 'attemptCount', attempt_count),
              last_failed_at
-      FROM dead_letters WHERE status = 'open'
+      FROM dead_letters WHERE status = '${DeadLetterStatus.OPEN}'
     `);
   }
 
@@ -206,13 +215,13 @@ class CeoRepository {
    */
   async collectConflicts() {
     return this.#insert(`
-      SELECT CONCAT('exc_conflict_', action_id), 'conflict', action_id,
-             workflow_id, 'high',
+      SELECT CONCAT('exc_conflict_', action_id), '${ExceptionSourceType.CONFLICT}', action_id,
+             workflow_id, '${RiskLevel.HIGH}',
              CONCAT('Action conflict: ', action_name),
              JSON_OBJECT('errorCode', last_error_code),
              updated_at
       FROM workflow_actions
-      WHERE status = 'manual_review'
+      WHERE status = '${WorkflowActionStatus.MANUAL_REVIEW}'
          OR last_error_code = 'resource_version_conflict'
     `);
   }
@@ -223,12 +232,12 @@ class CeoRepository {
    */
   async collectKpiDeviations() {
     return this.#insert(`
-      SELECT CONCAT('exc_kpi_', span_id), 'kpi_deviation', span_id,
-             workflow_id, 'high',
+      SELECT CONCAT('exc_kpi_', span_id), '${ExceptionSourceType.KPI_DEVIATION}', span_id,
+             workflow_id, '${RiskLevel.HIGH}',
              CONCAT('KPI deviation: ', component_id),
              metadata, occurred_at
       FROM intelligence_traces
-      WHERE JSON_EXTRACT(metadata, '$.kpiDeviation') = TRUE
+      WHERE is_kpi_deviation = 1 OR JSON_EXTRACT(metadata, '$.kpiDeviation') = TRUE
     `);
   }
 
@@ -239,7 +248,7 @@ class CeoRepository {
    */
   async listOpen(limit = 100) {
     const [rows] = await this.executor.execute(
-      `SELECT * FROM ceo_exceptions WHERE status = 'open'
+      `SELECT * FROM ceo_exceptions WHERE status = '${CeoExceptionStatus.OPEN}'
        ORDER BY FIELD(severity, 'critical', 'high', 'medium'), occurred_at ASC
        LIMIT ?`,
       [Math.min(Math.max(Number(limit) || 100, 1), 300)],
@@ -257,8 +266,8 @@ class CeoRepository {
   async acknowledge(exceptionId, actorId, at) {
     const [result] = await this.executor.execute(
       `UPDATE ceo_exceptions
-       SET status = 'acknowledged', acknowledged_by = ?, acknowledged_at = ?
-       WHERE exception_id = ? AND status = 'open'`,
+       SET status = '${CeoExceptionStatus.ACKNOWLEDGED}', acknowledged_by = ?, acknowledged_at = ?
+       WHERE exception_id = ? AND status = '${CeoExceptionStatus.OPEN}'`,
       [actorId, at, exceptionId],
     );
     return result.affectedRows === 1;

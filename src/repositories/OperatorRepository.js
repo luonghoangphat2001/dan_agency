@@ -3,6 +3,8 @@
  */
 "use strict";
 
+const { OutboxStatus } = require('@enums');
+
 /**
  * OperatorRepository
  * Manages operator logic.
@@ -271,7 +273,7 @@ class OperatorRepository {
       `INSERT INTO outbox_jobs (
         job_id, job_key, job_type, workflow_id, action_id, correlation_id,
         payload, status, priority, max_attempts, available_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, '${OutboxStatus.PENDING}', ?, ?, ?)`,
       [
         job.jobId,
         job.jobKey,
@@ -298,7 +300,7 @@ class OperatorRepository {
   async claimNext(workerId, now, leaseExpiresAt) {
     const [rows] = await this.executor.execute(
       `SELECT * FROM outbox_jobs
-       WHERE status IN ('pending', 'retry') AND available_at <= ?
+       WHERE status IN ('${OutboxStatus.PENDING}', '${OutboxStatus.RETRY}') AND available_at <= ?
          AND attempts < max_attempts
        ORDER BY priority DESC, available_at ASC, id ASC
        LIMIT 1 FOR UPDATE SKIP LOCKED`,
@@ -311,13 +313,13 @@ class OperatorRepository {
 
     await this.executor.execute(
       `UPDATE outbox_jobs
-       SET status = 'processing', attempts = attempts + 1,
+       SET status = '${OutboxStatus.PROCESSING}', attempts = attempts + 1,
            leased_at = ?, lease_expires_at = ?, leased_by = ?
        WHERE job_id = ?`,
       [now, leaseExpiresAt, workerId, job.job_id],
     );
 
-    return { ...job, status: 'processing', attempts: job.attempts + 1 };
+    return { ...job, status: OutboxStatus.PROCESSING, attempts: job.attempts + 1 };
   }
 
   /**
@@ -330,9 +332,9 @@ class OperatorRepository {
   async markDelivered(jobId, receipt, deliveredAt) {
     await this.executor.execute(
       `UPDATE outbox_jobs
-       SET status = 'delivered', delivered_at = ?, delivery_receipt = ?,
+       SET status = '${OutboxStatus.DELIVERED}', delivered_at = ?, delivery_receipt = ?,
            lease_expires_at = NULL, leased_by = NULL
-       WHERE job_id = ? AND status = 'processing'`,
+       WHERE job_id = ? AND status = '${OutboxStatus.PROCESSING}'`,
       [deliveredAt, JSON.stringify(receipt || {}), jobId],
     );
   }
@@ -347,9 +349,9 @@ class OperatorRepository {
   async markRetry(jobId, failure, availableAt) {
     await this.executor.execute(
       `UPDATE outbox_jobs
-       SET status = 'retry', available_at = ?, last_error_code = ?,
+       SET status = '${OutboxStatus.RETRY}', available_at = ?, last_error_code = ?,
            last_error_message = ?, lease_expires_at = NULL, leased_by = NULL
-       WHERE job_id = ? AND status = 'processing'`,
+       WHERE job_id = ? AND status = '${OutboxStatus.PROCESSING}'`,
       [availableAt, failure.code, failure.message, jobId],
     );
   }
@@ -363,9 +365,9 @@ class OperatorRepository {
   async markDead(jobId, failure) {
     await this.executor.execute(
       `UPDATE outbox_jobs
-       SET status = 'dead', last_error_code = ?, last_error_message = ?,
+       SET status = '${OutboxStatus.DEAD}', last_error_code = ?, last_error_message = ?,
            lease_expires_at = NULL, leased_by = NULL
-       WHERE job_id = ? AND status = 'processing'`,
+       WHERE job_id = ? AND status = '${OutboxStatus.PROCESSING}'`,
       [failure.code, failure.message, jobId],
     );
   }
@@ -378,10 +380,10 @@ class OperatorRepository {
   async recoverExpiredLeases(now) {
     const [result] = await this.executor.execute(
       `UPDATE outbox_jobs
-       SET status = 'retry', available_at = ?, leased_at = NULL,
+       SET status = '${OutboxStatus.RETRY}', available_at = ?, leased_at = NULL,
            lease_expires_at = NULL, leased_by = NULL,
            last_error_code = 'worker_lease_expired'
-       WHERE status = 'processing' AND lease_expires_at < ?`,
+       WHERE status = '${OutboxStatus.PROCESSING}' AND lease_expires_at < ?`,
       [now, now],
     );
     return result.affectedRows;

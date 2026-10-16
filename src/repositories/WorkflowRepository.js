@@ -4,6 +4,11 @@
 "use strict";
 
 const OptimisticLockError = require("@utils/errors/optimistic-lock.error");
+const {
+  WorkflowState,
+  WorkflowActionStatus,
+  DeadLetterStatus,
+} = require('@enums');
 
 /**
  * WorkflowRepository
@@ -36,7 +41,7 @@ class WorkflowRepository {
         workflow.eventId,
         workflow.correlationId,
         workflow.workflowType,
-        workflow.state || 'received',
+        workflow.state || WorkflowState.RECEIVED,
         workflow.assignedAgentId || null,
         workflow.riskLevel,
         workflow.priority ?? 50,
@@ -96,7 +101,7 @@ class WorkflowRepository {
   async findPortfolioCandidates(limit = 200) {
     const [rows] = await this.executor.execute(
       `SELECT * FROM workflows
-       WHERE state IN ('received', 'queued', 'paused')
+       WHERE state IN ('${WorkflowState.RECEIVED}', '${WorkflowState.QUEUED}', '${WorkflowState.PAUSED}')
        ORDER BY priority DESC, created_at ASC
        LIMIT ? FOR UPDATE`,
       [Math.min(Math.max(Number(limit) || 200, 1), 500)],
@@ -136,7 +141,7 @@ class WorkflowRepository {
       `SELECT wa.*, w.event_id, w.correlation_id
        FROM workflow_actions wa
        INNER JOIN workflows w ON w.workflow_id = wa.workflow_id
-       WHERE wa.status IN ('executing', 'unknown') AND wa.started_at < ?
+       WHERE wa.status IN ('${WorkflowActionStatus.EXECUTING}', '${WorkflowActionStatus.UNKNOWN}') AND wa.started_at < ?
        ORDER BY wa.started_at ASC LIMIT ?`,
       [before, limit],
     );
@@ -154,9 +159,9 @@ class WorkflowRepository {
   async markCompleted(actionId, receipt, receiptHash, completedAt) {
     await this.executor.execute(
       `UPDATE workflow_actions
-       SET status = 'completed', ssot_receipt = ?, receipt_hash = ?,
+       SET status = '${WorkflowActionStatus.COMPLETED}', ssot_receipt = ?, receipt_hash = ?,
            completed_at = ?, last_error_code = NULL, last_error_message = NULL
-       WHERE action_id = ? AND status IN ('executing', 'unknown')`,
+       WHERE action_id = ? AND status IN ('${WorkflowActionStatus.EXECUTING}', '${WorkflowActionStatus.UNKNOWN}')`,
       [JSON.stringify(receipt), receiptHash, completedAt, actionId],
     );
   }
@@ -168,8 +173,8 @@ class WorkflowRepository {
    */
   async markRetryQueued(actionId) {
     await this.executor.execute(
-      `UPDATE workflow_actions SET status = 'retry_queued'
-       WHERE action_id = ? AND status IN ('executing', 'unknown')`,
+      `UPDATE workflow_actions SET status = '${WorkflowActionStatus.RETRY_QUEUED}'
+       WHERE action_id = ? AND status IN ('${WorkflowActionStatus.EXECUTING}', '${WorkflowActionStatus.UNKNOWN}')`,
       [actionId],
     );
   }
@@ -183,8 +188,8 @@ class WorkflowRepository {
   async markManualReview(actionId, failure) {
     await this.executor.execute(
       `UPDATE workflow_actions
-       SET status = 'manual_review', last_error_code = ?, last_error_message = ?
-       WHERE action_id = ? AND status IN ('executing', 'unknown')`,
+       SET status = '${WorkflowActionStatus.MANUAL_REVIEW}', last_error_code = ?, last_error_message = ?
+       WHERE action_id = ? AND status IN ('${WorkflowActionStatus.EXECUTING}', '${WorkflowActionStatus.UNKNOWN}')`,
       [failure.code, failure.message, actionId],
     );
   }
@@ -254,7 +259,7 @@ class WorkflowRepository {
         action_id, correlation_id, payload_snapshot, payload_hash,
         error_code, error_class, error_message, error_details, attempt_count,
         first_failed_at, last_failed_at, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'open')
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '${DeadLetterStatus.OPEN}')
       ON DUPLICATE KEY UPDATE
         attempt_count = VALUES(attempt_count),
         last_failed_at = VALUES(last_failed_at),

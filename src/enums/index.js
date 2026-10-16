@@ -9,6 +9,7 @@ const OutboxStatus = require('./outbox-status.enum');
 const AgentLifecycleState = require('./agent-lifecycle-state.enum');
 const AgentMemoryScope = require('./agent-memory-scope.enum');
 const { ActorType, GoalOwnerType, ExceptionSourceType } = require('./morph-type.enum');
+const CeoExceptionStatus = require('./ceo-exception-status.enum');
 
 const ArbitrationStatus = require('./arbitration-status.enum');
 const AutonomyLevel = require('./autonomy-level.enum');
@@ -48,6 +49,7 @@ module.exports = Object.freeze({
   ActorType,
   GoalOwnerType,
   ExceptionSourceType,
+  CeoExceptionStatus,
   ArbitrationStatus,
   AutonomyLevel,
   BcgQuadrant,
