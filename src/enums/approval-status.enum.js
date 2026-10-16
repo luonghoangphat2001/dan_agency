@@ -8,6 +8,11 @@ const ApprovalStatus = Object.freeze({
   CONSUMED: 'consumed',
   REJECTED: 'rejected',
   EXPIRED: 'expired',
+
+  values() {
+    return [this.PENDING, this.CONSUMED, this.REJECTED, this.EXPIRED];
+  },
 });
 
 module.exports = ApprovalStatus;
+

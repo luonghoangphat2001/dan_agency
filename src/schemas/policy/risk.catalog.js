@@ -4,14 +4,11 @@
 'use strict';
 
 const actionCatalog = require('@schemas/workflow/action.catalog');
+const { RiskLevel, ApprovalMode } = require('@enums');
 
 const RISK_POLICY_VERSION = '1.0.0';
-const RISK_LEVELS = Object.freeze(['low', 'medium', 'high', 'critical']);
-const APPROVAL_MODES = Object.freeze({
-  NEVER: 'never',
-  CONDITIONAL: 'conditional',
-  ALWAYS: 'always',
-});
+const RISK_LEVELS = Object.freeze(RiskLevel.values());
+const APPROVAL_MODES = ApprovalMode;
 
 const DEFAULT_THRESHOLDS = Object.freeze({
   purchaseOrderDraftAmount: 500000,
@@ -31,63 +28,63 @@ function policy(action, baseRisk, approval, conditions = []) {
 }
 
 const ACTION_RISK_POLICIES = Object.freeze([
-  policy('order.list', 'low', APPROVAL_MODES.NEVER),
-  policy('order.read', 'low', APPROVAL_MODES.NEVER),
-  policy('product.list', 'low', APPROVAL_MODES.NEVER),
-  policy('product.read', 'low', APPROVAL_MODES.NEVER),
-  policy('inventory.read', 'low', APPROVAL_MODES.NEVER),
-  policy('finance.summary.read', 'low', APPROVAL_MODES.NEVER),
-  policy('cskh.feedback.list', 'low', APPROVAL_MODES.NEVER),
+  policy('order.list', RiskLevel.LOW, APPROVAL_MODES.NEVER),
+  policy('order.read', RiskLevel.LOW, APPROVAL_MODES.NEVER),
+  policy('product.list', RiskLevel.LOW, APPROVAL_MODES.NEVER),
+  policy('product.read', RiskLevel.LOW, APPROVAL_MODES.NEVER),
+  policy('inventory.read', RiskLevel.LOW, APPROVAL_MODES.NEVER),
+  policy('finance.summary.read', RiskLevel.LOW, APPROVAL_MODES.NEVER),
+  policy('cskh.feedback.list', RiskLevel.LOW, APPROVAL_MODES.NEVER),
   policy(
     'inventory.purchase_order_draft.create',
-    'medium',
+    RiskLevel.MEDIUM,
     APPROVAL_MODES.CONDITIONAL,
     [{
       field: 'total_amount',
       operator: 'gte',
       thresholdKey: 'purchaseOrderDraftAmount',
-      escalatesTo: 'high',
+      escalatesTo: RiskLevel.HIGH,
     }],
   ),
-  policy('finance.refund.execute', 'critical', APPROVAL_MODES.ALWAYS),
+  policy('finance.refund.execute', RiskLevel.CRITICAL, APPROVAL_MODES.ALWAYS),
   policy(
     'ops.order_status.update',
-    'medium',
+    RiskLevel.MEDIUM,
     APPROVAL_MODES.CONDITIONAL,
     [{
       field: 'target_status',
       operator: 'in',
       value: ['cancelled', 'refunded'],
-      escalatesTo: 'high',
+      escalatesTo: RiskLevel.HIGH,
     }],
   ),
   policy(
     'cskh.response.send',
-    'medium',
+    RiskLevel.MEDIUM,
     APPROVAL_MODES.CONDITIONAL,
     [{
       field: 'confidence',
       operator: 'lt',
       thresholdKey: 'externalResponseConfidence',
-      escalatesTo: 'high',
+      escalatesTo: RiskLevel.HIGH,
     }],
   ),
   policy(
     'cskh.voucher.issue',
-    'medium',
+    RiskLevel.MEDIUM,
     APPROVAL_MODES.CONDITIONAL,
     [
       {
         field: 'amount',
         operator: 'gte',
         thresholdKey: 'voucherAmount',
-        escalatesTo: 'high',
+        escalatesTo: RiskLevel.HIGH,
       },
       {
         field: 'confidence',
         operator: 'lt',
         thresholdKey: 'voucherConfidence',
-        escalatesTo: 'high',
+        escalatesTo: RiskLevel.HIGH,
       },
     ],
   ),
@@ -95,7 +92,7 @@ const ACTION_RISK_POLICIES = Object.freeze([
 
 const DEFAULT_DENY_POLICY = Object.freeze({
   action: null,
-  baseRisk: 'critical',
+  baseRisk: RiskLevel.CRITICAL,
   approval: APPROVAL_MODES.ALWAYS,
   conditions: Object.freeze([]),
   decision: 'deny',

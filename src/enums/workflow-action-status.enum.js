@@ -12,6 +12,20 @@ const WorkflowActionStatus = Object.freeze({
   MANUAL_REVIEW: 'manual_review',
   UNKNOWN: 'unknown',
   FAILED: 'failed',
+
+  values() {
+    return [
+      this.PROPOSED,
+      this.SCHEDULED,
+      this.EXECUTING,
+      this.COMPLETED,
+      this.RETRY_QUEUED,
+      this.MANUAL_REVIEW,
+      this.UNKNOWN,
+      this.FAILED,
+    ];
+  },
 });
 
 module.exports = WorkflowActionStatus;
+

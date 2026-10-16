@@ -3,15 +3,45 @@
  */
 'use strict';
 
+const { WorkflowState } = require('@enums');
+
 const TRANSITIONS = Object.freeze({
-  received: Object.freeze(['queued', 'failed', 'cancelled', 'paused']),
-  queued: Object.freeze(['running', 'failed', 'cancelled', 'paused']),
-  running: Object.freeze(['awaiting_approval', 'completed', 'failed', 'cancelled', 'paused']),
-  awaiting_approval: Object.freeze(['running', 'failed', 'cancelled', 'paused']),
-  paused: Object.freeze(['received', 'queued', 'running', 'awaiting_approval', 'failed', 'cancelled']),
-  completed: Object.freeze([]),
-  failed: Object.freeze(['queued', 'cancelled']),
-  cancelled: Object.freeze([]),
+  [WorkflowState.RECEIVED]: Object.freeze([
+    WorkflowState.QUEUED,
+    WorkflowState.FAILED,
+    WorkflowState.CANCELLED,
+    WorkflowState.PAUSED,
+  ]),
+  [WorkflowState.QUEUED]: Object.freeze([
+    WorkflowState.RUNNING,
+    WorkflowState.FAILED,
+    WorkflowState.CANCELLED,
+    WorkflowState.PAUSED,
+  ]),
+  [WorkflowState.RUNNING]: Object.freeze([
+    WorkflowState.AWAITING_APPROVAL,
+    WorkflowState.COMPLETED,
+    WorkflowState.FAILED,
+    WorkflowState.CANCELLED,
+    WorkflowState.PAUSED,
+  ]),
+  [WorkflowState.AWAITING_APPROVAL]: Object.freeze([
+    WorkflowState.RUNNING,
+    WorkflowState.FAILED,
+    WorkflowState.CANCELLED,
+    WorkflowState.PAUSED,
+  ]),
+  [WorkflowState.PAUSED]: Object.freeze([
+    WorkflowState.RECEIVED,
+    WorkflowState.QUEUED,
+    WorkflowState.RUNNING,
+    WorkflowState.AWAITING_APPROVAL,
+    WorkflowState.FAILED,
+    WorkflowState.CANCELLED,
+  ]),
+  [WorkflowState.COMPLETED]: Object.freeze([]),
+  [WorkflowState.FAILED]: Object.freeze([WorkflowState.QUEUED, WorkflowState.CANCELLED]),
+  [WorkflowState.CANCELLED]: Object.freeze([]),
 });
 
 /**

@@ -4,6 +4,23 @@
 'use strict';
 
 const AppError = require('@utils/errors/app.error');
+const { WebAction } = require('@enums');
+
+const STEP_HANDLERS = Object.freeze({
+  [WebAction.CLICK]: async (page, step) => {
+    if (step.selector) {
+      await page.click(step.selector);
+    }
+  },
+  [WebAction.FILL]: async (page, step) => {
+    if (step.selector) {
+      await page.fill(step.selector, step.value ?? '');
+    }
+  },
+  [WebAction.WAIT]: async (page, step) => {
+    await page.waitForTimeout(step.ms ?? 1000);
+  },
+});
 
 /**
  * AutomateService
@@ -77,22 +94,15 @@ class AutomateService {
   }
 
   /**
-   * runStep - Asynchronously executes run step.
+   * runStep - Asynchronously executes run step using strategy pattern.
    * @param {*} page - Input parameter.
    * @param {*} step - Input parameter.
    * @returns {*} Promise resolving result.
    */
   async runStep(page, step) {
-    if (step.action === 'click' && step.selector) {
-      await page.click(step.selector);
-    }
-
-    if (step.action === 'fill' && step.selector) {
-      await page.fill(step.selector, step.value ?? '');
-    }
-
-    if (step.action === 'wait') {
-      await page.waitForTimeout(step.ms ?? 1000);
+    const handler = STEP_HANDLERS[step?.action];
+    if (handler) {
+      await handler(page, step);
     }
   }
 }

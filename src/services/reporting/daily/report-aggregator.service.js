@@ -4,6 +4,7 @@
 'use strict';
 
 const localization = require('@lang');
+const { ReportHealthStatus } = require('@enums');
 
 /**
  * ReportAggregatorService
@@ -31,8 +32,8 @@ class ReportAggregatorService {
     const reports = await Promise.all(this.reporters.map(
       (reporter) => this.#collect(reporter, { from, to })
     ));
-    const degraded = reports.filter(({ status }) => status === 'degraded').length;
-    const attention = reports.filter(({ status }) => status === 'attention').length;
+    const degraded = reports.filter(({ status }) => status === ReportHealthStatus.DEGRADED).length;
+    const attention = reports.filter(({ status }) => status === ReportHealthStatus.ATTENTION).length;
     const message = this.#format(reportDate, reports);
 
     const receipt = await this.notificationGateway.notify({
@@ -55,7 +56,7 @@ class ReportAggregatorService {
       return Object.freeze({
         agentId: reporter.agent.id,
         department: reporter.agent.department,
-        status: 'degraded',
+        status: ReportHealthStatus.DEGRADED,
         errorCode: error.code || 'daily_report_failed',
       });
     }
@@ -78,12 +79,12 @@ class ReportAggregatorService {
     const dataDateLabel = localization.t('reporting.daily.data_date');
     const lines = [`${dataDateLabel}: **${reportDate}**`, ''];
     reports.forEach((report) => {
-      if (report.status === 'degraded') {
+      if (report.status === ReportHealthStatus.DEGRADED) {
         const degradedMessage = localization.t('reporting.daily.degraded_report', { errorCode: report.errorCode });
         lines.push(`⚠️ **${report.agentId}**: ${degradedMessage}`);
         return;
       }
-      const icon = report.status === 'attention' ? '⚠️' : '✅';
+      const icon = report.status === ReportHealthStatus.ATTENTION ? '⚠️' : '✅';
       const metrics = report.metrics;
       const completedLabel = localization.t('reporting.daily.completed');
       const failedLabel = localization.t('reporting.daily.failed');

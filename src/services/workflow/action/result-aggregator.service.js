@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const { TaskStatus, TaskAggregateStatus } = require('@enums');
+
 /**
  * ResultAggregatorService
  * Manages result aggregator logic.
@@ -17,7 +19,7 @@ class ResultAggregatorService {
   aggregate(graph, resultMap) {
     const tasks = graph.list().map((task) => {
       const result = resultMap.get(task.id) || {
-        status: 'skipped',
+        status: TaskStatus.SKIPPED,
         error: { code: 'task_not_executed' },
       };
       return Object.freeze({
@@ -27,14 +29,15 @@ class ResultAggregatorService {
         ...result,
       });
     });
-    const succeeded = tasks.filter(({ status }) => status === 'completed').length;
-    const failed = tasks.filter(({ status }) => status === 'failed').length;
-    const skipped = tasks.filter(({ status }) => status === 'skipped').length;
+    const succeeded = tasks.filter(({ status }) => status === TaskStatus.COMPLETED).length;
+    const failed = tasks.filter(({ status }) => status === TaskStatus.FAILED).length;
+    const skipped = tasks.filter(({ status }) => status === TaskStatus.SKIPPED).length;
     const status = succeeded === tasks.length
-      ? 'completed'
+      ? TaskAggregateStatus.COMPLETED
       : succeeded > 0
-        ? 'partial'
-        : 'failed';
+        ? TaskAggregateStatus.PARTIAL
+        : TaskAggregateStatus.FAILED;
+
 
     return Object.freeze({
       status,

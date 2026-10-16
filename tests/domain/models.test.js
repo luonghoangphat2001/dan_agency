@@ -4,12 +4,19 @@ const Workflow = require('../../src/models/Workflow');
 const Agent = require('../../src/models/Agent');
 const Approval = require('../../src/models/Approval');
 const { CeoCommand, CeoException } = require('../../src/models/Ceo');
+const DeadLetter = require('../../src/models/DeadLetter');
+const Goal = require('../../src/models/Goal');
 const {
   WorkflowState,
   RiskLevel,
   AgentLifecycleState,
   ApprovalStatus,
   ExceptionSourceType,
+  DeadLetterStatus,
+  DeadLetterSourceType,
+  GoalStatus,
+  GoalHorizon,
+  GoalOwnerType,
 } = require('@enums');
 
 describe('Domain Models with Enum Integration & Rich Helper Methods', () => {
@@ -105,4 +112,56 @@ describe('Domain Models with Enum Integration & Rich Helper Methods', () => {
       expect(exc.status).toBe('open');
     });
   });
+
+  describe('DeadLetter Model', () => {
+    it('initializes with default DeadLetterSourceType and DeadLetterStatus', () => {
+      const dl = new DeadLetter({ deadLetterId: 'dl_1', correlationId: 'corr_1' });
+      expect(dl.sourceType).toBe(DeadLetterSourceType.WORKFLOW_ACTION);
+      expect(dl.status).toBe(DeadLetterStatus.OPEN);
+      expect(dl.isOpen()).toBe(true);
+      expect(dl.isResolved()).toBe(false);
+      expect(dl.isReplayed()).toBe(false);
+      expect(dl.canRetry(3)).toBe(true);
+    });
+
+    it('evaluates resolved and retry status helpers', () => {
+      const resolved = new DeadLetter({ status: DeadLetterStatus.RESOLVED });
+      expect(resolved.isOpen()).toBe(false);
+      expect(resolved.isResolved()).toBe(true);
+      expect(resolved.canRetry()).toBe(false);
+
+      const maxed = new DeadLetter({ attemptCount: 5 });
+      expect(maxed.canRetry(5)).toBe(false);
+    });
+  });
+
+  describe('Goal Model', () => {
+    it('initializes with default GoalHorizon, GoalOwnerType, and GoalStatus', () => {
+      const goal = new Goal({ goalId: 'goal_1', ownerId: 'ceo_1' });
+      expect(goal.horizon).toBe(GoalHorizon.QUARTER);
+      expect(goal.ownerType).toBe(GoalOwnerType.CEO);
+      expect(goal.status).toBe(GoalStatus.DRAFT);
+      expect(goal.isDraft()).toBe(true);
+      expect(goal.isActive()).toBe(false);
+      expect(goal.isCompleted()).toBe(false);
+    });
+
+    it('correctly tracks active, at_risk, achieved, and cancelled lifecycle', () => {
+      const active = new Goal({ status: GoalStatus.ACTIVE });
+      expect(active.isActive()).toBe(true);
+      expect(active.isCompleted()).toBe(false);
+
+      const atRisk = new Goal({ status: GoalStatus.AT_RISK });
+      expect(atRisk.isAtRisk()).toBe(true);
+
+      const achieved = new Goal({ status: GoalStatus.ACHIEVED });
+      expect(achieved.isAchieved()).toBe(true);
+      expect(achieved.isCompleted()).toBe(true);
+
+      const cancelled = new Goal({ status: GoalStatus.CANCELLED });
+      expect(cancelled.isCancelled()).toBe(true);
+      expect(cancelled.isCompleted()).toBe(true);
+    });
+  });
 });
+

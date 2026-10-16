@@ -6,6 +6,7 @@
 const crypto = require('crypto');
 const identifiers = require('@schemas/events/correlation');
 const { stableSerialize } = require('@schemas/events/correlation');
+const { WorkflowActionStatus, DeadLetterSourceType } = require('@enums');
 
 /**
  * ReconciliationService
@@ -79,7 +80,7 @@ class ReconciliationService {
         availableAt: now,
       });
       await this.actionRepository.markRetryQueued(action.action_id);
-      return { action_id: action.action_id, status: 'retry_queued' };
+      return { action_id: action.action_id, status: WorkflowActionStatus.RETRY_QUEUED };
     }
 
     const failure = {
@@ -88,7 +89,7 @@ class ReconciliationService {
     };
     await this.deadLetterRepository.create({
       deadLetterId: this.idFactory.createId('deadLetter'),
-      sourceType: 'workflow_action',
+      sourceType: DeadLetterSourceType.WORKFLOW_ACTION,
       sourceId: action.action_id,
       eventId: action.event_id,
       workflowId: action.workflow_id,
@@ -104,7 +105,7 @@ class ReconciliationService {
       lastFailedAt: now,
     });
     await this.actionRepository.markManualReview(action.action_id, failure);
-    return { action_id: action.action_id, status: 'manual_review' };
+    return { action_id: action.action_id, status: WorkflowActionStatus.MANUAL_REVIEW };
   }
 
   /**

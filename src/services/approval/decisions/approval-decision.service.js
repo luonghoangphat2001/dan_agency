@@ -5,6 +5,7 @@
 
 const crypto = require('crypto');
 const AppError = require('@utils/errors/app.error');
+const { ApprovalStatus, ActorType } = require('@enums');
 
 /**
  * ApprovalDecisionService
@@ -42,7 +43,7 @@ class ApprovalDecisionService {
       const approval = await approvals.findByApprovalIdForUpdate(command.approvalId);
 
       if (!approval) return { outcome: 'not_found' };
-      if (approval.status !== 'pending') {
+      if (approval.status !== ApprovalStatus.PENDING) {
         return { outcome: 'already_decided', approval };
       }
       if (new Date(approval.expires_at).getTime() <= decidedAt.getTime()) {
@@ -50,7 +51,7 @@ class ApprovalDecisionService {
         return { outcome: 'expired', approval };
       }
 
-      const status = command.decision === 'approve' ? 'consumed' : 'rejected';
+      const status = command.decision === 'approve' ? ApprovalStatus.CONSUMED : ApprovalStatus.REJECTED;
       const changed = await approvals.decidePending(command.approvalId, {
         status,
         expectedVersion: command.decisionVersion,
@@ -69,10 +70,10 @@ class ApprovalDecisionService {
         workflowId: approval.workflow_id,
         actionId: approval.action_id,
         approvalId: approval.approval_id,
-        actorType: 'ceo',
+        actorType: ActorType.CEO,
         actorId: command.actorId,
-        auditType: status === 'consumed' ? 'approval_consumed' : 'approval_rejected',
-        fromState: 'pending',
+        auditType: status === ApprovalStatus.CONSUMED ? 'approval_consumed' : 'approval_rejected',
+        fromState: ApprovalStatus.PENDING,
         toState: status,
         outcome: 'success',
         details: {

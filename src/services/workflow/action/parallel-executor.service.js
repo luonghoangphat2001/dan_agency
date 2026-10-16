@@ -5,6 +5,7 @@
 
 const ResultAggregatorService = require('@services/workflow/action/result-aggregator.service');
 const logger = require('@utils/logger.service');
+const { TaskStatus } = require('@enums');
 
 /**
  * ParallelExecutorService
@@ -43,7 +44,7 @@ class ParallelExecutorService {
         graph.list().filter((task) => !terminal.has(task.id)).forEach((task) => {
           terminal.add(task.id);
           results.set(task.id, Object.freeze({
-            status: 'skipped',
+            status: TaskStatus.SKIPPED,
             error: Object.freeze({
               code: 'dependency_failed',
               dependencies: task.dependsOn.filter((id) => !succeeded.has(id)),
@@ -59,7 +60,7 @@ class ParallelExecutorService {
         settled.forEach(({ taskId, result }) => {
           terminal.add(taskId);
           results.set(taskId, result);
-          if (result.status === 'completed') succeeded.add(taskId);
+          if (result.status === TaskStatus.COMPLETED) succeeded.add(taskId);
         });
       }
     }
@@ -81,7 +82,7 @@ class ParallelExecutorService {
       return {
         taskId: task.id,
         result: Object.freeze({
-          status: 'failed',
+          status: TaskStatus.FAILED,
           error: Object.freeze({ code: 'agent_handler_unavailable' }),
         }),
       };
@@ -94,7 +95,7 @@ class ParallelExecutorService {
       logger.info('agent_task_completed', logContext);
       return {
         taskId: task.id,
-        result: Object.freeze({ status: 'completed', output }),
+        result: Object.freeze({ status: TaskStatus.COMPLETED, output }),
       };
     } catch (error) {
       logger.error('agent_task_failed', {
@@ -105,7 +106,7 @@ class ParallelExecutorService {
       return {
         taskId: task.id,
         result: Object.freeze({
-          status: 'failed',
+          status: TaskStatus.FAILED,
           error: Object.freeze({
             code: error.code || 'task_execution_failed',
           }),

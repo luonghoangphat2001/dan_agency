@@ -8,6 +8,11 @@ const DeadLetterStatus = Object.freeze({
   RESOLVED: 'resolved',
   REPLAYED: 'replayed',
   IGNORED: 'ignored',
+
+  values() {
+    return [this.OPEN, this.RESOLVED, this.REPLAYED, this.IGNORED];
+  },
 });
 
 module.exports = DeadLetterStatus;
+

@@ -7,6 +7,7 @@ const commandCatalog = require('@schemas/ceo/command.catalog');
 const JsonSchemaValidator = require('@utils/json-schema.validator');
 const AppError = require('@utils/errors/app.error');
 const crypto = require('crypto');
+const { WorkflowState } = require('@enums');
 
 /**
  * CommandDispatcherService
@@ -99,7 +100,7 @@ class CommandDispatcherService {
         requestId,
         command: commandName,
         version: command.version,
-        status: result?.status === 'queued' ? 'queued' : 'completed',
+        status: result?.status === WorkflowState.QUEUED ? WorkflowState.QUEUED : WorkflowState.COMPLETED,
         duplicate: false,
         result,
       });

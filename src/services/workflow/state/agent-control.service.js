@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const { AgentLifecycleState } = require('@enums');
+
 /**
  * AgentControlService
  * Manages agent control logic.
@@ -25,9 +27,18 @@ class AgentControlService {
    */
   pauseAgent({ agentId, reason }) {
     if (this.lifecycleStateMachineService) {
-      return this.lifecycleStateMachineService.transitionState({ agentId, toState: 'PAUSED', reason });
+      return this.lifecycleStateMachineService.transitionState({
+        agentId,
+        toState: AgentLifecycleState.PAUSED,
+        reason,
+      });
     }
-    return Object.freeze({ agentId, state: 'PAUSED', reason, controlledAt: new Date().toISOString() });
+    return Object.freeze({
+      agentId,
+      state: AgentLifecycleState.PAUSED,
+      reason,
+      controlledAt: new Date().toISOString(),
+    });
   }
 
   /**
@@ -38,9 +49,18 @@ class AgentControlService {
    */
   resumeAgent({ agentId, reason }) {
     if (this.lifecycleStateMachineService) {
-      return this.lifecycleStateMachineService.transitionState({ agentId, toState: 'ACTIVE', reason });
+      return this.lifecycleStateMachineService.transitionState({
+        agentId,
+        toState: AgentLifecycleState.ACTIVE,
+        reason,
+      });
     }
-    return Object.freeze({ agentId, state: 'ACTIVE', reason, controlledAt: new Date().toISOString() });
+    return Object.freeze({
+      agentId,
+      state: AgentLifecycleState.ACTIVE,
+      reason,
+      controlledAt: new Date().toISOString(),
+    });
   }
 }
 

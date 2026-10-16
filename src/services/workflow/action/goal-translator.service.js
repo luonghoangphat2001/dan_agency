@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const { GoalStatus } = require('@enums');
+
 /**
  * GoalTranslatorService
  * Manages goal translator logic.
@@ -25,7 +27,7 @@ class GoalTranslatorService {
   }) {
     const goal = await this.goalRepository.findById(goalId);
     if (!goal) throw new TypeError('Goal not found');
-    if (['achieved', 'cancelled'].includes(goal.status)) {
+    if ([GoalStatus.ACHIEVED, GoalStatus.CANCELLED].includes(goal.status)) {
       throw new TypeError(`Terminal goal cannot create workflow: ${goal.status}`);
     }
     const target = typeof goal.target === 'string' ? JSON.parse(goal.target) : goal.target;

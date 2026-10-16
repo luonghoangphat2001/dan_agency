@@ -9,6 +9,7 @@ const RiskEvaluator = require('@policy/permissions/risk-evaluator');
 const InvariantChecker = require('@policy/permissions/invariant-checker');
 const agentRegistry = require('@services/ai/agents/agent-registry');
 const { stableSerialize } = require('@schemas/events/correlation');
+const { PolicyDecision, RiskLevel, WorkflowActionStatus } = require('@enums');
 
 /**
  * ProposalVerifierService
@@ -51,8 +52,8 @@ class ProposalVerifierService {
         payload: requestedAction.payload,
         grantedPermissions: agent.permissions,
       });
-      if (decision.decision === 'deny') throw this.#error(`risk_denied:${decision.reason}`);
-      if (decision.decision === 'require_approval'
+      if (decision.decision === PolicyDecision.DENY) throw this.#error(`risk_denied:${decision.reason}`);
+      if (decision.decision === PolicyDecision.REQUIRE_APPROVAL
         && requestedAction.approval_required !== true) {
         throw this.#error('approval_flag_missing');
       }
@@ -60,7 +61,7 @@ class ProposalVerifierService {
     }
 
     const requiresCritic = decisions.some(({ risk_level: risk }) =>
-      risk === 'critical' || risk === 'high');
+      risk === RiskLevel.CRITICAL || risk === RiskLevel.HIGH);
     if (requiresCritic && this.critic) {
       const review = await this.critic.review({ proposal, decisions });
       if (review?.approved !== true) throw this.#error('critic_rejected');
@@ -86,7 +87,7 @@ class ProposalVerifierService {
     if (!proposal || required.some((field) => proposal[field] === undefined)) {
       throw this.#error('proposal_schema_invalid');
     }
-    if (proposal.schema_version !== '1.0.0' || proposal.status !== 'proposed') {
+    if (proposal.schema_version !== '1.0.0' || proposal.status !== WorkflowActionStatus.PROPOSED) {
       throw this.#error('proposal_state_invalid');
     }
     if (!Array.isArray(proposal.evidence)

@@ -7,6 +7,7 @@ const actionCatalog = require('@schemas/workflow/action.catalog');
 const ActionValidatorService = require('@services/workflow/action/action-validator.service');
 const RiskEvaluator = require('@policy/permissions/risk-evaluator');
 const AppError = require('@utils/errors/app.error');
+const { ApprovalStatus, PolicyDecision } = require('@enums');
 
 const POLICY_ONLY_FIELDS = Object.freeze(['confidence']);
 
@@ -107,14 +108,14 @@ class SsotWriteAdapter {
       payload,
       grantedPermissions,
     });
-    if (policy.decision === 'deny') {
+    if (policy.decision === PolicyDecision.DENY) {
       throw new AppError('Action denied by policy', 403, {
         code: 'action_policy_denied',
         policy,
       });
     }
-    if (policy.decision === 'require_approval'
-      && (approval?.status !== 'consumed' || approval?.action_id !== actionId)) {
+    if (policy.decision === PolicyDecision.REQUIRE_APPROVAL
+      && (approval?.status !== ApprovalStatus.CONSUMED || approval?.action_id !== actionId)) {
       throw new AppError('Consumed approval is required', 409, {
         code: 'action_approval_required',
         action_id: actionId,

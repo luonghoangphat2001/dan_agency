@@ -4,10 +4,11 @@
 'use strict';
 
 const { getAgentModel } = require('@services/ai/agents/agent-model.config');
+const { DomainAgent } = require('@enums');
 
 const AGENTS = Object.freeze([
   Object.freeze({
-    id: 'dan_rnd',
+    id: DomainAgent.RND,
     department: 'rnd',
     mission: 'product_menu_research',
     version: '1.0.0',
@@ -20,10 +21,10 @@ const AGENTS = Object.freeze([
     kpis: Object.freeze(['menu_performance', 'proposal_acceptance', 'experiment_success']),
     prohibitions: Object.freeze(['business_state_write', 'price_change', 'product_publish']),
     escalationOwner: 'ceo',
-    model: getAgentModel('dan_rnd'),
+    model: getAgentModel(DomainAgent.RND),
   }),
   Object.freeze({
-    id: 'dan_logistics',
+    id: DomainAgent.LOGISTICS,
     department: 'logistics',
     mission: 'inventory_and_procurement',
     version: '1.0.0',
@@ -36,10 +37,10 @@ const AGENTS = Object.freeze([
     kpis: Object.freeze(['stockout_rate', 'inventory_turn', 'reorder_accuracy']),
     prohibitions: Object.freeze(['purchase_order_approve', 'supplier_payment']),
     escalationOwner: 'ceo',
-    model: getAgentModel('dan_logistics'),
+    model: getAgentModel(DomainAgent.LOGISTICS),
   }),
   Object.freeze({
-    id: 'dan_cfo',
+    id: DomainAgent.CFO,
     department: 'finance',
     mission: 'finance_and_reconciliation',
     version: '1.0.0',
@@ -52,10 +53,10 @@ const AGENTS = Object.freeze([
     kpis: Object.freeze(['revenue', 'margin', 'reconciliation_variance', 'refund_rate']),
     prohibitions: Object.freeze(['bank_transfer', 'ledger_mutation', 'refund_without_approval']),
     escalationOwner: 'ceo',
-    model: getAgentModel('dan_cfo'),
+    model: getAgentModel(DomainAgent.CFO),
   }),
   Object.freeze({
-    id: 'dan_ops',
+    id: DomainAgent.OPS,
     department: 'operations',
     mission: 'order_and_sla_operations',
     version: '1.0.0',
@@ -68,10 +69,10 @@ const AGENTS = Object.freeze([
     kpis: Object.freeze(['order_cycle_time', 'sla_breach_rate', 'completion_rate']),
     prohibitions: Object.freeze(['raw_status_write', 'policy_override']),
     escalationOwner: 'ceo',
-    model: getAgentModel('dan_ops'),
+    model: getAgentModel(DomainAgent.OPS),
   }),
   Object.freeze({
-    id: 'dan_cskh',
+    id: DomainAgent.CSKH,
     department: 'customer_support',
     mission: 'customer_feedback_and_recovery',
     version: '1.0.0',
@@ -84,7 +85,7 @@ const AGENTS = Object.freeze([
     kpis: Object.freeze(['response_sla', 'customer_satisfaction', 'recovery_rate']),
     prohibitions: Object.freeze(['customer_data_export', 'unapproved_high_value_voucher']),
     escalationOwner: 'ceo',
-    model: getAgentModel('dan_cskh'),
+    model: getAgentModel(DomainAgent.CSKH),
   }),
 ]);
 

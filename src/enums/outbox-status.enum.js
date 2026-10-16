@@ -9,6 +9,11 @@ const OutboxStatus = Object.freeze({
   RETRY: 'retry',
   DELIVERED: 'delivered',
   DEAD: 'dead',
+
+  values() {
+    return [this.PENDING, this.PROCESSING, this.RETRY, this.DELIVERED, this.DEAD];
+  },
 });
 
 module.exports = OutboxStatus;
+

@@ -4,6 +4,7 @@
 'use strict';
 
 const BaseController = require('@controllers/BaseController');
+const { WorkflowState } = require('@enums');
 
 /**
  * CeoController
@@ -66,7 +67,7 @@ class CeoController extends BaseController {
       actorId,
       idempotencyKey: req.body?.idempotencyKey,
     });
-    if (receipt.status === 'queued') {
+    if (receipt.status === WorkflowState.QUEUED) {
       return this.accepted(res, { receipt });
     }
     return this.ok(res, { receipt });

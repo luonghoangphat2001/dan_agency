@@ -3,15 +3,17 @@
  */
 'use strict';
 
-const HORIZONS = Object.freeze(['year', 'quarter', 'month', 'week']);
-const STATUSES = Object.freeze(['draft', 'active', 'at_risk', 'achieved', 'cancelled']);
-const OWNER_TYPES = Object.freeze(['ceo', 'agent', 'department']);
+const { GoalHorizon, GoalStatus, GoalOwnerType } = require('@enums');
+
+const HORIZONS = Object.freeze(Object.values(GoalHorizon));
+const STATUSES = Object.freeze(Object.values(GoalStatus));
+const OWNER_TYPES = Object.freeze(Object.values(GoalOwnerType));
 const STATUS_TRANSITIONS = Object.freeze({
-  draft: Object.freeze(['active', 'cancelled']),
-  active: Object.freeze(['at_risk', 'achieved', 'cancelled']),
-  at_risk: Object.freeze(['active', 'achieved', 'cancelled']),
-  achieved: Object.freeze([]),
-  cancelled: Object.freeze([]),
+  [GoalStatus.DRAFT]: Object.freeze([GoalStatus.ACTIVE, GoalStatus.CANCELLED]),
+  [GoalStatus.ACTIVE]: Object.freeze([GoalStatus.AT_RISK, GoalStatus.ACHIEVED, GoalStatus.CANCELLED]),
+  [GoalStatus.AT_RISK]: Object.freeze([GoalStatus.ACTIVE, GoalStatus.ACHIEVED, GoalStatus.CANCELLED]),
+  [GoalStatus.ACHIEVED]: Object.freeze([]),
+  [GoalStatus.CANCELLED]: Object.freeze([]),
 });
 
 /**
@@ -35,7 +37,7 @@ class Goal {
     this.ownerId = String(input.ownerId);
     this.target = Object.freeze({ ...input.target });
     this.progress = Number(input.progress || 0);
-    this.status = input.status || 'draft';
+    this.status = input.status || GoalStatus.DRAFT;
     this.startsAt = new Date(input.startsAt);
     this.deadlineAt = new Date(input.deadlineAt);
     this.version = Number(input.version || 1);

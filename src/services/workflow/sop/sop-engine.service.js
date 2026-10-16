@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const { SopExecutionStatus } = require('@enums');
+
 /**
  * SopEngineService
  * Manages sop engine logic.
@@ -55,7 +57,7 @@ class SopEngineService {
         executionResults.push({
           stepId: step.id,
           name: step.name,
-          status: 'BLOCKED_PRECONDITION_FAILED',
+          status: SopExecutionStatus.BLOCKED_PRECONDITION_FAILED,
         });
         break;
       }
@@ -63,7 +65,7 @@ class SopEngineService {
       executionResults.push({
         stepId: step.id,
         name: step.name,
-        status: 'COMPLETED',
+        status: SopExecutionStatus.COMPLETED,
         output: step.expectedOutput || {},
       });
       Object.assign(context, step.expectedOutput || {});
@@ -72,7 +74,9 @@ class SopEngineService {
     return Object.freeze({
       sopId,
       version: sopVersion.version,
-      status: executionResults.every(r => r.status === 'COMPLETED') ? 'COMPLETED' : 'INCOMPLETE',
+      status: executionResults.every(r => r.status === SopExecutionStatus.COMPLETED)
+        ? SopExecutionStatus.COMPLETED
+        : SopExecutionStatus.INCOMPLETE,
       steps: executionResults,
       finalContext: context,
     });

@@ -4,13 +4,14 @@
 'use strict';
 
 const BasePolicy = require('@policy/BasePolicy');
+const {
+  AgentAutonomyLevel,
+  PolicyDecision,
+  RiskLevel,
+  ApprovalStatus,
+} = require('@enums');
 
-const LEVELS = Object.freeze([
-  'OBSERVE',
-  'PROPOSE',
-  'EXECUTE_LOW_RISK',
-  'FULL_WITH_LIMITS',
-]);
+const LEVELS = Object.freeze(AgentAutonomyLevel.values());
 
 /**
  * AgentAutonomyPolicy
@@ -19,9 +20,8 @@ const LEVELS = Object.freeze([
 class AgentAutonomyPolicy extends BasePolicy {
   constructor(options = {}) {
     super({ name: 'AgentAutonomyPolicy' });
-
-
   }
+
   authorize({
     settings,
     operation,
@@ -33,28 +33,29 @@ class AgentAutonomyPolicy extends BasePolicy {
     if (!LEVELS.includes(settings.autonomyLevel)) return this.#deny('autonomy_level_invalid');
     if (operation === 'observe') return this.#allow();
     if (operation === 'propose') {
-      return settings.autonomyLevel === 'OBSERVE'
+      return settings.autonomyLevel === AgentAutonomyLevel.OBSERVE
         ? this.#deny('observe_only')
         : this.#allow();
     }
     if (operation !== 'execute') return this.#deny('operation_unknown');
-    if (['OBSERVE', 'PROPOSE'].includes(settings.autonomyLevel)) {
+    if ([AgentAutonomyLevel.OBSERVE, AgentAutonomyLevel.PROPOSE].includes(settings.autonomyLevel)) {
       return this.#deny('execution_not_allowed');
     }
-    if (!riskDecision || riskDecision.decision === 'deny') {
+    if (!riskDecision || riskDecision.decision === PolicyDecision.DENY) {
       return this.#deny('risk_policy_denied');
     }
-    if (settings.autonomyLevel === 'EXECUTE_LOW_RISK'
-      && (riskDecision.risk_level !== 'low' || riskDecision.decision !== 'allow')) {
+    if (settings.autonomyLevel === AgentAutonomyLevel.EXECUTE_LOW_RISK
+      && (riskDecision.risk_level !== RiskLevel.LOW || riskDecision.decision !== PolicyDecision.ALLOW)) {
       return this.#deny('low_risk_only');
     }
-    if (riskDecision.decision === 'require_approval'
-      && approval?.status !== 'consumed') {
+    if (riskDecision.decision === PolicyDecision.REQUIRE_APPROVAL
+      && approval?.status !== ApprovalStatus.CONSUMED) {
       return this.#deny('approval_required');
     }
     const violation = this.#limitViolation(settings.limits || {}, usage);
     return violation ? this.#deny(violation) : this.#allow();
   }
+
 
   #limitViolation(limits, usage) {
     const checks = [

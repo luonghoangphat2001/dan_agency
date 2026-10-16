@@ -4,6 +4,7 @@
 "use strict";
 
 const BaseSchema = require("@schemas/BaseSchema");
+const { RiskLevel, GoalHorizon, GoalOwnerType } = require("@enums");
 
 const COMMAND_CATALOG_VERSION = "1.0.0";
 
@@ -39,15 +40,15 @@ const CEO_COMMANDS = Object.freeze([
   command("goal.create", {
     description: "Create a versioned CEO goal or OKR",
     permission: "goal.create",
-    risk: "medium",
+    risk: RiskLevel.MEDIUM,
     handler: "goal.create",
     required: ["horizon", "title", "ownerType", "ownerId", "target", "startsAt", "deadlineAt"],
     properties: {
       parentGoalId: id,
-      horizon: { type: "string", enum: ["year", "quarter", "month", "week"] },
+      horizon: { type: "string", enum: GoalHorizon.values() },
       title: { type: "string", minLength: 1, maxLength: 500 },
       description: { type: "string", maxLength: 2000 },
-      ownerType: { type: "string", enum: ["ceo", "agent", "department"] },
+      ownerType: { type: "string", enum: GoalOwnerType.values() },
       ownerId: id,
       target: {
         type: "object",
@@ -61,7 +62,7 @@ const CEO_COMMANDS = Object.freeze([
   command("portfolio.priority.change", {
     description: "Change workflow portfolio priority",
     permission: "portfolio.priority.change",
-    risk: "medium",
+    risk: RiskLevel.MEDIUM,
     handler: "portfolio.priority.change",
     required: ["workflowId", "priority", "reason"],
     properties: {
@@ -73,7 +74,7 @@ const CEO_COMMANDS = Object.freeze([
   ...["pause", "resume"].map((operation) => command(`workflow.${operation}`, {
     description: `${operation} a workflow`,
     permission: "workflow.control",
-    risk: "high",
+    risk: RiskLevel.HIGH,
     handler: "workflow.control",
     required: ["workflowId", "expectedVersion", "reason"],
     properties: {
@@ -85,7 +86,7 @@ const CEO_COMMANDS = Object.freeze([
   ...["approve", "reject"].map((decision) => command(`approval.${decision}`, {
     description: `${decision} an approval request`,
     permission: "approval.decide",
-    risk: "critical",
+    risk: RiskLevel.CRITICAL,
     handler: "approval.decide",
     required: ["approvalId", "decisionVersion", "reason"],
     properties: {
@@ -97,7 +98,7 @@ const CEO_COMMANDS = Object.freeze([
   command("analysis.request", {
     description: "Request a read-only strategic analysis",
     permission: "analysis.request",
-    risk: "low",
+    risk: RiskLevel.LOW,
     handler: "analysis.request",
     required: ["question"],
     properties: {

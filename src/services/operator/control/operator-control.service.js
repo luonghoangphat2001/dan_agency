@@ -6,6 +6,7 @@
 const crypto = require('crypto');
 const stateMachine = require('@services/workflow/state/workflow-state-machine');
 const AppError = require('@utils/errors/app.error');
+const { WorkflowState, ActorType } = require('@enums');
 
 /**
  * OperatorControlService
@@ -53,7 +54,7 @@ class OperatorControlService {
         {
           state: toState,
           pausedFromState: command.operation === 'pause' ? current.state : null,
-          completedAt: toState === 'cancelled' ? this.clock() : null,
+          completedAt: toState === WorkflowState.CANCELLED ? this.clock() : null,
         },
       );
       if (!changed) throw new AppError('Workflow control conflict', 409);
@@ -63,7 +64,7 @@ class OperatorControlService {
         correlationId: current.correlation_id,
         eventId: current.event_id,
         workflowId: current.workflow_id,
-        actorType: 'ceo',
+        actorType: ActorType.CEO,
         actorId: command.actorId,
         auditType: `workflow.${command.operation}`,
         fromState: current.state,
@@ -105,8 +106,8 @@ class OperatorControlService {
   }
 
   #targetState(operation, current) {
-    if (operation === 'pause') return 'paused';
-    if (operation === 'cancel') return 'cancelled';
+    if (operation === 'pause') return WorkflowState.PAUSED;
+    if (operation === 'cancel') return WorkflowState.CANCELLED;
     if (!current.paused_from_state) throw new AppError('Workflow has no resumable state', 409);
     return current.paused_from_state;
   }

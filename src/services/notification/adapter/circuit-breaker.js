@@ -3,6 +3,8 @@
  */
 'use strict';
 
+const { CircuitBreakerState } = require('@enums');
+
 /**
  * CircuitOpenError
  * Manages circuit open error logic.
@@ -44,13 +46,13 @@ class CircuitBreaker {
    */
   assertRequestAllowed(key) {
     const circuit = this.get(key);
-    if (circuit.state !== 'open') {
+    if (circuit.state !== CircuitBreakerState.OPEN) {
       return;
     }
     if (this.clock() - circuit.openedAt < this.cooldownMs) {
       throw new CircuitOpenError(key);
     }
-    circuit.state = 'half_open';
+    circuit.state = CircuitBreakerState.HALF_OPEN;
   }
 
   /**
@@ -59,7 +61,7 @@ class CircuitBreaker {
    * @returns {*} Result of operation.
    */
   recordSuccess(key) {
-    this.circuits.set(key, { state: 'closed', failures: 0, openedAt: null });
+    this.circuits.set(key, { state: CircuitBreakerState.CLOSED, failures: 0, openedAt: null });
   }
 
   /**
@@ -70,8 +72,8 @@ class CircuitBreaker {
   recordFailure(key) {
     const circuit = this.get(key);
     circuit.failures += 1;
-    if (circuit.state === 'half_open' || circuit.failures >= this.failureThreshold) {
-      circuit.state = 'open';
+    if (circuit.state === CircuitBreakerState.HALF_OPEN || circuit.failures >= this.failureThreshold) {
+      circuit.state = CircuitBreakerState.OPEN;
       circuit.openedAt = this.clock();
     }
   }
@@ -83,11 +85,12 @@ class CircuitBreaker {
    */
   get(key) {
     if (!this.circuits.has(key)) {
-      this.circuits.set(key, { state: 'closed', failures: 0, openedAt: null });
+      this.circuits.set(key, { state: CircuitBreakerState.CLOSED, failures: 0, openedAt: null });
     }
     return this.circuits.get(key);
   }
 }
+
 
 module.exports = CircuitBreaker;
 module.exports.CircuitOpenError = CircuitOpenError;
